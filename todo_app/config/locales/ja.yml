@@ -1,0 +1,13 @@
+ja:
+  activerecord:
+    models:
+      list: リスト
+      todo: ToDo
+    attributes:
+      list:
+        name: 名前
+        archived_at: アーカイブ日時
+      todo:
+        title: タイトル
+        list: リスト
+        completed_at: 完了日時

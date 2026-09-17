@@ -56,21 +56,21 @@ module Agent
       end
 
       def execute(workdir, message)
-        command = build_command(message)
+        command = build_command
         @transcript.record_event("reference_command", command: command, workdir: workdir)
 
-        stdout, stderr, status = Open3.capture3(*command, chdir: workdir)
+        # プロンプトは標準入力から渡す（位置引数だと他のフラグに飲まれることがある）。
+        stdout, stderr, status = Open3.capture3(*command, stdin_data: message, chdir: workdir)
         @transcript.record_event("reference_output", stdout: stdout, stderr: stderr, exit_status: status.exitstatus)
 
         parse(stdout, status)
       end
 
-      def build_command(message)
+      def build_command
         [
           "claude", "-p", "--output-format", "json",
           "--max-turns", "40", "--model", @config.model,
-          "--allowedTools", ENV.fetch("REFERENCE_ALLOWED_TOOLS", DEFAULT_ALLOWED_TOOLS),
-          message
+          "--allowedTools", ENV.fetch("REFERENCE_ALLOWED_TOOLS", DEFAULT_ALLOWED_TOOLS)
         ]
       end
 

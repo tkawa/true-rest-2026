@@ -11,7 +11,7 @@ Kaigi on Rails 2026 の発表「真のREST 2026」で使う比較実験用のToD
 
 ## 必要なもの
 
-- Ruby 3.4.8（`.ruby-version` を参照）
+- Ruby 4.0.7（`.ruby-version` を参照）
 - SQLite
 
 ```sh

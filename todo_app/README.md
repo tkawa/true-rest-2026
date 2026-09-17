@@ -81,6 +81,13 @@ CSSとJavaScriptを配信する場合は、先に `bin/rails assets:precompile R
 
 アーカイブの二つは `FEATURE_ARCHIVE=1` のときだけ存在します。
 
+表現はスコープで固定してあり、`Accept` ヘッダや拡張子では切り替えられません。
+`GET /lists` に `Accept: application/json` を付けてもHTMLが返り、`GET /api/lists` に `Accept: text/html` を付けてもJSONが返ります。
+`/lists.json` と `/api/lists.html` はどちらも404です。
+
+`/api` 以下の未定義パスは、HTMLの404ページではなく `{"errors":["見つかりません"]}` を404で返します。
+JSON表現のエラー本文は常にこの形で、422（バリデーション）、404（存在しないID）、400（パラメータの包みが無い）があります。
+
 業務ルールは二つだけで、モデルの `validate` に書いてあります。
 
 - アーカイブ済みのリストにはToDoを追加できない

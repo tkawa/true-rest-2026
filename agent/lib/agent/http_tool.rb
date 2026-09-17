@@ -120,7 +120,9 @@ module Agent
       end
       lines << ""
       lines << truncate(raw_body)
-      lines.join("\n")
+      # Net::HTTP のボディは ASCII-8BIT で返る。バイト列は変えず、
+      # 扱いだけ UTF-8 に揃える（APIも記録もUTF-8を前提にするため）。
+      lines.join("\n").dup.force_encoding(Encoding::UTF_8)
     end
 
     def truncate(raw_body)

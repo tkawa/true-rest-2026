@@ -76,8 +76,12 @@ module Agent
 
     # --- DB の読み取り -------------------------------------------------
 
+    # immutable で開く。読むだけのファイルの隣に -wal / -shm を作らないため。
     def read_all(path)
-      db = SQLite3::Database.new(path, readonly: true, results_as_hash: true)
+      db = SQLite3::Database.new(
+        "file:#{path}?immutable=1", results_as_hash: true,
+        flags: SQLite3::Constants::Open::READONLY | SQLite3::Constants::Open::URI
+      )
       TABLES.to_h do |table|
         rows = db.execute("SELECT * FROM #{table} ORDER BY id").map { |row| row.transform_keys(&:to_s) }
         [ table, rows.to_h { |row| [ row["id"], row ] } ]

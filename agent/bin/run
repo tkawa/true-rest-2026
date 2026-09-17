@@ -1,0 +1,78 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+$LOAD_PATH.unshift File.expand_path("../lib", __dir__)
+
+require "optparse"
+require "agent/config"
+require "agent/fake_agent"
+require "agent/runner"
+require "agent/scenario"
+
+options = { runs: 1, all: false }
+parser = OptionParser.new do |opts|
+  opts.banner = "使い方: bin/run --scenario s2 --condition json [--runs 10]"
+  opts.on("--scenario ID", "シナリオ（s0〜s4）") { |v| options[:scenario] = v }
+  opts.on("--condition NAME", "条件（html / json / json_v2）") { |v| options[:condition] = v }
+  opts.on("--all", "全シナリオ × 全条件") { options[:all] = true }
+  opts.on("--runs N", Integer, "繰り返し回数（既定 1）") { |v| options[:runs] = v }
+  opts.on("--fake SCRIPT", "疑似エージェント（#{Agent::FakeAgent::SCRIPTS.join(' / ')}）") { |v| options[:fake] = v }
+  opts.on("--model ID", "モデル") { |v| options[:model] = v }
+  opts.on("--port N", Integer, "ポート（既定 3000）") { |v| options[:port] = v }
+  opts.on("--max-tool-calls N", Integer, "ツール呼び出しの上限") { |v| options[:max_tool_calls] = v }
+  opts.on("-h", "--help") { puts opts; exit }
+end
+parser.parse!
+
+unless options[:all] || options[:scenario]
+  warn parser.banner
+  exit 1
+end
+
+config = Agent::Config.default
+config.model = options[:model] if options[:model]
+config.port = options[:port] if options[:port]
+config.max_tool_calls = options[:max_tool_calls] if options[:max_tool_calls]
+config.agent_name = options[:fake] ? "fake:#{options[:fake]}" : "loop"
+
+agent_factory =
+  if options[:fake]
+    lambda do |scenario:, condition:, http_tool:, origin:, transcript:, **|
+      Agent::FakeAgent.new(
+        script: options[:fake], scenario: scenario, condition: condition,
+        http_tool: http_tool, origin: origin, transcript: transcript
+      )
+    end
+  else
+    require "agent/loop"
+    lambda do |scenario:, condition:, http_tool:, transcript:, initial_message:, config:, **|
+      Agent::Loop.new(
+        scenario: scenario, condition: condition, http_tool: http_tool,
+        transcript: transcript, initial_message: initial_message, config: config
+      )
+    end
+  end
+
+targets =
+  if options[:all]
+    Agent::Scenario.all.flat_map { |s| s.condition_names.map { |c| [ s, c ] } }
+  else
+    scenario = Agent::Scenario.load(options[:scenario])
+    names = options[:condition] ? [ options[:condition] ] : scenario.condition_names
+    names.map { |c| [ scenario, c ] }
+  end
+
+targets.each do |scenario, condition_name|
+  runner = Agent::Runner.new(
+    scenario: scenario, condition_name: condition_name, config: config, agent_factory: agent_factory
+  )
+  options[:runs].times do |index|
+    data = runner.call(sequence: index + 1)
+    puts format(
+      "%-42s %-14s requests=%-3d errors=%-2d tools=%-3d in=%-7d out=%-6d%s",
+      data["run_id"], data["verdict"], data["http_requests"], data["error_responses"],
+      data["tool_calls"], data["input_tokens"], data["output_tokens"],
+      data["protocol_violation"] ? " protocol_violation" : ""
+    )
+  end
+end

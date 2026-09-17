@@ -26,7 +26,8 @@ module TodoApp
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
     # Common ones are `templates`, `generators`, or `middleware`, for example.
-    config.autoload_lib(ignore: %w[assets tasks])
+    # request_recorder.rb は experiment.rb から require_relative するので autoload の対象外にする。
+    config.autoload_lib(ignore: %w[assets tasks request_recorder.rb])
 
     # Configuration for the application, engines, and railties goes here.
     #

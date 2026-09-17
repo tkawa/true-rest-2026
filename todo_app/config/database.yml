@@ -29,3 +29,8 @@ test:
 production:
   <<: *default
   # database: path/to/persistent/storage/production.sqlite3
+
+# 実験専用の環境。EXPERIMENT_DB でシードのスナップショットの複製を指す。
+experiment:
+  <<: *default
+  database: <%= ENV.fetch("EXPERIMENT_DB", "storage/experiment.sqlite3") %>

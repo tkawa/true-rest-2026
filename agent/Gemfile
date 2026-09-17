@@ -1,0 +1,12 @@
+source "https://rubygems.org"
+
+# Claude の Messages API を呼ぶ公式 SDK
+gem "anthropic", "~> 1.71"
+
+# オラクルがスナップショットと実行後DBを直接読む
+gem "sqlite3", "~> 2.9"
+
+group :development, :test do
+  gem "rake"
+  gem "minitest"
+end

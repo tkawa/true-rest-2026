@@ -25,6 +25,9 @@ gem "rails-i18n"
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem "tzinfo-data", platforms: %i[ windows jruby ]
 
+# json 3.0 は ActiveSupport 8.1 の JSON.parse 呼び出しと非互換なので 2 系に固定する
+gem "json", "~> 2.7"
+
 # Reduces boot times through caching; required in config/boot.rb
 gem "bootsnap", require: false
 

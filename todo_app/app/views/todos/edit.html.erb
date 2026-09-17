@@ -1,0 +1,18 @@
+<% content_for :title, "ToDoの編集" %>
+
+<h1>ToDoの編集</h1>
+
+<%= form_with model: @todo do |form| %>
+  <%= render "shared/errors", record: @todo %>
+
+  <div>
+    <%= form.label :title, "タイトル" %>
+    <%= form.text_field :title %>
+  </div>
+
+  <div>
+    <%= form.submit "保存" %>
+  </div>
+<% end %>
+
+<p><%= link_to "リストへ戻る", @todo.list %></p>

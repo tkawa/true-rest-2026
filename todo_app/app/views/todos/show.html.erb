@@ -1,0 +1,9 @@
+<% content_for :title, @todo.title %>
+
+<h1><%= @todo.title %></h1>
+
+<p>状態: <%= @todo.completed? ? "完了済み" : "未完了" %></p>
+
+<p>リスト: <%= link_to @todo.list.name, @todo.list %></p>
+
+<p><%= render "todos/actions", todo: @todo %></p>

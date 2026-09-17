@@ -1,0 +1,6 @@
+<% if todo.completed? %>
+  <s><%= link_to todo.title, todo %></s>
+<% else %>
+  <%= link_to todo.title, todo %>
+<% end %>
+<%= render "todos/actions", todo: todo %>

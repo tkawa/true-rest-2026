@@ -1,0 +1,7 @@
+<% if todo.completed? %>
+  <%= button_to "再開", todo_completion_path(todo), method: :delete %>
+<% else %>
+  <%= button_to "完了", todo_completion_path(todo), method: :post %>
+  <%= link_to "編集", edit_todo_path(todo) %>
+<% end %>
+<%= button_to "削除", todo, method: :delete %>

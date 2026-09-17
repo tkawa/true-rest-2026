@@ -1,0 +1,20 @@
+<% content_for :title, "リスト" %>
+
+<h1>リスト</h1>
+
+<ul>
+  <% @lists.each do |list| %>
+    <li><%= link_to list.name, list %></li>
+  <% end %>
+</ul>
+
+<% if @archived_lists.any? %>
+  <h2>アーカイブ済み</h2>
+  <ul>
+    <% @archived_lists.each do |list| %>
+      <li><%= link_to list.name, list %></li>
+    <% end %>
+  </ul>
+<% end %>
+
+<p><%= link_to "新しいリスト", new_list_path %></p>

@@ -1,0 +1,12 @@
+<%= form_with model: list do |form| %>
+  <%= render "shared/errors", record: list %>
+
+  <div>
+    <%= form.label :name, "名前" %>
+    <%= form.text_field :name %>
+  </div>
+
+  <div>
+    <%= form.submit "保存" %>
+  </div>
+<% end %>

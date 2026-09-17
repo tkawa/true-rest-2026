@@ -1,0 +1,7 @@
+<% content_for :title, "新しいリスト" %>
+
+<h1>新しいリスト</h1>
+
+<%= render "form", list: @list %>
+
+<p><%= link_to "リスト一覧へ", lists_path %></p>

@@ -25,9 +25,7 @@ module Agent
     end
 
     def call(sequence: 1)
-      run_id = build_run_id(sequence)
-      dir = File.join(RUNS_DIR, @scenario.id, @condition.name, run_id)
-      FileUtils.mkdir_p(dir)
+      run_id, dir = reserve_directory(sequence)
 
       database_path = File.join(dir, "db.sqlite3")
       FileUtils.cp(seed_path, database_path)
@@ -66,9 +64,23 @@ module Agent
       nil
     end
 
-    def build_run_id(sequence)
+    # 同じ秒に始まった実行が同じディレクトリを共有しないよう、
+    # 空いている連番が見つかるまで進める。
+    def reserve_directory(sequence)
       stamp = Time.now.utc.strftime("%Y%m%dT%H%M%SZ")
-      format("%s-%s-%s-%03d", @scenario.id, @condition.name, stamp, sequence)
+      parent = File.join(RUNS_DIR, @scenario.id, @condition.name)
+      FileUtils.mkdir_p(parent)
+
+      loop do
+        run_id = format("%s-%s-%s-%03d", @scenario.id, @condition.name, stamp, sequence)
+        dir = File.join(parent, run_id)
+        begin
+          Dir.mkdir(dir)
+          return [ run_id, dir ]
+        rescue Errno::EEXIST
+          sequence += 1
+        end
+      end
     end
 
     def run_agent(server, dir, transcript)

@@ -1,0 +1,10 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+$LOAD_PATH.unshift File.expand_path("../lib", __dir__)
+
+require "agent/report"
+
+report = Agent::Report.new
+path = report.write
+puts "#{path} を書きました（実行数 #{report.run_count}）"

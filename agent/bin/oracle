@@ -1,0 +1,43 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+$LOAD_PATH.unshift File.expand_path("../lib", __dir__)
+
+require "json"
+require "optparse"
+require "agent/oracle"
+require "agent/runner"
+require "agent/scenario"
+
+options = {}
+parser = OptionParser.new do |opts|
+  opts.banner = "使い方: bin/oracle --run experiment/runs/s2/json/<run_id>"
+  opts.on("--run DIR", "実行記録のディレクトリ") { |v| options[:run] = v }
+  opts.on("--write", "run.json の判定を書き換える") { options[:write] = true }
+  opts.on("-h", "--help") { puts opts; exit }
+end
+parser.parse!
+
+unless options[:run]
+  warn parser.banner
+  exit 1
+end
+
+dir = File.expand_path(options[:run])
+data = JSON.parse(File.read(File.join(dir, "run.json")))
+scenario = Agent::Scenario.load(data.fetch("scenario"))
+
+result = Agent::Oracle.new(
+  scenario: scenario, condition: data.fetch("condition"),
+  seed_path: File.join(Agent::Runner::TODO_APP_DIR, "db", "seed.sqlite3"),
+  result_path: File.join(dir, "db.sqlite3"),
+  final_message: data["final_message"], finish_reason: data["finish_reason"],
+  requests_path: File.join(dir, "requests.jsonl")
+).call
+
+puts JSON.pretty_generate(result.to_h)
+
+if options[:write]
+  File.write(File.join(dir, "run.json"), JSON.pretty_generate(data.merge(result.to_h)) + "\n")
+  puts "run.json を更新しました"
+end

@@ -21,17 +21,19 @@ RSpec.describe "表現の固定", type: :request do
     expect(response.media_type).to eq("application/json")
   end
 
+  # 応答の media_type は Accept と拡張子の解釈で変わる（curl では public/404.html が返る）。
+  # ここで確かめたいのは、拡張子ではJSON表現のデータに到達できないこと。
   it "拡張子ではHTML側からJSONに到達できない" do
     get "/lists.json"
 
     expect(response).to have_http_status(:not_found)
-    expect(response.media_type).to eq("text/html")
+    expect(response.body).not_to include(list.name)
   end
 
   it "拡張子ではJSON側からHTMLに到達できない" do
     get "/api/lists.html"
 
     expect(response).to have_http_status(:not_found)
-    expect(response.media_type).to eq("application/json")
+    expect(response.parsed_body["errors"]).to eq([ "見つかりません" ])
   end
 end

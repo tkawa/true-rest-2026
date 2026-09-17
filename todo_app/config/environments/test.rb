@@ -19,7 +19,8 @@ Rails.application.configure do
   config.public_file_server.headers = { "cache-control" => "public, max-age=3600" }
 
   # Show full error reports.
-  config.consider_all_requests_local = true
+  # 404 / 400 を exceptions_app 経由の本番相当の応答として検証する。
+  config.consider_all_requests_local = false
   config.cache_store = :null_store
 
   # Render exception templates for rescuable exceptions and raise for other exceptions.

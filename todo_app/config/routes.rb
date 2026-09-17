@@ -20,9 +20,6 @@ Rails.application.routes.draw do
 
   scope "/api", as: :api, defaults: { format: :json } do
     todo_routes.call(api: true)
-
-    # 仕様書にないURLを試したときも、HTMLの404ページではなくJSONを返す。
-    match "(*unmatched)", to: "api_not_found#show", via: :all, format: false
   end
 
   get "up" => "rails/health#show", as: :rails_health_check

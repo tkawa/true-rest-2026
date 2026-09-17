@@ -27,7 +27,7 @@ module TodoApp
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
     # Common ones are `templates`, `generators`, or `middleware`, for example.
     # request_recorder.rb は experiment.rb から require_relative するので autoload の対象外にする。
-    config.autoload_lib(ignore: %w[assets tasks request_recorder.rb])
+    config.autoload_lib(ignore: %w[assets tasks request_recorder.rb exceptions_app.rb])
 
     # Configuration for the application, engines, and railties goes here.
     #
@@ -46,5 +46,9 @@ module TodoApp
     # 実験の条件切り替え用の機能フラグ。
     # アーカイブ「操作」の有無だけを制御する（カラムやバリデーションは常に存在する）。
     config.x.features.archive = ENV["FEATURE_ARCHIVE"] == "1"
+
+    # 例外時の応答。/api 以下は JSON、それ以外は public/*.html（Rails既定）。
+    require_relative "../lib/exceptions_app"
+    config.exceptions_app = ExceptionsApp.new(Rails.public_path)
   end
 end

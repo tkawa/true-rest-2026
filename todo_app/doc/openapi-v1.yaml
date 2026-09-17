@@ -250,6 +250,24 @@ paths:
         schema:
           type: integer
         example: 1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                list:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                  required:
+                  - name
+              required:
+              - list
+            example:
+              list:
+                name: 変更後のテスト用リスト
       responses:
         '200':
           description: リストの名前だけを変更します。アーカイブ状態はこの操作では変わりません。
@@ -284,22 +302,6 @@ paths:
                 archived_at:
                 created_at: '2026-01-01T00:00:00.000Z'
                 updated_at: '2026-01-01T00:00:00.000Z'
-        '400':
-          description: 変更する属性は list で包んでください。包みが無い場合は400を返します。
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  errors:
-                    type: array
-                    items:
-                      type: string
-                required:
-                - errors
-              example:
-                errors:
-                - list パラメータが必要です
         '422':
           description: 名前は必須です。空の場合は422を返します。
           content:
@@ -316,24 +318,6 @@ paths:
               example:
                 errors:
                 - 名前を入力してください
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                list:
-                  type: object
-                  properties:
-                    name:
-                      type: string
-                  required:
-                  - name
-              required:
-              - list
-            example:
-              list:
-                name: 変更後のテスト用リスト
   "/lists/{list_id}/todos":
     post:
       summary: ToDo追加

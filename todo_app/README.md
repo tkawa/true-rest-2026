@@ -85,8 +85,10 @@ CSSとJavaScriptを配信する場合は、先に `bin/rails assets:precompile R
 `GET /lists` に `Accept: application/json` を付けてもHTMLが返り、`GET /api/lists` に `Accept: text/html` を付けてもJSONが返ります。
 `/lists.json` と `/api/lists.html` はどちらも404です。
 
-`/api` 以下の未定義パスは、HTMLの404ページではなく `{"errors":["見つかりません"]}` を404で返します。
-JSON表現のエラー本文は常にこの形で、422（バリデーション）、404（存在しないID）、400（パラメータの包みが無い）があります。
+業務ルールに反したときの422は、コントローラが `{"errors":[...]}` の形で返します。
+それ以外の例外（存在しないID、未定義のパス、パラメータの包みが無いなど）は `config.exceptions_app` に置いた
+`ExceptionsApp`（`lib/exceptions_app.rb`）が一箇所で組み立てます。元のパスが `/api` 以下ならJSON、
+そうでなければRails既定の `public/<status>.html` です。JSON表現のエラー本文は常に `{"errors":[...]}` の形になります。
 
 業務ルールは二つだけで、モデルの `validate` に書いてあります。
 

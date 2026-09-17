@@ -11,9 +11,6 @@ RSpec::OpenAPI.title = "ToDo API"
 # パスからは取り除く（post_process_hook で実施）。
 RSpec::OpenAPI.servers = [ { url: "http://localhost:3000/api" } ]
 
-# /api 以下の catch-all は、仕様書に載せる「操作」ではないので除外する。
-RSpec::OpenAPI.ignored_paths = [ /\*unmatched/ ]
-
 RSpec::OpenAPI.summary_builder = ->(example) { example.metadata.dig(:openapi, :summary) }
 RSpec::OpenAPI.description_builder = ->(example) { example.metadata.dig(:openapi, :description) }
 

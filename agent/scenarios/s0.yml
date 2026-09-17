@@ -1,0 +1,14 @@
+id: s0
+name: 対照
+instruction: すべてのリストの名前を教えて
+feature_archive: false
+conditions:
+  html: {}
+  json: { spec: v1 }
+expected:
+  changes: []
+  claim: 完了
+  final_message_includes:
+    - 仕事
+    - 買い物リスト
+    - 2025年の目標

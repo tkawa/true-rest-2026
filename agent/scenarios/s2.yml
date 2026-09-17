@@ -1,0 +1,16 @@
+id: s2
+name: 名前からの追加
+instruction: 買い物リストに牛乳を追加して
+feature_archive: false
+conditions:
+  html: {}
+  json: { spec: v1 }
+expected:
+  changes:
+    - table: todos
+      op: insert
+      match:
+        list_id: 2
+        title: 牛乳
+        completed_at: null
+  claim: 完了

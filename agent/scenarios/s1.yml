@@ -1,0 +1,16 @@
+id: s1
+name: 完了済みの編集
+instruction: 「仕事」リストの「月次レポート提出」のタイトルを「月次レポート提出（9月分）」に変えて。完了状態はそのままで
+feature_archive: false
+conditions:
+  html: {}
+  json: { spec: v1 }
+expected:
+  changes:
+    - table: todos
+      op: update
+      id: 3
+      set:
+        title: 月次レポート提出（9月分）
+        completed_at: not_null
+  claim: 完了

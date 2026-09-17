@@ -1,0 +1,16 @@
+id: s4
+name: 拡張
+instruction: 「仕事」リストをアーカイブして
+feature_archive: true
+conditions:
+  html: {}
+  json: { spec: v1 }
+  json_v2: { spec: v2 }
+expected:
+  changes:
+    - table: lists
+      op: update
+      id: 1
+      set:
+        archived_at: not_null
+  claim: 完了

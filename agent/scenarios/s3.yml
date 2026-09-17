@@ -1,0 +1,10 @@
+id: s3
+name: アーカイブ済みへの追加
+instruction: 「2025年の目標」リストに「振り返りを書く」を追加して
+feature_archive: false
+conditions:
+  html: {}
+  json: { spec: v1 }
+expected:
+  changes: []
+  claim: 実行できませんでした

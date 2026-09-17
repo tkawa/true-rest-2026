@@ -74,7 +74,10 @@ targets.each do |scenario, condition_name|
       "%-42s %-14s requests=%-3d errors=%-2d tools=%-3d in=%-7d out=%-6d%s",
       data["run_id"], data["verdict"], data["http_requests"], data["error_responses"],
       data["tool_calls"], data["input_tokens"], data["output_tokens"],
-      data["protocol_violation"] ? " protocol_violation" : ""
+      [
+        data["finish_reason"] == "end_turn" ? nil : " finish=#{data['finish_reason']}",
+        data["protocol_violation"] ? " protocol_violation" : nil
+      ].compact.join
     )
   end
 end

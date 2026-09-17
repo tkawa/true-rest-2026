@@ -17,11 +17,12 @@ module Agent
     TODO_APP_DIR = File.expand_path("../todo_app", AGENT_ROOT).freeze
     RUNS_DIR = File.expand_path("../runs", AGENT_ROOT).freeze
 
-    def initialize(scenario:, condition_name:, config:, agent_factory:)
+    def initialize(scenario:, condition_name:, config:, agent_factory:, build_initial_message: true)
       @scenario = scenario
       @condition = scenario.condition(condition_name)
       @config = config
       @agent_factory = agent_factory
+      @build_initial_message = build_initial_message
     end
 
     def call(sequence: 1)
@@ -85,14 +86,17 @@ module Agent
 
     def run_agent(server, dir, transcript)
       tool = HttpTool.new(allowed_origin: server.origin)
-      message = InitialMessage.new(app_dir: TODO_APP_DIR, origin: server.origin)
-                              .build(@scenario.instruction, @condition)
-      File.write(File.join(dir, "initial_message.md"), message)
-      transcript.record_event("initial_message", condition: @condition.name, content: message)
+      message = nil
+      if @build_initial_message
+        message = InitialMessage.new(app_dir: TODO_APP_DIR, origin: server.origin)
+                                .build(@scenario.instruction, @condition)
+        File.write(File.join(dir, "initial_message.md"), message)
+        transcript.record_event("initial_message", condition: @condition.name, content: message)
+      end
 
       agent = @agent_factory.call(
-        scenario: @scenario, condition: @condition, http_tool: tool,
-        origin: server.origin, transcript: transcript, initial_message: message, config: @config
+        scenario: @scenario, condition: @condition, http_tool: tool, origin: server.origin,
+        transcript: transcript, initial_message: message, config: @config, run_dir: dir
       )
       started = monotonic
       outcome = agent.run
@@ -132,10 +136,15 @@ module Agent
         "cache_creation_input_tokens" => outcome.cache_creation_input_tokens,
         "cache_read_input_tokens" => outcome.cache_read_input_tokens,
         "tool_call_log" => tool.calls.map { |c| c.to_h.transform_keys(&:to_s) }
-      }.merge(server_metrics(requests_path)).merge(verdict.to_h)
+      }.merge(extra_of(outcome)).merge(server_metrics(requests_path)).merge(verdict.to_h)
 
       File.write(File.join(dir, "run.json"), JSON.pretty_generate(data) + "\n")
       data
+    end
+
+    # 参考実行だけが持つ値（CLIのバージョン、ターン数など）。
+    def extra_of(outcome)
+      outcome.respond_to?(:extra) ? outcome.extra.to_h : {}
     end
 
     # リクエスト数とエラー数はサーバ側の記録から取る。エージェントの自己申告には依存しない。

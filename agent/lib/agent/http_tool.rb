@@ -121,7 +121,7 @@ module Agent
       lines << ""
       lines << truncate(raw_body)
       # Net::HTTP のボディは ASCII-8BIT で返る。バイト列は変えず、
-      # 扱いだけ UTF-8 に揃える（APIも記録もUTF-8を前提にするため）。
+      # 扱いだけ UTF-8 に揃える（送信も記録も UTF-8 を前提にするため）。
       lines.join("\n").dup.force_encoding(Encoding::UTF_8)
     end
 

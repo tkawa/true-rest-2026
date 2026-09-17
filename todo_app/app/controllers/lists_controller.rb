@@ -68,7 +68,10 @@ class ListsController < ApplicationController
     @list = List.find(params[:id])
   end
 
+  # params.expect は許可キーが1つも無いと 400 になる。
+  # permit されていない属性を送ったときに「無視して 200」を返す挙動を保つため、
+  # require/permit を使う（§14 JSON側7 で観測する挙動）。
   def list_params
-    params.expect(list: [ :name ])
+    params.require(:list).permit(:name)
   end
 end

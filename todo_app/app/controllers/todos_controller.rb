@@ -55,7 +55,8 @@ class TodosController < ApplicationController
     @todo = Todo.find(params[:id])
   end
 
+  # list_params と同じ理由で require/permit を使う。
   def todo_params
-    params.expect(todo: [ :title ])
+    params.require(:todo).permit(:title)
   end
 end

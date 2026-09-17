@@ -6,6 +6,9 @@ gem "anthropic", "~> 1.71"
 # オラクルがスナップショットと実行後DBを直接読む
 gem "sqlite3", "~> 2.9"
 
+# ANTHROPIC_API_KEY などを .env から読む（.env はコミットしない）
+gem "dotenv", "~> 3.1"
+
 group :development, :test do
   gem "rake"
   gem "minitest"

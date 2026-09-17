@@ -20,12 +20,25 @@ HTML条件はルートURL、JSON条件はOpenAPI仕様書の本文を渡しま�
 ## 必要なもの
 
 - Ruby 4.0.7（`.ruby-version` を参照）
-- `ANTHROPIC_API_KEY`（自作ループを動かす場合）
+- `ANTHROPIC_API_KEY`（自作ループを動かす場合。下記の `.env` に書く）
 - `claude` コマンド（参考実行を動かす場合）
 
 ```sh
 bundle install
+cp .env.example .env    # ANTHROPIC_API_KEY を書く
 ```
+
+認証情報と設定は `.env` から読みます（`dotenv`）。`.env` はコミットされません。
+シェルで設定済みの環境変数があればそちらが優先されます。
+
+| 変数 | 意味 |
+|---|---|
+| `ANTHROPIC_API_KEY` | 自作ループが Messages API を呼ぶのに使う |
+| `MODEL` | モデル（既定はコード中の値） |
+| `PORT` | サーバのポート（既定 3000） |
+| `MAX_TOOL_CALLS` | ツール呼び出しの上限（既定 25） |
+| `RUN_TIMEOUT_SECONDS` | 1実行の壁時計の上限（既定 600） |
+| `REFERENCE_ALLOWED_TOOLS` | 参考実行で Claude Code に許すツール |
 
 日本語のデータを扱うので、UTF-8 のロケールを設定してください（例: `export LANG=ja_JP.UTF-8`）。
 

@@ -1,2 +1,6 @@
 /.bundle
 /vendor/bundle
+
+# 認証情報。.env.example を複製して各自で埋める。
+/.env
+/.env.local

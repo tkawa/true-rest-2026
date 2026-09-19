@@ -114,7 +114,9 @@ module Agent
       lines = [
         "## 参考実行（Claude Code）",
         "",
-        "判定はDB差分だけで出しています（素のシステムプロンプトでは自己申告の行が付かないため）。",
+        "判定はDB差分だけで出しています（既製品のシステムプロンプトのままでは自己申告の行が付かないため）。",
+        "「到達」は、サーバに1回以上リクエストが届いた実行の数です。",
+        "N − 到達 が「到達しなかった」、到達 − success が「到達したが状態変更の手前で止まった」になります。",
         "「前提の一行」は、初期メッセージに「このサービスには HTTP でアクセスできます。」を足したかどうかです。",
         "#{setting_sources_note(runs)}",
         "#{claude_md_note(runs)}",
@@ -123,8 +125,8 @@ module Agent
         "こちらは CLI が使った全ツールの回数）。",
         ""
       ]
-      lines << "| シナリオ | 条件 | 前提の一行 | N | 判定の内訳 | HTTPリクエスト | エラー応答 | ツール呼び出し | ツールの内訳 | ターン数 | バージョン |"
-      lines << "|---|---|---|---|---|---|---|---|---|---|---|"
+      lines << "| シナリオ | 条件 | 前提の一行 | N | 到達 | 判定の内訳 | HTTPリクエスト | エラー応答 | ツール呼び出し | ツールの内訳 | ターン数 | バージョン |"
+      lines << "|---|---|---|---|---|---|---|---|---|---|---|---|"
       grouped = runs.group_by { |run| [ run["scenario"], run["condition"], run["hint"] ? 1 : 0 ] }
       grouped.sort_by(&:first).each do |(scenario, condition, hint), cell|
         breakdown = REFERENCE_VERDICTS.filter_map do |verdict|
@@ -132,7 +134,7 @@ module Agent
           "#{verdict} #{count}" if count.positive?
         end.join(", ")
         lines << [
-          "", scenario, condition, hint.zero? ? "なし" : "あり", cell.size, breakdown,
+          "", scenario, condition, hint.zero? ? "なし" : "あり", cell.size, reached(cell), breakdown,
           spread(cell, "http_requests"), spread(cell, "error_responses"), spread(cell, "tool_calls"),
           tool_breakdown(cell), spread(cell, "num_turns"),
           cell.map { |run| run["claude_code_version"] }.uniq.join(", "), ""
@@ -159,6 +161,9 @@ module Agent
       shown = values.map { |v| v.nil? ? "記録なし" : (v ? "あり" : "なし") }
       "~/.claude/CLAUDE.md: #{shown.join(' / ')}。"
     end
+
+    # サーバに1回でも届いたか。届かなかった失敗と、届いたうえで止まった失敗を分ける。
+    def reached(cell) = cell.count { |run| run["http_requests"].to_i.positive? }
 
     # 期待する変更が入ったか、巻き添えがあったか。この二つだけで決める。
     def reference_verdict(run)

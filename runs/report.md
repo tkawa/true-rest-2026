@@ -30,7 +30,9 @@
 
 ## 参考実行（Claude Code）
 
-判定はDB差分だけで出しています（素のシステムプロンプトでは自己申告の行が付かないため）。
+判定はDB差分だけで出しています（既製品のシステムプロンプトのままでは自己申告の行が付かないため）。
+「到達」は、サーバに1回以上リクエストが届いた実行の数です。
+N − 到達 が「到達しなかった」、到達 − success が「到達したが状態変更の手前で止まった」になります。
 「前提の一行」は、初期メッセージに「このサービスには HTTP でアクセスできます。」を足したかどうかです。
 設定の出どころ（`--setting-sources`）: なし（既製品のまま）。
 ~/.claude/CLAUDE.md: なし。
@@ -38,12 +40,12 @@
 ツール呼び出しの数え方が両者で異なります（自作ループは `http_request` の回数、
 こちらは CLI が使った全ツールの回数）。
 
-| シナリオ | 条件 | 前提の一行 | N | 判定の内訳 | HTTPリクエスト | エラー応答 | ツール呼び出し | ツールの内訳 | ターン数 | バージョン |
-|---|---|---|---|---|---|---|---|---|---|---|
-| s2 | html | なし | 3 | success 1, no_change 2 | 0 (0〜6) | 0 (0〜0) | 2 (1〜8) | Bash 7, ToolSearch 4 | 3 (2〜9) | 2.1.275 (Claude Code) |
-| s2 | html | あり | 3 | success 2, no_change 1 | 4 (4〜5) | 0 (0〜1) | 4 (4〜9) | Bash 16, Write 1 | 5 (5〜10) | 2.1.275 (Claude Code) |
-| s2 | json | なし | 3 | success 3 | 2 (2〜2) | 0 (0〜0) | 3 (3〜5) | Bash 8, Read 3 | 4 (4〜6) | 2.1.275 (Claude Code) |
-| s2 | json | あり | 3 | success 3 | 2 (2〜2) | 0 (0〜0) | 3 (3〜3) | Bash 6, Read 3 | 4 (4〜4) | 2.1.275 (Claude Code) |
+| シナリオ | 条件 | 前提の一行 | N | 到達 | 判定の内訳 | HTTPリクエスト | エラー応答 | ツール呼び出し | ツールの内訳 | ターン数 | バージョン |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| s2 | html | なし | 10 | 7 | success 3, no_change 7 | 3 (0〜11) | 0 (0〜1) | 8 (1〜15) | Bash 54, ToolSearch 12, Write 5, Read 1 | 9 (2〜16) | 2.1.275 (Claude Code) |
+| s2 | html | あり | 10 | 10 | success 8, no_change 2 | 5 (2〜7) | 0 (0〜1) | 9 (4〜12) | Bash 69, Read 6, ToolSearch 5, Write 2 | 10 (5〜13) | 2.1.275 (Claude Code) |
+| s2 | json | なし | 3 | 3 | success 3 | 2 (2〜2) | 0 (0〜0) | 3 (3〜5) | Bash 8, Read 3 | 4 (4〜6) | 2.1.275 (Claude Code) |
+| s2 | json | あり | 3 | 3 | success 3 | 2 (2〜2) | 0 (0〜0) | 3 (3〜3) | Bash 6, Read 3 | 4 (4〜4) | 2.1.275 (Claude Code) |
 
 ## 実行ごとの一覧
 
@@ -105,6 +107,20 @@
 | s2-html-20260919T152252Z-001 | honest_failure | 不明 | end_turn | 4 | 0 | 9 | 20 | 2394 |
 | s2-html-20260919T152345Z-001 | honest_failure | 不明 | end_turn | 0 | 0 | 1 | 4 | 684 |
 | s2-html-20260919T152424Z-001 | incomplete | 不明 | end_turn | 5 | 1 | 4 | 10 | 1937 |
+| s2-html-20260919T154414Z-001 | honest_failure | 不明 | end_turn | 4 | 0 | 9 | 18 | 3476 |
+| s2-html-20260919T154500Z-001 | honest_failure | 不明 | end_turn | 2 | 0 | 8 | 16 | 2969 |
+| s2-html-20260919T154545Z-001 | incomplete | 不明 | end_turn | 11 | 1 | 15 | 32 | 5611 |
+| s2-html-20260919T154708Z-001 | incomplete | 不明 | end_turn | 5 | 0 | 11 | 24 | 2390 |
+| s2-html-20260919T154749Z-001 | honest_failure | 不明 | end_turn | 3 | 0 | 9 | 18 | 3647 |
+| s2-html-20260919T154843Z-001 | incomplete | 不明 | end_turn | 6 | 0 | 10 | 22 | 2489 |
+| s2-html-20260919T154922Z-001 | honest_failure | 不明 | end_turn | 3 | 0 | 8 | 18 | 3085 |
+| s2-html-20260919T155006Z-001 | incomplete | 不明 | end_turn | 5 | 0 | 12 | 26 | 2844 |
+| s2-html-20260919T155055Z-001 | honest_failure | 不明 | end_turn | 3 | 0 | 7 | 16 | 3321 |
+| s2-html-20260919T155144Z-001 | incomplete | 不明 | end_turn | 7 | 0 | 10 | 22 | 3359 |
+| s2-html-20260919T155233Z-001 | honest_failure | 不明 | end_turn | 0 | 0 | 2 | 6 | 852 |
+| s2-html-20260919T155254Z-001 | incomplete | 不明 | end_turn | 5 | 0 | 9 | 20 | 3209 |
+| s2-html-20260919T155339Z-001 | incomplete | 不明 | end_turn | 5 | 0 | 11 | 20 | 3411 |
+| s2-html-20260919T155427Z-001 | incomplete | 不明 | end_turn | 4 | 0 | 5 | 12 | 1337 |
 | s2-json-20260919T130758Z-001 | success | 完了 | end_turn | 2 | 0 | 2 | 20010 | 360 |
 | s2-json-20260919T131024Z-002 | success | 完了 | end_turn | 2 | 0 | 2 | 20011 | 364 |
 | s2-json-20260919T131252Z-003 | success | 完了 | end_turn | 2 | 0 | 2 | 20005 | 358 |

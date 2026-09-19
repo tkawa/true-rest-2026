@@ -1,0 +1,17 @@
+=> Booting Puma
+=> Rails 8.1.3.1 application starting in experiment 
+=> Run `bin/rails server --help` for more startup options
+Puma starting in single mode...
+* Puma version: 8.0.2 ("Into the Arena")
+* Ruby version: ruby 4.0.7 (2026-09-15 revision 229531a6cf) +PRISM [arm64-darwin24]
+*  Min threads: 3
+*  Max threads: 3
+*  Environment: experiment
+*          PID: 77125
+* Listening on http://0.0.0.0:3000
+Use Ctrl-C to stop
+[e8710388-6dc6-4162-ad55-5819c04285fd]   
+[e8710388-6dc6-4162-ad55-5819c04285fd] ActionController::RoutingError (No route matches [POST] "/lists/2"):
+[e8710388-6dc6-4162-ad55-5819c04285fd]   
+- Gracefully stopping, waiting for requests to finish
+Exiting

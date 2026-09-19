@@ -72,8 +72,20 @@ class ReportTest < Minitest::Test
 
     text = report.call
 
-    assert_includes text, "| s2 | html | なし | 1 | no_change 1"
-    assert_includes text, "| s2 | html | あり | 1 | success 1"
+    assert_includes text, "| s2 | html | なし | 1 | 0 | no_change 1"
+    assert_includes text, "| s2 | html | あり | 1 | 0 | success 1"
+  end
+
+  def test_the_reached_column_separates_the_two_kinds_of_failure
+    write_run(scenario: "s2", condition: "html", agent: "claude_code", seq: 1,
+              expected_changes_satisfied: false, http_requests: 0)
+    write_run(scenario: "s2", condition: "html", agent: "claude_code", seq: 2,
+              expected_changes_satisfied: false, http_requests: 4)
+    write_run(scenario: "s2", condition: "html", agent: "claude_code", seq: 3,
+              expected_changes_satisfied: true, http_requests: 5)
+
+    # N=3、到達 2、success 1 → 到達しなかった1、到達したが止まった1、完遂1
+    assert_includes report.call, "| s2 | html | なし | 3 | 2 | success 1, no_change 2"
   end
 
   def test_the_reference_table_says_what_is_comparable

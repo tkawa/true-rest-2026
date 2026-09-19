@@ -11,8 +11,8 @@ Kaigi on Rails 2026 の発表「真のREST 2026」で示す比較実験の、実
 | 場所 | 件数 | 内容 |
 |---|---|---|
 | `experiment/runs/` | 110 | 本番。自作ループ、シナリオ5本 × 条件2〜3、各 N=10 |
-| `experiment/runs/s2/` のうち `agent: claude_code` | 12 | 参考実行（Claude Code）。前提の一行なし3回 × 2条件、あり3回 × 2条件 |
-| `experiment/runs-pilot/` | 32 | 予備実行。**古いシステムプロンプトと古い S1 指示文**、および**個人設定を含む参考実行**12件 |
+| `experiment/runs/s2/` のうち `agent: claude_code` | 26 | 参考実行（Claude Code）。HTML は前提の一行なし／あり各10回、JSON は各3回 |
+| `experiment/runs-pilot/` | 44 | 予備実行。**古いシステムプロンプトと古い S1 指示文**、および**設定条件が違う参考実行**24件 |
 
 `runs-pilot/` は本番の集計に入りません。条件を変えた経緯（`experiment/agent/NOTES.md`）の
 裏づけとして残してあります。プロンプトの変更前後は `run.json` の `system_prompt_sha256` と
@@ -30,7 +30,25 @@ Kaigi on Rails 2026 の発表「真のREST 2026」で示す比較実験の、実
 | extended thinking | 無効（`thinking: {type: "disabled"}`） |
 | ツール呼び出しの上限 | 25 |
 | `todo_app` / ハーネスのコミット | `cd95754` |
-| Claude Code | 2.1.275。`--setting-sources ""` でユーザー設定を読み込まない（`plugins` は空、`output_style` は既定） |
+| Claude Code | 2.1.275 |
+
+## 参考実行の条件
+
+聴講者が再現できる条件に固定しています。実行した人の個人設定は読み込みません。
+
+| 項目 | 値 |
+|---|---|
+| 設定の出どころ | `--setting-sources ""`（`plugins` は空、`output_style` は既定） |
+| `~/.claude/CLAUDE.md` | なし |
+| 許可するツール | `--allowedTools "Bash(curl:*),Read,Write"` |
+| システムプロンプト | 変更しない |
+| 作業ディレクトリ | 空の一時ディレクトリ（JSON条件のみ `openapi.yaml` を置く） |
+
+条件は `run.json` の `setting_sources`、`user_claude_md`、`allowed_tools`、`available_tools`、
+`permission_mode`、`api_key_source` から読めます。
+`runs-pilot/` にある参考実行は、条件を固定するまでの経緯として残したもので、
+個人設定を含む12件と `~/.claude/CLAUDE.md` がある状態の12件です。
+どちらもラベルは記録を移すときに後から付けました。
 
 ## 1実行あたりのファイル
 

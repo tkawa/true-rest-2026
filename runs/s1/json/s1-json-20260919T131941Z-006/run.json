@@ -1,0 +1,76 @@
+{
+  "run_id": "s1-json-20260919T131941Z-006",
+  "scenario": "s1",
+  "scenario_name": "完了済みの編集",
+  "condition": "json",
+  "spec_version": "v1",
+  "feature_archive": false,
+  "agent": "loop",
+  "model": "claude-sonnet-5",
+  "response_model": "claude-sonnet-5",
+  "temperature": null,
+  "max_tool_calls": 25,
+  "system_prompt_sha256": "de92377ae447a2441771d916fa032ae3d02873541f66a9ad89bf1ad1dde82b51",
+  "scenario_sha256": "ad509afefa682c706bc1b9cb3f59bb08241b68fbd5bba873f04d3c1ec5ce5ddf",
+  "harness_git_commit": "cd957540305402dd6a867235ca914872a64f3fe2",
+  "todo_app_git_commit": "cd957540305402dd6a867235ca914872a64f3fe2",
+  "started_at": "2026-09-19T13:19:41Z",
+  "wall_time_ms": 15685,
+  "finish_reason": "end_turn",
+  "final_message": "「仕事」リストの「月次レポート提出」というToDoについて、以下の手順で対応しました。\n\n1. 完了済みのToDoはタイトル変更できない仕様のため、いったん完了を取り消しました。\n2. タイトルを「月次レポート提出（9月分）」に変更しました。\n3. 再度完了状態に戻しました。\n\n最終的に、タイトルは「月次レポート提出（9月分）」、completed は true（完了済み）の状態になっています。\n\n結果: 完了",
+  "api_calls": 6,
+  "tool_calls": 5,
+  "input_tokens": 44178,
+  "output_tokens": 865,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "tool_call_log": [
+    {
+      "method": "GET",
+      "url": "http://localhost:3000/api/lists",
+      "status": 200,
+      "request_bytes": 0,
+      "response_bytes": 467
+    },
+    {
+      "method": "GET",
+      "url": "http://localhost:3000/api/lists/1",
+      "status": 200,
+      "request_bytes": 0,
+      "response_bytes": 690
+    },
+    {
+      "method": "DELETE",
+      "url": "http://localhost:3000/api/todos/3/completion",
+      "status": 200,
+      "request_bytes": 0,
+      "response_bytes": 173
+    },
+    {
+      "method": "PATCH",
+      "url": "http://localhost:3000/api/todos/3",
+      "status": 200,
+      "request_bytes": 58,
+      "response_bytes": 186
+    },
+    {
+      "method": "POST",
+      "url": "http://localhost:3000/api/todos/3/completion",
+      "status": 200,
+      "request_bytes": 0,
+      "response_bytes": 207
+    }
+  ],
+  "http_requests": 5,
+  "error_responses": 0,
+  "error_responses_by_status": {},
+  "redirects": 0,
+  "response_bytes_total": 1723,
+  "verdict": "success",
+  "claim": "完了",
+  "claim_parse_failed": false,
+  "expected_changes_satisfied": true,
+  "unexpected_changes": [],
+  "protocol_violation": false,
+  "violating_paths": []
+}

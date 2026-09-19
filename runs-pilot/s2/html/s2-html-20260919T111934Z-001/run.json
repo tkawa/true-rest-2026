@@ -1,0 +1,67 @@
+{
+  "run_id": "s2-html-20260919T111934Z-001",
+  "scenario": "s2",
+  "scenario_name": "名前からの追加",
+  "condition": "html",
+  "spec_version": null,
+  "feature_archive": false,
+  "agent": "loop",
+  "model": "claude-sonnet-5",
+  "response_model": "claude-sonnet-5",
+  "temperature": null,
+  "max_tool_calls": 25,
+  "harness_git_commit": "78f8276b40841e5da0cccc820aa559254e3afb8d",
+  "todo_app_git_commit": "78f8276b40841e5da0cccc820aa559254e3afb8d",
+  "started_at": "2026-09-19T11:19:34Z",
+  "wall_time_ms": 12278,
+  "finish_reason": "end_turn",
+  "final_message": "「買い物リスト」に「牛乳」（ToDo ID: 8）が追加されたことを確認しました。「ToDoを追加しました」というメッセージも表示されています。\n\n結果: 完了",
+  "api_calls": 5,
+  "tool_calls": 4,
+  "input_tokens": 20049,
+  "output_tokens": 751,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "tool_call_log": [
+    {
+      "method": "GET",
+      "url": "http://localhost:3000/",
+      "status": 200,
+      "request_bytes": 0,
+      "response_bytes": 2215
+    },
+    {
+      "method": "GET",
+      "url": "http://localhost:3000/lists/2",
+      "status": 200,
+      "request_bytes": 0,
+      "response_bytes": 4131
+    },
+    {
+      "method": "POST",
+      "url": "http://localhost:3000/lists/2/todos",
+      "status": 302,
+      "request_bytes": 166,
+      "response_bytes": 0
+    },
+    {
+      "method": "GET",
+      "url": "http://localhost:3000/lists/2",
+      "status": 200,
+      "request_bytes": 0,
+      "response_bytes": 4821
+    }
+  ],
+  "http_requests": 4,
+  "error_responses": 0,
+  "error_responses_by_status": {},
+  "redirects": 1,
+  "response_bytes_total": 11167,
+  "verdict": "success",
+  "claim": "完了",
+  "claim_parse_failed": false,
+  "expected_changes_satisfied": true,
+  "unexpected_changes": [],
+  "protocol_violation": false,
+  "violating_paths": []
+}

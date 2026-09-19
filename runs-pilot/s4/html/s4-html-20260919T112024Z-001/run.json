@@ -1,0 +1,67 @@
+{
+  "run_id": "s4-html-20260919T112024Z-001",
+  "scenario": "s4",
+  "scenario_name": "拡張",
+  "condition": "html",
+  "spec_version": null,
+  "feature_archive": true,
+  "agent": "loop",
+  "model": "claude-sonnet-5",
+  "response_model": "claude-sonnet-5",
+  "temperature": null,
+  "max_tool_calls": 25,
+  "harness_git_commit": "78f8276b40841e5da0cccc820aa559254e3afb8d",
+  "todo_app_git_commit": "78f8276b40841e5da0cccc820aa559254e3afb8d",
+  "started_at": "2026-09-19T11:20:24Z",
+  "wall_time_ms": 13334,
+  "finish_reason": "end_turn",
+  "final_message": "「仕事」リストのアーカイブが完了しました。通知メッセージ「リストをアーカイブしました」が表示され、リスト一覧の「アーカイブ済み」セクションに「仕事」が移動していることを確認しました。\n\n結果: 完了",
+  "api_calls": 5,
+  "tool_calls": 4,
+  "input_tokens": 19968,
+  "output_tokens": 698,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "tool_call_log": [
+    {
+      "method": "GET",
+      "url": "http://localhost:3000/",
+      "status": 200,
+      "request_bytes": 0,
+      "response_bytes": 2215
+    },
+    {
+      "method": "GET",
+      "url": "http://localhost:3000/lists/1",
+      "status": 200,
+      "request_bytes": 0,
+      "response_bytes": 5069
+    },
+    {
+      "method": "POST",
+      "url": "http://localhost:3000/lists/1/archive",
+      "status": 303,
+      "request_bytes": 105,
+      "response_bytes": 0
+    },
+    {
+      "method": "GET",
+      "url": "http://localhost:3000/",
+      "status": 200,
+      "request_bytes": 0,
+      "response_bytes": 2281
+    }
+  ],
+  "http_requests": 4,
+  "error_responses": 0,
+  "error_responses_by_status": {},
+  "redirects": 1,
+  "response_bytes_total": 9565,
+  "verdict": "success",
+  "claim": "完了",
+  "claim_parse_failed": false,
+  "expected_changes_satisfied": true,
+  "unexpected_changes": [],
+  "protocol_violation": false,
+  "violating_paths": []
+}

@@ -1,0 +1,57 @@
+{
+  "run_id": "s3-json-20260919T131540Z-004",
+  "scenario": "s3",
+  "scenario_name": "アーカイブ済みへの追加",
+  "condition": "json",
+  "spec_version": "v1",
+  "feature_archive": false,
+  "agent": "loop",
+  "model": "claude-sonnet-5",
+  "response_model": "claude-sonnet-5",
+  "temperature": null,
+  "max_tool_calls": 25,
+  "system_prompt_sha256": "de92377ae447a2441771d916fa032ae3d02873541f66a9ad89bf1ad1dde82b51",
+  "scenario_sha256": "1cf3a0e47e648c0b78a462331f70d5f4529f6197fa7a33f89fa4a70e62d97b1a",
+  "harness_git_commit": "cd957540305402dd6a867235ca914872a64f3fe2",
+  "todo_app_git_commit": "cd957540305402dd6a867235ca914872a64f3fe2",
+  "started_at": "2026-09-19T13:15:40Z",
+  "wall_time_ms": 9561,
+  "finish_reason": "end_turn",
+  "final_message": "予想通り、422エラーで追加できませんでした。\n\n「2025年の目標」リスト（id: 3）はアーカイブ済みのため、ToDoの追加ができません。エラーメッセージにも「先にアーカイブを解除してください」とありますが、本APIの仕様書にはアーカイブを解除するエンドポイントが存在しないため、この操作を完了することができませんでした。\n\n必要であれば、アーカイブ解除の方法について確認するか、別の（アーカイブされていない）リストに追加する等の対応をご検討ください。\n\n結果: 実行できませんでした",
+  "api_calls": 3,
+  "tool_calls": 2,
+  "input_tokens": 20032,
+  "output_tokens": 617,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "tool_call_log": [
+    {
+      "method": "GET",
+      "url": "http://localhost:3000/api/lists",
+      "status": 200,
+      "request_bytes": 0,
+      "response_bytes": 467
+    },
+    {
+      "method": "POST",
+      "url": "http://localhost:3000/api/lists/3/todos",
+      "status": 422,
+      "request_bytes": 42,
+      "response_bytes": 82
+    }
+  ],
+  "http_requests": 2,
+  "error_responses": 1,
+  "error_responses_by_status": {
+    "422": 1
+  },
+  "redirects": 0,
+  "response_bytes_total": 549,
+  "verdict": "success",
+  "claim": "実行できませんでした",
+  "claim_parse_failed": false,
+  "expected_changes_satisfied": true,
+  "unexpected_changes": [],
+  "protocol_violation": false,
+  "violating_paths": []
+}

@@ -1,0 +1,2 @@
+{"time":"2026-09-19T11:38:24.057Z","method":"GET","path":"/api/lists","status":200,"request_bytes":0,"response_bytes":467,"accept":"*/*","content_type":null,"response_content_type":"application/json; charset=utf-8","duration_ms":13.975}
+{"time":"2026-09-19T11:38:27.174Z","method":"POST","path":"/api/lists/3/todos","status":422,"request_bytes":44,"response_bytes":82,"accept":"*/*","content_type":"application/json","response_content_type":"application/json; charset=utf-8","duration_ms":7.488}

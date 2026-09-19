@@ -1,0 +1,53 @@
+{
+  "run_id": "s4-json_v2-20260919T112049Z-001",
+  "scenario": "s4",
+  "scenario_name": "拡張",
+  "condition": "json_v2",
+  "spec_version": "v2",
+  "feature_archive": true,
+  "agent": "loop",
+  "model": "claude-sonnet-5",
+  "response_model": "claude-sonnet-5",
+  "temperature": null,
+  "max_tool_calls": 25,
+  "harness_git_commit": "78f8276b40841e5da0cccc820aa559254e3afb8d",
+  "todo_app_git_commit": "78f8276b40841e5da0cccc820aa559254e3afb8d",
+  "started_at": "2026-09-19T11:20:49Z",
+  "wall_time_ms": 6039,
+  "finish_reason": "end_turn",
+  "final_message": "「仕事」リスト（ID: 1）をアーカイブしました。`archived` が `true`、`archived_at` に日時が設定されたことを確認しました。\n\n結果: 完了",
+  "api_calls": 3,
+  "tool_calls": 2,
+  "input_tokens": 22406,
+  "output_tokens": 279,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "tool_call_log": [
+    {
+      "method": "GET",
+      "url": "http://localhost:3000/api/lists",
+      "status": 200,
+      "request_bytes": 0,
+      "response_bytes": 467
+    },
+    {
+      "method": "POST",
+      "url": "http://localhost:3000/api/lists/1/archive",
+      "status": 200,
+      "request_bytes": 0,
+      "response_bytes": 161
+    }
+  ],
+  "http_requests": 2,
+  "error_responses": 0,
+  "error_responses_by_status": {},
+  "redirects": 0,
+  "response_bytes_total": 628,
+  "verdict": "success",
+  "claim": "完了",
+  "claim_parse_failed": false,
+  "expected_changes_satisfied": true,
+  "unexpected_changes": [],
+  "protocol_violation": false,
+  "violating_paths": []
+}

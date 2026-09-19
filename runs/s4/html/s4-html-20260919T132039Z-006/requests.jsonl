@@ -1,0 +1,4 @@
+{"time":"2026-09-19T13:20:43.317Z","method":"GET","path":"/","status":200,"request_bytes":0,"response_bytes":2215,"accept":"*/*","content_type":null,"response_content_type":"text/html; charset=utf-8","duration_ms":134.59}
+{"time":"2026-09-19T13:20:45.357Z","method":"GET","path":"/lists/1","status":200,"request_bytes":0,"response_bytes":5069,"accept":"*/*","content_type":null,"response_content_type":"text/html; charset=utf-8","duration_ms":19.002}
+{"time":"2026-09-19T13:20:50.098Z","method":"POST","path":"/lists/1/archive","status":303,"request_bytes":105,"response_bytes":0,"accept":"*/*","content_type":"application/x-www-form-urlencoded","response_content_type":"text/html; charset=utf-8","duration_ms":5.577}
+{"time":"2026-09-19T13:20:52.122Z","method":"GET","path":"/lists/1","status":200,"request_bytes":0,"response_bytes":4875,"accept":"*/*","content_type":null,"response_content_type":"text/html; charset=utf-8","duration_ms":8.197}

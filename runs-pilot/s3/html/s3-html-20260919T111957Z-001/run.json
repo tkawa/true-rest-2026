@@ -1,0 +1,53 @@
+{
+  "run_id": "s3-html-20260919T111957Z-001",
+  "scenario": "s3",
+  "scenario_name": "アーカイブ済みへの追加",
+  "condition": "html",
+  "spec_version": null,
+  "feature_archive": false,
+  "agent": "loop",
+  "model": "claude-sonnet-5",
+  "response_model": "claude-sonnet-5",
+  "temperature": null,
+  "max_tool_calls": 25,
+  "harness_git_commit": "78f8276b40841e5da0cccc820aa559254e3afb8d",
+  "todo_app_git_commit": "78f8276b40841e5da0cccc820aa559254e3afb8d",
+  "started_at": "2026-09-19T11:19:57Z",
+  "wall_time_ms": 6882,
+  "finish_reason": "end_turn",
+  "final_message": "「2025年の目標」リストはアーカイブ済みで、ページ上に「このリストはアーカイブ済みです。ToDoは追加できません。」と明記されています。このため、新しいToDo「振り返りを書く」を追加することはできません。\n\nもし追加したい場合は、まずリストのアーカイブを解除する必要がありますが、それは依頼内容（追加のみ）を超える操作になるため、勝手には行いません。どうしますか？\n\n結果: 実行できませんでした",
+  "api_calls": 3,
+  "tool_calls": 2,
+  "input_tokens": 7450,
+  "output_tokens": 385,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "tool_call_log": [
+    {
+      "method": "GET",
+      "url": "http://localhost:3000/",
+      "status": 200,
+      "request_bytes": 0,
+      "response_bytes": 2215
+    },
+    {
+      "method": "GET",
+      "url": "http://localhost:3000/lists/3",
+      "status": 200,
+      "request_bytes": 0,
+      "response_bytes": 3839
+    }
+  ],
+  "http_requests": 2,
+  "error_responses": 0,
+  "error_responses_by_status": {},
+  "redirects": 0,
+  "response_bytes_total": 6054,
+  "verdict": "success",
+  "claim": "実行できませんでした",
+  "claim_parse_failed": false,
+  "expected_changes_satisfied": true,
+  "unexpected_changes": [],
+  "protocol_violation": false,
+  "violating_paths": []
+}

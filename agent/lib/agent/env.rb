@@ -1,3 +1,7 @@
+# シェルのロケールに関わらず同じ結果になるよう、既定の文字コードを固定する。
+Encoding.default_external = Encoding::UTF_8
+Encoding.default_internal = Encoding::UTF_8
+
 require "dotenv"
 
 module Agent

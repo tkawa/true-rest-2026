@@ -61,7 +61,7 @@ module Agent
         "EXPERIMENT_DB" => @database_path,
         "EXPERIMENT_LOG" => @log_path,
         "SECRET_KEY_BASE" => "x",
-        "LANG" => ENV.fetch("LANG", "ja_JP.UTF-8")
+        "LANG" => ENV.fetch("LANG", "C.UTF-8")
       ).tap { |e| e["FEATURE_ARCHIVE"] = "1" if @feature_archive }
     end
 

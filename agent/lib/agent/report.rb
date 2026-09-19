@@ -8,8 +8,9 @@ module Agent
     VERDICTS = %w[success honest_failure false_success collateral incomplete].freeze
     CONDITION_ORDER = %w[html json json_v2].freeze
 
-    def initialize(runs_dir: RUNS_DIR)
+    def initialize(runs_dir: ENV.fetch("RUNS_DIR", RUNS_DIR), include_fake: false)
       @runs_dir = runs_dir
+      @include_fake = include_fake
       @runs = load_runs
     end
 
@@ -34,8 +35,10 @@ module Agent
 
     private
 
+    # 疑似エージェントの実行は装置の確認用なので、既定では表に混ぜない。
     def load_runs
-      Dir.glob(File.join(@runs_dir, "**", "run.json")).sort.map { |path| JSON.parse(File.read(path)) }
+      runs = Dir.glob(File.join(@runs_dir, "**", "run.json")).sort.map { |path| JSON.parse(File.read(path)) }
+      @include_fake ? runs : runs.reject { |run| run["agent"].to_s.start_with?("fake:") }
     end
 
     def summary_section(runs)
@@ -139,7 +142,7 @@ module Agent
 
     def spread(cell, key)
       values = cell.map { |run| run[key] }.compact.map(&:to_i)
-      return "-" if values.empty?
+      return "—" if values.empty?
 
       "#{median(values)} (#{values.min}〜#{values.max})"
     end
@@ -149,7 +152,8 @@ module Agent
       middle = sorted.size / 2
       return sorted[middle] if sorted.size.odd?
 
-      ((sorted[middle - 1] + sorted[middle]) / 2.0).round(1)
+      average = (sorted[middle - 1] + sorted[middle]) / 2.0
+      (average % 1).zero? ? average.to_i : average.round(1)
     end
   end
 end

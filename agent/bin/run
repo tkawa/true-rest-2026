@@ -36,6 +36,8 @@ config.model = options[:model] if options[:model]
 config.port = options[:port] if options[:port]
 config.max_tool_calls = options[:max_tool_calls] if options[:max_tool_calls]
 config.agent_name = options[:fake] ? "fake:#{options[:fake]}" : "loop"
+# 疑似エージェントはモデルを使わないので、表のモデル欄を汚さないよう記録しない。
+config.model = nil if options[:fake]
 
 agent_factory =
   if options[:fake]

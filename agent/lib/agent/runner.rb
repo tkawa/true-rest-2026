@@ -15,8 +15,6 @@ module Agent
   class Runner
     AGENT_ROOT = File.expand_path("../..", __dir__).freeze
     TODO_APP_DIR = File.expand_path("../todo_app", AGENT_ROOT).freeze
-    RUNS_DIR = File.expand_path("../runs", AGENT_ROOT).freeze
-
     def initialize(scenario:, condition_name:, config:, agent_factory:, build_initial_message: true)
       @scenario = scenario
       @condition = scenario.condition(condition_name)
@@ -69,7 +67,7 @@ module Agent
     # 空いている連番が見つかるまで進める。
     def reserve_directory(sequence)
       stamp = Time.now.utc.strftime("%Y%m%dT%H%M%SZ")
-      parent = File.join(RUNS_DIR, @scenario.id, @condition.name)
+      parent = File.join(@config.runs_dir, @scenario.id, @condition.name)
       FileUtils.mkdir_p(parent)
 
       loop do

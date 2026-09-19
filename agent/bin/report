@@ -5,8 +5,16 @@ $LOAD_PATH.unshift File.expand_path("../lib", __dir__)
 
 require "agent/env"
 
+require "optparse"
 require "agent/report"
 
-report = Agent::Report.new
+options = { include_fake: false }
+OptionParser.new do |opts|
+  opts.banner = "使い方: bin/report [--include-fake]"
+  opts.on("--include-fake", "疑似エージェントの実行も表に含める") { options[:include_fake] = true }
+  opts.on("-h", "--help") { puts opts; exit }
+end.parse!
+
+report = Agent::Report.new(include_fake: options[:include_fake])
 path = report.write
 puts "#{path} を書きました（実行数 #{report.run_count}）"

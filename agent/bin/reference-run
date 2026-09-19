@@ -17,6 +17,7 @@ parser = OptionParser.new do |opts|
   opts.on("--scenario ID", "シナリオ（s0〜s4）") { |v| options[:scenario] = v }
   opts.on("--condition NAME", "条件（html / json / json_v2）") { |v| options[:condition] = v }
   opts.on("--runs N", Integer, "繰り返し回数（既定 1。参考実行は 3〜5 に抑える）") { |v| options[:runs] = v }
+  opts.on("--hint", "初期メッセージに「このサービスには HTTP でアクセスできます。」を足す") { options[:hint] = true }
   opts.on("--model ID", "モデル") { |v| options[:model] = v }
   opts.on("--port N", Integer, "ポート（既定 3000）") { |v| options[:port] = v }
   opts.on("-h", "--help") { puts opts; exit }
@@ -35,7 +36,7 @@ config.port = options[:port] if options[:port]
 factory = lambda do |scenario:, condition:, origin:, transcript:, config:, run_dir:, **|
   Agent::Reference::ClaudeCode.new(
     scenario: scenario, condition: condition, origin: origin, transcript: transcript,
-    config: config, app_dir: Agent::Runner::TODO_APP_DIR, run_dir: run_dir
+    config: config, app_dir: Agent::Runner::TODO_APP_DIR, run_dir: run_dir, hint: options[:hint]
   )
 end
 
@@ -53,6 +54,6 @@ names.each do |condition_name|
       "%-42s %-14s requests=%-3d errors=%-2d turns=%-3s cost=%s",
       data["run_id"], data["verdict"], data["http_requests"], data["error_responses"],
       data["num_turns"], data["total_cost_usd"]
-    )
+    ) + (data["hint"] ? " hint" : "")
   end
 end

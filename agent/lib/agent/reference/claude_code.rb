@@ -10,6 +10,9 @@ module Agent
     class ClaudeCode
       # リポジトリの中で起動すると実装を読まれてしまうので、空の一時ディレクトリで動かす。
       SPEC_FILENAME = "openapi.yaml".freeze
+      # 自作ループのシステムプロンプトが最初から持っている前提を、既製エージェントにも同じだけ与える。
+      # 手順もアプリ固有の知識も含まない一行。
+      HINT = "このサービスには HTTP でアクセスできます。".freeze
       DEFAULT_ALLOWED_TOOLS = "Bash(curl:*),Read,Write".freeze
 
       Result = Struct.new(
@@ -18,7 +21,7 @@ module Agent
         :extra, keyword_init: true
       )
 
-      def initialize(scenario:, condition:, origin:, transcript:, config:, app_dir:, run_dir:)
+      def initialize(scenario:, condition:, origin:, transcript:, config:, app_dir:, run_dir:, hint: false)
         @scenario = scenario
         @condition = condition
         @origin = origin
@@ -26,6 +29,7 @@ module Agent
         @config = config
         @app_dir = app_dir
         @run_dir = run_dir
+        @hint = hint
       end
 
       def run
@@ -47,12 +51,17 @@ module Agent
       private
 
       def build_message(workdir)
-        return "#{@scenario.instruction}\n\n操作対象: #{@origin}/\n" if @condition.spec_version.nil?
+        body =
+          if @condition.spec_version.nil?
+            "#{@scenario.instruction}\n\n操作対象: #{@origin}/\n"
+          else
+            spec = File.read(File.join(@app_dir, "doc", "openapi-#{@condition.spec_version}.yaml"))
+                       .gsub("http://localhost:3000/", "#{@origin}/")
+            File.write(File.join(workdir, SPEC_FILENAME), spec)
+            "#{@scenario.instruction}\n\n操作対象のサービスの仕様書（OpenAPI）は ./#{SPEC_FILENAME} にあります。\n"
+          end
 
-        spec = File.read(File.join(@app_dir, "doc", "openapi-#{@condition.spec_version}.yaml"))
-                   .gsub("http://localhost:3000/", "#{@origin}/")
-        File.write(File.join(workdir, SPEC_FILENAME), spec)
-        "#{@scenario.instruction}\n\n操作対象のサービスの仕様書（OpenAPI）は ./#{SPEC_FILENAME} にあります。\n"
+        @hint ? "#{body}#{HINT}\n" : body
       end
 
       def execute(workdir, message)
@@ -106,6 +115,7 @@ module Agent
             "session_id" => result["session_id"],
             "allowed_tools" => ENV.fetch("REFERENCE_ALLOWED_TOOLS", DEFAULT_ALLOWED_TOOLS),
             "claude_code_version" => self.class.version,
+            "hint" => @hint,
             "tool_calls_by_name" => tools
           }.merge(init_metadata(events))
         )
@@ -148,7 +158,10 @@ module Agent
           final_message: stdout.to_s, finish_reason: "api_error",
           api_calls: 0, tool_calls: nil, input_tokens: 0, output_tokens: 0,
           cache_creation_input_tokens: 0, cache_read_input_tokens: 0,
-          extra: { "exit_status" => status.exitstatus, "claude_code_version" => self.class.version }
+          extra: {
+            "exit_status" => status.exitstatus, "claude_code_version" => self.class.version,
+            "hint" => @hint
+          }
         )
       end
     end

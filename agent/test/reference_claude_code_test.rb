@@ -3,11 +3,36 @@ require "json"
 require "agent/reference/claude_code"
 
 class ReferenceClaudeCodeTest < Minitest::Test
-  def build
+  Condition = Struct.new(:name, :spec_version, keyword_init: true)
+  Scenario = Struct.new(:instruction, keyword_init: true)
+
+  def build(hint: false, condition: nil)
     Agent::Reference::ClaudeCode.new(
-      scenario: nil, condition: nil, origin: "http://localhost:3000",
-      transcript: nil, config: nil, app_dir: TODO_APP_DIR, run_dir: "/tmp"
+      scenario: Scenario.new(instruction: "買い物リストに牛乳を追加して"),
+      condition: condition || Condition.new(name: "html"),
+      origin: "http://localhost:3000",
+      transcript: nil, config: nil, app_dir: TODO_APP_DIR, run_dir: "/tmp", hint: hint
     )
+  end
+
+  def test_the_bare_message_has_no_hint
+    message = build.send(:build_message, Dir.mktmpdir)
+
+    refute_includes message, Agent::Reference::ClaudeCode::HINT
+    assert_includes message, "操作対象: http://localhost:3000/"
+  end
+
+  def test_the_hint_adds_one_line_only
+    bare = build.send(:build_message, Dir.mktmpdir)
+    hinted = build(hint: true).send(:build_message, Dir.mktmpdir)
+
+    assert_equal "#{bare}#{Agent::Reference::ClaudeCode::HINT}\n", hinted
+    assert_equal bare.lines.size + 1, hinted.lines.size
+  end
+
+  def test_the_hint_is_recorded
+    assert_equal true, build(hint: true).send(:parse, STREAM, nil).extra["hint"]
+    assert_equal false, build.send(:parse, STREAM, nil).extra["hint"]
   end
 
   def test_api_key_is_not_passed_to_the_cli

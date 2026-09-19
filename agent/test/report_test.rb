@@ -64,6 +64,18 @@ class ReportTest < Minitest::Test
     assert_includes Agent::Report.new(runs_dir: @dir, include_fake: true).call, "success 1"
   end
 
+  def test_hint_runs_are_a_separate_row
+    write_run(scenario: "s2", condition: "html", agent: "claude_code", seq: 1,
+              expected_changes_satisfied: false, hint: false)
+    write_run(scenario: "s2", condition: "html", agent: "claude_code", seq: 2,
+              expected_changes_satisfied: true, hint: true)
+
+    text = report.call
+
+    assert_includes text, "| s2 | html | なし | 1 | no_change 1"
+    assert_includes text, "| s2 | html | あり | 1 | success 1"
+  end
+
   def test_the_reference_table_says_what_is_comparable
     write_run(scenario: "s2", condition: "json", agent: "claude_code",
               expected_changes_satisfied: true)

@@ -64,6 +64,7 @@ bin/run --scenario s2 --condition html --fake correct
 
 ```sh
 bin/reference-run --scenario s2 --condition html
+bin/reference-run --scenario s2 --condition html --hint  # 前提の一行を足した変種
 bin/report                 # 疑似エージェントの実行は除外される
 bin/report --include-fake  # 装置の確認用に含める
 bin/oracle --run ../runs/s2/json/<run_id>

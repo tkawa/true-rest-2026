@@ -12,8 +12,12 @@ module Agent
     Result = Struct.new(
       :final_message, :finish_reason, :api_calls, :tool_calls,
       :input_tokens, :output_tokens, :cache_creation_input_tokens, :cache_read_input_tokens,
-      keyword_init: true
+      :temperature, keyword_init: true
     )
+
+    # 新しいモデルは temperature を受け付けない。指定できるモデルでは 0 を送り、
+    # 拒否されたら外して送り直す。どちらの条件も同じ経路を通るので公平性は変わらない。
+    TEMPERATURE_DEPRECATED = /`temperature` is deprecated/
 
     def initialize(scenario:, condition:, http_tool:, transcript:, initial_message:, config:, client: nil)
       @scenario = scenario
@@ -25,7 +29,11 @@ module Agent
       @client = client || Anthropic::Client.new(max_retries: 0)
       @usage = Hash.new(0)
       @api_calls = 0
+      @temperature = config.temperature
     end
+
+    # 実際に送った temperature（外した場合は nil）。
+    attr_reader :temperature
 
     def system_prompt = File.read(SYSTEM_PROMPT_PATH)
 
@@ -67,15 +75,23 @@ module Agent
       begin
         attempt += 1
         params = {
-          model: @config.model, max_tokens: MAX_TOKENS, temperature: @config.temperature,
+          model: @config.model, max_tokens: MAX_TOKENS,
           system: system_prompt, tools: [ HttpTool::DEFINITION ], messages: messages
         }
+        params[:temperature] = @temperature unless @temperature.nil?
         response = @client.messages.create(params)
         @api_calls += 1
         accumulate(response.usage)
         @transcript.record_api_call(request: params, response: response.to_h)
         response
       rescue Anthropic::Errors::APIError => e
+        if TEMPERATURE_DEPRECATED.match?(e.message) && !@temperature.nil?
+          @transcript.record_event("temperature_dropped", model: @config.model)
+          @temperature = nil
+          attempt -= 1
+          retry
+        end
+
         @transcript.record_event("api_error", attempt: attempt, error: "#{e.class}: #{e.message}")
         if attempt < API_RETRIES
           sleep(2**attempt)
@@ -118,7 +134,8 @@ module Agent
         api_calls: @api_calls, tool_calls: @tool.call_count,
         input_tokens: @usage[:input_tokens], output_tokens: @usage[:output_tokens],
         cache_creation_input_tokens: @usage[:cache_creation_input_tokens],
-        cache_read_input_tokens: @usage[:cache_read_input_tokens]
+        cache_read_input_tokens: @usage[:cache_read_input_tokens],
+        temperature: @temperature
       )
     end
 

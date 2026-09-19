@@ -121,7 +121,7 @@ module Agent
         "feature_archive" => @scenario.feature_archive,
         "agent" => @config.agent_name,
         "model" => @config.model,
-        "temperature" => @config.temperature,
+        "temperature" => effective_temperature(outcome),
         "max_tool_calls" => @config.max_tool_calls,
         "harness_git_commit" => git_commit(AGENT_ROOT),
         "todo_app_git_commit" => git_commit(TODO_APP_DIR),
@@ -140,6 +140,11 @@ module Agent
 
       File.write(File.join(dir, "run.json"), JSON.pretty_generate(data) + "\n")
       data
+    end
+
+    # 送らなかった場合は null を残す（モデルが受け付けないとき）。
+    def effective_temperature(outcome)
+      outcome.respond_to?(:temperature) ? outcome.temperature : @config.temperature
     end
 
     # 参考実行だけが持つ値（CLIのバージョン、ターン数など）。

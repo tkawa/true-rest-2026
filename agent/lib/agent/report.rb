@@ -50,13 +50,19 @@ module Agent
         | 項目 | 値 |
         |---|---|
         | モデル | #{models.join(", ")} |
-        | temperature | #{runs.map { |r| r["temperature"] }.uniq.join(", ")} |
+        | temperature | #{temperatures(runs)} |
         | ツール呼び出しの上限 | #{runs.map { |r| r["max_tool_calls"] }.uniq.join(", ")} |
         | todo_app のコミット | #{commits.join(", ")} |
         | 実行日 | #{dates.join(" 〜 ")} |
         | 実行数 | #{runs.size} |
 
       SECTION
+    end
+
+    # 新しいモデルは temperature を受け付けないので、送らなかったことを明示する。
+    def temperatures(runs)
+      runs.map { |run| run["temperature"].nil? ? "未指定（モデルが受け付けない）" : run["temperature"] }
+          .uniq.join(", ")
     end
 
     def matrix_section(runs)

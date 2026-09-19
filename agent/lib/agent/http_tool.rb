@@ -120,17 +120,22 @@ module Agent
       end
       lines << ""
       lines << truncate(raw_body)
-      # Net::HTTP のボディは ASCII-8BIT で返る。バイト列は変えず、
-      # 扱いだけ UTF-8 に揃える（送信も記録も UTF-8 を前提にするため）。
-      lines.join("\n").dup.force_encoding(Encoding::UTF_8)
+      lines.join("\n")
     end
 
+    # バイト列は変えず、扱いだけ UTF-8 に揃える。
     def truncate(raw_body)
-      return raw_body if raw_body.bytesize <= MAX_BODY_BYTES
+      return utf8(raw_body) if raw_body.bytesize <= MAX_BODY_BYTES
 
       remaining = raw_body.bytesize - MAX_BODY_BYTES
-      head = raw_body.byteslice(0, MAX_BODY_BYTES).scrub
-      "#{head}\n[... 切り詰め: 残り #{remaining} バイト]"
+      "#{utf8(raw_body.byteslice(0, MAX_BODY_BYTES))}\n[... 切り詰め: 残り #{remaining} バイト]"
+    end
+
+    # 不正なバイトは U+FFFD に置き換える。そのままだと記録の JSON.generate が落ち、
+    # 記録の失敗が実行そのものを巻き込む。
+    def utf8(bytes)
+      text = bytes.dup.force_encoding(Encoding::UTF_8)
+      text.valid_encoding? ? text : text.scrub
     end
   end
 end

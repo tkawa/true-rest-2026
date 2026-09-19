@@ -6,6 +6,9 @@ module Agent
   class Report
     RUNS_DIR = File.expand_path("../../../runs", __dir__).freeze
     VERDICTS = %w[success honest_failure false_success collateral incomplete].freeze
+    # 参考実行は素のシステムプロンプトで動かすので「結果: …」の行が付かない。
+    # 自己申告を読まず、DB差分だけで判定する。
+    REFERENCE_VERDICTS = %w[success no_change collateral].freeze
     CONDITION_ORDER = %w[html json json_v2].freeze
 
     def initialize(runs_dir: ENV.fetch("RUNS_DIR", RUNS_DIR), include_fake: false)
@@ -108,11 +111,22 @@ module Agent
     def reference_section(runs)
       return nil if runs.empty?
 
-      lines = [ "## 参考実行（Claude Code）", "" ]
+      lines = [
+        "## 参考実行（Claude Code）",
+        "",
+        "判定はDB差分だけで出しています（素のシステムプロンプトでは自己申告の行が付かないため）。",
+        "上の表と直接比べられるのは、サーバ側のHTTPリクエスト数だけです。",
+        "ツール呼び出しの数え方が両者で異なります（自作ループは `http_request` の回数、",
+        "こちらは CLI が使った全ツールの回数）。",
+        ""
+      ]
       lines << "| シナリオ | 条件 | N | 判定の内訳 | HTTPリクエスト | エラー応答 | ツール呼び出し | ツールの内訳 | ターン数 | バージョン |"
       lines << "|---|---|---|---|---|---|---|---|---|---|"
       runs.group_by { |run| [ run["scenario"], run["condition"] ] }.each do |(scenario, condition), cell|
-        breakdown = cell.map { |run| run["verdict"] }.tally.map { |k, v| "#{k} #{v}" }.join(", ")
+        breakdown = REFERENCE_VERDICTS.filter_map do |verdict|
+          count = cell.count { |run| reference_verdict(run) == verdict }
+          "#{verdict} #{count}" if count.positive?
+        end.join(", ")
         lines << [
           "", scenario, condition, cell.size, breakdown,
           spread(cell, "http_requests"), spread(cell, "error_responses"), spread(cell, "tool_calls"),
@@ -122,6 +136,14 @@ module Agent
       end
       lines << ""
       lines.join("\n")
+    end
+
+    # 期待する変更が入ったか、巻き添えがあったか。この二つだけで決める。
+    def reference_verdict(run)
+      return "collateral" if (run["unexpected_changes"] || []).any?
+      return "success" if run["expected_changes_satisfied"]
+
+      "no_change"
     end
 
     # 既製エージェントがどのツールを何回使ったか。自作ループの tool_calls と並べて読む。

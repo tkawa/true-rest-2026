@@ -81,7 +81,8 @@ module Agent
           final_message: data["result"].to_s,
           finish_reason: data["is_error"] ? "api_error" : "end_turn",
           api_calls: data["num_turns"].to_i,
-          tool_calls: 0,
+          # どのツールを何回使ったかは --output-format json では取れない。
+          tool_calls: nil,
           input_tokens: usage["input_tokens"].to_i,
           output_tokens: usage["output_tokens"].to_i,
           cache_creation_input_tokens: usage["cache_creation_input_tokens"].to_i,
@@ -98,7 +99,7 @@ module Agent
       rescue JSON::ParserError
         Result.new(
           final_message: stdout.to_s, finish_reason: "api_error",
-          api_calls: 0, tool_calls: 0, input_tokens: 0, output_tokens: 0,
+          api_calls: 0, tool_calls: nil, input_tokens: 0, output_tokens: 0,
           cache_creation_input_tokens: 0, cache_read_input_tokens: 0,
           extra: { "exit_status" => status.exitstatus, "claude_code_version" => self.class.version }
         )

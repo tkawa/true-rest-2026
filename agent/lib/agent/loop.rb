@@ -19,6 +19,10 @@ module Agent
     # 拒否されたら外して送り直す。どちらの条件も同じ経路を通るので公平性は変わらない。
     TEMPERATURE_DEPRECATED = /`temperature` is deprecated/
 
+    # 既定で思考する（thinking_tokens が出る）モデルがあるので明示的に切る。
+    # 両条件で同じ設定にし、出力トークンの比較を素の応答だけで行う。
+    THINKING_DISABLED = { type: "disabled" }.freeze
+
     def initialize(scenario:, condition:, http_tool:, transcript:, initial_message:, config:, client: nil)
       @scenario = scenario
       @condition = condition
@@ -45,12 +49,16 @@ module Agent
 
       loop do
         response = call_api(messages)
-        return timed_out(final_message) if response == :api_error
+        return api_failed(final_message) if response == :api_error
 
         messages << { role: "assistant", content: response.to_h[:content] }
         final_message = text_of(response)
 
-        break unless response.stop_reason.to_s == "tool_use"
+        unless response.stop_reason.to_s == "tool_use"
+          # max_tokens や refusal で止まった場合も、そのまま終了理由に残す。
+          finish_reason = response.stop_reason.to_s
+          break
+        end
 
         messages << { role: "user", content: tool_results(response) }
 
@@ -76,7 +84,8 @@ module Agent
         attempt += 1
         params = {
           model: @config.model, max_tokens: MAX_TOKENS,
-          system: system_prompt, tools: [ HttpTool::DEFINITION ], messages: messages
+          system: system_prompt, tools: [ HttpTool::DEFINITION ], messages: messages,
+          thinking: THINKING_DISABLED
         }
         params[:temperature] = @temperature unless @temperature.nil?
         response = @client.messages.create(params)
@@ -126,7 +135,7 @@ module Agent
       end
     end
 
-    def timed_out(final_message) = result(final_message, "api_error")
+    def api_failed(final_message) = result(final_message, "api_error")
 
     def result(final_message, finish_reason)
       Result.new(

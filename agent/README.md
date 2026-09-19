@@ -39,8 +39,7 @@ cp .env.example .env    # ANTHROPIC_API_KEY を書く
 | `MAX_TOOL_CALLS` | ツール呼び出しの上限（既定 25） |
 | `RUN_TIMEOUT_SECONDS` | 1実行の壁時計の上限（既定 600） |
 | `REFERENCE_ALLOWED_TOOLS` | 参考実行で Claude Code に許すツール |
-
-日本語のデータを扱うので、UTF-8 のロケールを設定してください（例: `export LANG=ja_JP.UTF-8`）。
+| `RUNS_DIR` | 実行記録の置き場（既定は `experiment/runs/`） |
 
 ## 実行
 
@@ -65,7 +64,8 @@ bin/run --scenario s2 --condition html --fake correct
 
 ```sh
 bin/reference-run --scenario s2 --condition html
-bin/report
+bin/report                 # 疑似エージェントの実行は除外される
+bin/report --include-fake  # 装置の確認用に含める
 bin/oracle --run ../runs/s2/json/<run_id>
 ```
 
@@ -122,6 +122,9 @@ LLM を呼ばずに、ランナー・ツール・オラクルが正しいこと�
 ```sh
 bundle exec rake test
 ```
+
+テストの実行記録は一時ディレクトリに書かれるので、`experiment/runs/` は汚れません。
+文字コードはシェルのロケールに関わらず UTF-8 に固定してあり、`LANG` が未設定でも同じ結果になります。
 
 疑似エージェントは本物と同じ `HttpTool` を使うので、Cookie と CSRF トークンの扱いも同じ経路を通ります。
 ここが通っていれば、LLM を使った実行で出る差は装置の差ではなく表現の差だと言えます。

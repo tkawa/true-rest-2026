@@ -95,6 +95,18 @@ class LoopTest < Minitest::Test
     assert_equal 40, result.output_tokens
   end
 
+  def test_max_tokens_is_kept_as_the_finish_reason
+    cut_off = Response.new(
+      content: [ Block.new(type: "text", text: "途中で切れた") ],
+      stop_reason: "max_tokens", usage: usage
+    )
+    loop_agent, = build([ cut_off ])
+
+    result = loop_agent.run
+
+    assert_equal "max_tokens", result.finish_reason
+  end
+
   def test_tool_limit_stops_the_loop
     responses = Array.new(5) { tool_use_response }
     loop_agent, tool = build(responses, max_tool_calls: 2)
@@ -116,6 +128,8 @@ class LoopTest < Minitest::Test
 
     assert_equal html_request[:system], json_request[:system]
     assert_equal html_request[:tools], json_request[:tools]
+    assert_equal html_request[:thinking], json_request[:thinking]
     assert_equal 0, html_request[:temperature]
+    assert_equal({ type: "disabled" }, html_request[:thinking])
   end
 end

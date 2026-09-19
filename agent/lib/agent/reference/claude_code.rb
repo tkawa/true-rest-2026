@@ -60,10 +60,16 @@ module Agent
         @transcript.record_event("reference_command", command: command, workdir: workdir)
 
         # プロンプトは標準入力から渡す（位置引数だと他のフラグに飲まれることがある）。
-        stdout, stderr, status = Open3.capture3(*command, stdin_data: message, chdir: workdir)
+        stdout, stderr, status = Open3.capture3(child_env, *command, stdin_data: message, chdir: workdir)
         @transcript.record_event("reference_output", stdout: stdout, stderr: stderr, exit_status: status.exitstatus)
 
         parse(stdout, status)
+      end
+
+      # 既製エージェントは自前の認証で動かす。ハーネスの API キーを渡すと、
+      # 参考実行ぶんが Messages API に課金されてしまう。
+      def child_env
+        { "ANTHROPIC_API_KEY" => nil }
       end
 
       def build_command

@@ -76,3 +76,39 @@ S4 の JSON 条件で予想していた「偽の成功」（`PATCH /api/lists/1`
 観測されませんでした。仕様書の `PATCH /lists/{id}` に「アーカイブ状態はこの操作では変わりません」と
 書いてあるため、エージェントは操作手段がないと判断して止まりました。
 これは「古い仕様書では操作にたどり着けない」という素直な失敗なので、仕様書は変えていません。
+
+## 2026-09-19 参考実行（Claude Code）の確認
+
+`bin/reference-run --scenario s2 --condition html` を、空の一時ディレクトリで動かしました。
+`run.json` に `agent: claude_code`、`claude_code_version: 2.1.275 (Claude Code)`、
+`total_cost_usd`、`session_id`、`num_turns` が入ることを確認しています。
+
+### `--allowedTools` の渡し方
+
+`"Bash(curl:*),Read,Write"` を一つの引数として渡す形で受け付けられます。
+`--output-format stream-json` の `system` イベントで、CLI に渡っているツール一覧に `Bash` が
+含まれること、`permissionMode: auto` であることを確認しました。引数を分ける必要はありません。
+
+### 参考実行のばらつき
+
+同じコマンドで、curl を使って完遂する実行と、一度もツールを使わずに断る実行の両方が出ます。
+
+| 時期 | `ANTHROPIC_API_KEY` | ターン数 | サーバ側のリクエスト | 結果 |
+|---|---|---|---|---|
+| 変更前に2回 | 設定あり | 6〜7 | 6 | curl でリストに追加。DB の期待変更は満たした |
+| 今回2回 | 未設定 | 1 | 0 | 「HTTPに到達する手段がない」と述べて断った |
+
+`permission_denials` は空で、`is_error` も false です。ツールは渡っているのに使わなかっただけで、
+装置側の不具合ではありません。キーの有無と結果が対応して見えますが、キーを設定すると参考実行ぶんが
+Messages API に課金されるため、因果は確かめていません。
+
+指示書 §13 のとおり、既製エージェントの結果はバージョン依存です。集計では自作ループと別の表にします。
+N は 3〜5 で回し、このばらつきごと記録してください。
+
+### 参考実行に API キーを渡さないようにした
+
+ハーネスが `.env` から読んだ `ANTHROPIC_API_KEY` は、子プロセスの環境から外します。
+渡したままだと、既製エージェントの実行が Messages API に課金されます。
+`test/reference_claude_code_test.rb` で確認しています。
+
+参考実行の記録は `experiment/runs-pilot/s2/` にあります。

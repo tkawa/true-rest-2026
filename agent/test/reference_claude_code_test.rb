@@ -103,4 +103,20 @@ class ReferenceClaudeCodeTest < Minitest::Test
     assert_includes command, "stream-json"
     assert_includes command, "--verbose"
   end
+
+  def test_user_settings_are_not_loaded
+    config = Struct.new(:model).new("claude-sonnet-5")
+    agent = build
+    agent.instance_variable_set(:@config, config)
+
+    command = agent.send(:build_command)
+    index = command.index("--setting-sources")
+
+    refute_nil index
+    assert_equal "", command[index + 1]
+  end
+
+  def test_setting_sources_are_recorded
+    assert_equal "", build.send(:parse, STREAM, nil).extra["setting_sources"]
+  end
 end

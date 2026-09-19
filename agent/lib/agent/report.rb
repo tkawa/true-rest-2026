@@ -116,6 +116,7 @@ module Agent
         "",
         "判定はDB差分だけで出しています（素のシステムプロンプトでは自己申告の行が付かないため）。",
         "「前提の一行」は、初期メッセージに「このサービスには HTTP でアクセスできます。」を足したかどうかです。",
+        "#{setting_sources_note(runs)}",
         "上の表と直接比べられるのは、サーバ側のHTTPリクエスト数だけです。",
         "ツール呼び出しの数え方が両者で異なります（自作ループは `http_request` の回数、",
         "こちらは CLI が使った全ツールの回数）。",
@@ -138,6 +139,15 @@ module Agent
       end
       lines << ""
       lines.join("\n")
+    end
+
+    # 既製品の条件。読み込んだ設定の出どころを明示する。
+    def setting_sources_note(runs)
+      values = runs.map { |run| run["setting_sources"] }.uniq
+      return "設定の出どころ: 記録なし。" if values == [ nil ]
+
+      shown = values.map { |v| v.nil? ? "記録なし" : (v.empty? ? "なし（既製品のまま）" : v) }
+      "設定の出どころ（`--setting-sources`）: #{shown.join(' / ')}。"
     end
 
     # 期待する変更が入ったか、巻き添えがあったか。この二つだけで決める。

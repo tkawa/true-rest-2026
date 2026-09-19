@@ -11,12 +11,14 @@ Kaigi on Rails 2026 の発表「真のREST 2026」で示す比較実験の、実
 | 場所 | 件数 | 内容 |
 |---|---|---|
 | `experiment/runs/` | 110 | 本番。自作ループ、シナリオ5本 × 条件2〜3、各 N=10 |
-| `experiment/runs/s2/` のうち `agent: claude_code` | 12 | 参考実行（Claude Code）。素のまま3回 × 2条件、前提の一行あり3回 × 2条件 |
-| `experiment/runs-pilot/` | 20 | 予備実行。**古いシステムプロンプトと古い S1 指示文**で取ったものを含む |
+| `experiment/runs/s2/` のうち `agent: claude_code` | 12 | 参考実行（Claude Code）。前提の一行なし3回 × 2条件、あり3回 × 2条件 |
+| `experiment/runs-pilot/` | 32 | 予備実行。**古いシステムプロンプトと古い S1 指示文**、および**個人設定を含む参考実行**12件 |
 
-`runs-pilot/` は本番の集計に入りません。プロンプトを変えた経緯（`experiment/agent/NOTES.md`）の
-裏づけとして残してあります。変更前後は `run.json` の `system_prompt_sha256` と
-`scenario_sha256` で判別できます。
+`runs-pilot/` は本番の集計に入りません。条件を変えた経緯（`experiment/agent/NOTES.md`）の
+裏づけとして残してあります。プロンプトの変更前後は `run.json` の `system_prompt_sha256` と
+`scenario_sha256` で、参考実行の設定条件は `setting_sources` で判別できます。
+`runs-pilot/` にある参考実行は実行した人の個人設定（出力スタイル、プラグイン、スキル）を
+含んだもので、`setting_sources` のラベルは記録を移すときに後から付けました。
 
 ## 実行条件
 
@@ -28,7 +30,7 @@ Kaigi on Rails 2026 の発表「真のREST 2026」で示す比較実験の、実
 | extended thinking | 無効（`thinking: {type: "disabled"}`） |
 | ツール呼び出しの上限 | 25 |
 | `todo_app` / ハーネスのコミット | `cd95754` |
-| Claude Code | 2.1.275 |
+| Claude Code | 2.1.275。`--setting-sources ""` でユーザー設定を読み込まない（`plugins` は空、`output_style` は既定） |
 
 ## 1実行あたりのファイル
 

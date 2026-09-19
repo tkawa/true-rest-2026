@@ -15,6 +15,9 @@ module Agent
       # 手順もアプリ固有の知識も含まない一行。
       HINT = "このサービスには HTTP でアクセスできます。".freeze
       DEFAULT_ALLOWED_TOOLS = "Bash(curl:*),Read,Write".freeze
+      # 実行した人の個人設定（出力スタイル、プラグイン、スキル、~/.claude/CLAUDE.md）を読み込まない。
+      # 「既製品のまま」を主張する以上、その既製品の条件を実行ごとに固定する。
+      DEFAULT_SETTING_SOURCES = "".freeze
 
       Result = Struct.new(
         :final_message, :finish_reason, :api_calls, :tool_calls,
@@ -92,9 +95,12 @@ module Agent
         [
           "claude", "-p", "--output-format", "stream-json", "--verbose",
           "--max-turns", "40", "--model", @config.model,
-          "--allowedTools", ENV.fetch("REFERENCE_ALLOWED_TOOLS", DEFAULT_ALLOWED_TOOLS)
+          "--allowedTools", ENV.fetch("REFERENCE_ALLOWED_TOOLS", DEFAULT_ALLOWED_TOOLS),
+          "--setting-sources", setting_sources
         ]
       end
+
+      def setting_sources = ENV.fetch("REFERENCE_SETTING_SOURCES", DEFAULT_SETTING_SOURCES)
 
       def parse(stdout, status)
         events = parse_events(stdout)
@@ -119,6 +125,7 @@ module Agent
             "duration_ms" => result["duration_ms"],
             "session_id" => result["session_id"],
             "allowed_tools" => ENV.fetch("REFERENCE_ALLOWED_TOOLS", DEFAULT_ALLOWED_TOOLS),
+            "setting_sources" => setting_sources,
             "claude_code_version" => self.class.version,
             "hint" => @hint,
             "tool_calls_by_name" => tools

@@ -1,3 +1,4 @@
+require "digest"
 require "yaml"
 
 module Agent
@@ -15,14 +16,23 @@ module Agent
       path = File.join(dir, "#{id}.yml")
       raise ArgumentError, "シナリオが見つかりません: #{id}" unless File.exist?(path)
 
-      new(YAML.safe_load_file(path))
+      from_file(path)
     end
 
     def self.all(dir: self.dir)
-      Dir.glob(File.join(dir, "*.yml")).sort.map { |path| new(YAML.safe_load_file(path)) }
+      Dir.glob(File.join(dir, "*.yml")).sort.map { |path| from_file(path) }
     end
 
-    def initialize(data)
+    def self.from_file(path)
+      source = File.read(path)
+      new(YAML.safe_load(source), source: source)
+    end
+
+    # 指示文を変えたら値が変わる。どの版で回した実行かを記録に残すため。
+    def sha256 = Digest::SHA256.hexdigest(@source.to_s)
+
+    def initialize(data, source: nil)
+      @source = source
       @id = data.fetch("id")
       @name = data.fetch("name")
       @instruction = data.fetch("instruction")

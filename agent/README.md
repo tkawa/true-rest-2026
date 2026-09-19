@@ -100,6 +100,12 @@ bin/oracle --run ../runs/s2/json/<run_id>
 HTML条件で `/api` 以下を叩いた場合、JSON条件で `/api` 以下でも `/up` でもない場所を叩いた場合は
 `protocol_violation` を立てます。判定は変えず、集計で別に数えます。
 
+## 実験ノート
+
+装置やプロンプトに手を入れた記録は [NOTES.md](NOTES.md) にあります。
+結果を見てから条件を変えた場合は、何を、なぜ、いつ変えたかをそこに残します。
+`run.json` の `system_prompt_sha256` と `scenario_sha256` で、どの版で回した実行かを判別できます。
+
 ## 記録の形式
 
 実行記録は `experiment/runs/<scenario>/<condition>/<run_id>/` に置かれます。
@@ -114,6 +120,12 @@ HTML条件で `/api` 以下を叩いた場合、JSON条件で `/api` 以下で�
 | `initial_message.md` | 実際に送った最初のユーザーメッセージ |
 
 `experiment/runs/` は `.gitignore` で除外してあります。発表に使う記録は `git add -f` で選んで入れてください。
+
+条件を変える前に取った予備実行は `experiment/runs-pilot/` に置き、本番の集計から外します。
+
+```sh
+RUNS_DIR=../runs-pilot bin/report
+```
 
 ## 自己テスト
 

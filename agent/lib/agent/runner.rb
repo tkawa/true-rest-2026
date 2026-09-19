@@ -98,10 +98,10 @@ module Agent
       )
       started = monotonic
       outcome = agent.run
-      [ outcome, tool, ((monotonic - started) * 1000).round ]
+      [ outcome, tool, ((monotonic - started) * 1000).round, agent ]
     end
 
-    def write_run_json(dir, run_id, started_at, (outcome, tool, wall_time_ms), database_path)
+    def write_run_json(dir, run_id, started_at, (outcome, tool, wall_time_ms, agent), database_path)
       requests_path = File.join(dir, "requests.jsonl")
       verdict = Oracle.new(
         scenario: @scenario, condition: @condition.name,
@@ -122,6 +122,8 @@ module Agent
         "response_model" => outcome.respond_to?(:response_model) ? outcome.response_model : nil,
         "temperature" => effective_temperature(outcome),
         "max_tool_calls" => @config.max_tool_calls,
+        "system_prompt_sha256" => system_prompt_sha256(agent),
+        "scenario_sha256" => @scenario.sha256,
         "harness_git_commit" => git_commit(AGENT_ROOT),
         "todo_app_git_commit" => git_commit(TODO_APP_DIR),
         "started_at" => started_at.iso8601,
@@ -144,6 +146,11 @@ module Agent
     # 送らなかった場合は null を残す（モデルが受け付けないとき）。
     def effective_temperature(outcome)
       outcome.respond_to?(:temperature) ? outcome.temperature : @config.temperature
+    end
+
+    # 素のまま走らせる参考実行にはシステムプロンプトが無い。
+    def system_prompt_sha256(agent)
+      agent.respond_to?(:system_prompt_sha256) ? agent.system_prompt_sha256 : nil
     end
 
     # 参考実行だけが持つ値（CLIのバージョン、ターン数など）。

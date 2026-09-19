@@ -1,4 +1,5 @@
 require "anthropic"
+require "digest"
 require "agent/http_tool"
 
 module Agent
@@ -41,6 +42,9 @@ module Agent
     attr_reader :temperature
 
     def system_prompt = File.read(SYSTEM_PROMPT_PATH)
+
+    # プロンプトを変えたら値が変わる。両条件で同一であることの証拠にもなる。
+    def system_prompt_sha256 = Digest::SHA256.hexdigest(system_prompt)
 
     def run
       messages = [ { role: "user", content: @initial_message } ]

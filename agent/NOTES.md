@@ -217,3 +217,38 @@ GET /  →  GET /lists/2  →  GET /lists/2  →  POST /lists/2/todos (302)  →
 気づけば辿れます。必要なのは前提の一行だけでした。
 
 JSON 条件はヒントの有無で変わりません。仕様書を渡された時点で HTTP で叩く対象だと分かるためです。
+
+## 2026-09-19 実行記録を追跡対象にし、参考実行を匿名化した
+
+### 方針の変更
+
+当初は「発表に使うものだけ `git add -f` で選ぶ」方針でしたが、撤回しました。
+CFP が約束している「手元で同じ比較を再現できる」の実体が実行記録そのものであること、
+選んで入れると「都合のよい実行を選んだのでは」という疑いを招くこと、
+19MB は git にとって問題のない量であること（JSONL はパックで数MBに縮む）、の三つが理由です。
+
+`runs/.gitignore` と `runs-pilot/.gitignore` を外し、取った実行をすべて追跡します。
+今後の試し打ちは `RUNS_DIR=../runs-scratch` に向けます（`experiment/.gitignore` で除外）。
+データセットの説明は `experiment/runs/README.md` にあります。
+
+### 匿名化
+
+参考実行の `transcript.jsonl` に、Claude Code の stream-json 出力がそのまま入っていました。
+その `system` イベントに、実行した人の環境の情報が含まれます。
+
+落としたもの: `cwd`、`session_id`、`slash_commands`、`terminal_slash_commands`、`skills`、
+`agents`、`plugins`（社内プラグインの名前・バージョン・`/Users/...` のパスを含む）、`output_style`、
+`memory_paths`、`messaging_socket_path`、`mcp_servers`、`capabilities`、`uuid`、
+`analytics_disabled`、`product_feedback_disabled`、`fast_mode_state`、`fast_mode_disabled_reason`。
+
+残したもの: `type`、`subtype`、`model`、`permissionMode`、`apiKeySource`、`tools`、
+`claude_code_version`。いずれも実験条件として意味があり、`run.json` の
+`response_model` / `permission_mode` / `api_key_source` / `available_tools` の出どころです。
+
+本文に残るパスは `<HOME>` / `<WORKDIR>` / `<SOCKET>` に置換しました。APIキーの混入はありませんでした。
+
+記録時の処理は `lib/agent/reference/sanitizer.rb` です。
+既存の15件（参考実行12件と予備実行3件）には `script/sanitize-reference-records` を一度当てました。
+再実行して取り直す手もありましたが、既製エージェントは揺れるので、
+いまの 0/3 と 3/3 を作り直すより記録を加工して残すほうが誠実だと判断しました。
+匿名化の前後で `run.json` の値も集計結果も変わっていないことを確認しています。

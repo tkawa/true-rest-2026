@@ -136,7 +136,10 @@ HTML条件で `/api` 以下を叩いた場合、JSON条件で `/api` 以下で�
 `permission_mode`、`api_key_source`、`available_tools` も入ります。
 既製エージェントは自前の認証で動かすので、ハーネスの `ANTHROPIC_API_KEY` は子プロセスに渡しません。
 
-`experiment/runs/` は `.gitignore` で除外してあります。発表に使う記録は `git add -f` で選んで入れてください。
+`experiment/runs/` は公開データセットとしてコミットしてあります。説明は
+[runs/README.md](../runs/README.md) を見てください。取った実行をすべて残す方針です。
+
+試し打ちは `RUNS_DIR=../runs-scratch` に向けてください（`experiment/.gitignore` で除外してあります）。
 
 条件を変える前に取った予備実行は `experiment/runs-pilot/` に置き、本番の集計から外します。
 

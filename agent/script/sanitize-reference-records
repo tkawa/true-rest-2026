@@ -1,0 +1,51 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# 参考実行の記録から、実行した人の環境の情報を落とす一回限りのスクリプト。
+#
+# 匿名化を record 時に行うようにする前（2026-09-19）に取った記録に当てるためのもの。
+# stream-json の system イベントを許可リストの項目だけに絞り、
+# ホームディレクトリ・作業ディレクトリ・ソケットのパスを置換する。
+#
+#   script/sanitize-reference-records ../runs ../runs-pilot
+#   script/sanitize-reference-records --dry-run ../runs
+
+$LOAD_PATH.unshift File.expand_path("../lib", __dir__)
+
+require "json"
+require "agent/reference/sanitizer"
+
+Sanitizer = Agent::Reference::Sanitizer
+
+dry_run = ARGV.delete("--dry-run")
+roots = ARGV.empty? ? [ File.expand_path("../../runs", __dir__) ] : ARGV
+
+changed = 0
+roots.each do |root|
+  Dir.glob(File.join(root, "**", "transcript.jsonl")).sort.each do |path|
+    lines = File.readlines(path)
+    next unless lines.any? { |line| line.include?("reference_output") }
+
+    rewritten = lines.map do |line|
+      event = JSON.parse(line)
+      case event["type"]
+      when "reference_output"
+        event["stdout"] = Sanitizer.stream(event["stdout"])
+        event["stderr"] = Sanitizer.redact(event["stderr"])
+      when "reference_command"
+        event["workdir"] = Sanitizer::WORKDIR_PLACEHOLDER
+      end
+      "#{JSON.generate(event)}\n"
+    rescue JSON::ParserError
+      Sanitizer.redact(line)
+    end
+
+    next if rewritten == lines
+
+    changed += 1
+    puts "#{dry_run ? '[dry-run] ' : ''}#{path}"
+    File.write(path, rewritten.join) unless dry_run
+  end
+end
+
+puts "#{changed} 件#{dry_run ? '（書き換えていません）' : ' を書き換えました'}"

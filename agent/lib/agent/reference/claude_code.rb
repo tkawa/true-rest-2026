@@ -2,6 +2,7 @@ require "fileutils"
 require "json"
 require "open3"
 require "tmpdir"
+require "agent/reference/sanitizer"
 
 module Agent
   module Reference
@@ -66,10 +67,14 @@ module Agent
 
       def execute(workdir, message)
         command = build_command
-        @transcript.record_event("reference_command", command: command, workdir: workdir)
+        @transcript.record_event("reference_command", command: command, workdir: Sanitizer::WORKDIR_PLACEHOLDER)
 
         # プロンプトは標準入力から渡す（位置引数だと他のフラグに飲まれることがある）。
         stdout, stderr, status = Open3.capture3(child_env, *command, stdin_data: message, chdir: workdir)
+
+        # 記録も解析も、環境の情報を落としたあとの本文で行う。
+        stdout = Sanitizer.stream(stdout)
+        stderr = Sanitizer.redact(stderr, workdir: workdir)
         @transcript.record_event("reference_output", stdout: stdout, stderr: stderr, exit_status: status.exitstatus)
 
         parse(stdout, status)

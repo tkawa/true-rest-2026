@@ -18,6 +18,7 @@ parser = OptionParser.new do |opts|
   opts.on("--condition NAME", "条件（html / json / json_v2）") { |v| options[:condition] = v }
   opts.on("--all", "全シナリオ × 全条件") { options[:all] = true }
   opts.on("--runs N", Integer, "繰り返し回数（既定 1）") { |v| options[:runs] = v }
+  opts.on("--interleave", "条件をまとめずに1回ずつ交互に回す（時間帯の揺れが片側に偏らない）") { options[:interleave] = true }
   opts.on("--fake SCRIPT", "疑似エージェント（#{Agent::FakeAgent::SCRIPTS.join(' / ')}）") { |v| options[:fake] = v }
   opts.on("--model ID", "モデル") { |v| options[:model] = v }
   opts.on("--port N", Integer, "ポート（既定 3000）") { |v| options[:port] = v }
@@ -66,20 +67,29 @@ targets =
     names.map { |c| [ scenario, c ] }
   end
 
-targets.each do |scenario, condition_name|
-  runner = Agent::Runner.new(
+runners = targets.map do |scenario, condition_name|
+  Agent::Runner.new(
     scenario: scenario, condition_name: condition_name, config: config, agent_factory: agent_factory
   )
-  options[:runs].times do |index|
-    data = runner.call(sequence: index + 1)
-    puts format(
+end
+
+# 交互モードでは「全条件を1回ずつ」を繰り返す。既定は条件ごとにまとめて回す。
+rounds =
+  if options[:interleave]
+    (1..options[:runs]).flat_map { |sequence| runners.map { |runner| [ runner, sequence ] } }
+  else
+    runners.flat_map { |runner| (1..options[:runs]).map { |sequence| [ runner, sequence ] } }
+  end
+
+rounds.each do |runner, sequence|
+  data = runner.call(sequence: sequence)
+  puts format(
       "%-42s %-14s requests=%-3d errors=%-2d tools=%-3d in=%-7d out=%-6d%s",
       data["run_id"], data["verdict"], data["http_requests"], data["error_responses"],
       data["tool_calls"], data["input_tokens"], data["output_tokens"],
       [
         data["finish_reason"] == "end_turn" ? nil : " finish=#{data['finish_reason']}",
         data["protocol_violation"] ? " protocol_violation" : nil
-      ].compact.join
-    )
-  end
+    ].compact.join
+  )
 end

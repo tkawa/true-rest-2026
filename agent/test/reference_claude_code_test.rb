@@ -119,4 +119,11 @@ class ReferenceClaudeCodeTest < Minitest::Test
   def test_setting_sources_are_recorded
     assert_equal "", build.send(:parse, STREAM, nil).extra["setting_sources"]
   end
+
+  def test_the_presence_of_the_user_claude_md_is_recorded
+    extra = build.send(:parse, STREAM, nil).extra
+
+    assert_includes [ true, false ], extra["user_claude_md"]
+    assert_equal File.exist?(File.join(Dir.home, ".claude", "CLAUDE.md")), extra["user_claude_md"]
+  end
 end

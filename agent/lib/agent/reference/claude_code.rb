@@ -45,6 +45,9 @@ module Agent
         end
       end
 
+      # --setting-sources と別に読み込まれる可能性があるので、有無を記録に残す。
+      def self.user_claude_md? = File.exist?(File.join(Dir.home, ".claude", "CLAUDE.md"))
+
       def self.version
         out, _, status = Open3.capture3("claude", "--version")
         status.success? ? out.strip : nil
@@ -126,6 +129,7 @@ module Agent
             "session_id" => result["session_id"],
             "allowed_tools" => ENV.fetch("REFERENCE_ALLOWED_TOOLS", DEFAULT_ALLOWED_TOOLS),
             "setting_sources" => setting_sources,
+            "user_claude_md" => self.class.user_claude_md?,
             "claude_code_version" => self.class.version,
             "hint" => @hint,
             "tool_calls_by_name" => tools

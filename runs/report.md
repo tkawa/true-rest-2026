@@ -33,15 +33,16 @@
 判定はDB差分だけで出しています（素のシステムプロンプトでは自己申告の行が付かないため）。
 「前提の一行」は、初期メッセージに「このサービスには HTTP でアクセスできます。」を足したかどうかです。
 設定の出どころ（`--setting-sources`）: なし（既製品のまま）。
+~/.claude/CLAUDE.md: なし。
 上の表と直接比べられるのは、サーバ側のHTTPリクエスト数だけです。
 ツール呼び出しの数え方が両者で異なります（自作ループは `http_request` の回数、
 こちらは CLI が使った全ツールの回数）。
 
 | シナリオ | 条件 | 前提の一行 | N | 判定の内訳 | HTTPリクエスト | エラー応答 | ツール呼び出し | ツールの内訳 | ターン数 | バージョン |
 |---|---|---|---|---|---|---|---|---|---|---|
-| s2 | html | なし | 3 | success 3 | 7 (7〜7) | 0 (0〜1) | 12 (9〜14) | Bash 29, ToolSearch 4, Read 2 | 13 (10〜15) | 2.1.275 (Claude Code) |
-| s2 | html | あり | 3 | success 3 | 6 (4〜7) | 0 (0〜0) | 11 (5〜13) | Bash 24, Read 5 | 12 (6〜14) | 2.1.275 (Claude Code) |
-| s2 | json | なし | 3 | success 3 | 2 (2〜2) | 0 (0〜0) | 3 (3〜3) | Bash 6, Read 3 | 4 (4〜4) | 2.1.275 (Claude Code) |
+| s2 | html | なし | 3 | success 1, no_change 2 | 0 (0〜6) | 0 (0〜0) | 2 (1〜8) | Bash 7, ToolSearch 4 | 3 (2〜9) | 2.1.275 (Claude Code) |
+| s2 | html | あり | 3 | success 2, no_change 1 | 4 (4〜5) | 0 (0〜1) | 4 (4〜9) | Bash 16, Write 1 | 5 (5〜10) | 2.1.275 (Claude Code) |
+| s2 | json | なし | 3 | success 3 | 2 (2〜2) | 0 (0〜0) | 3 (3〜5) | Bash 8, Read 3 | 4 (4〜6) | 2.1.275 (Claude Code) |
 | s2 | json | あり | 3 | success 3 | 2 (2〜2) | 0 (0〜0) | 3 (3〜3) | Bash 6, Read 3 | 4 (4〜4) | 2.1.275 (Claude Code) |
 
 ## 実行ごとの一覧
@@ -98,12 +99,12 @@
 | s2-html-20260919T132434Z-008 | success | 完了 | end_turn | 4 | 0 | 4 | 20036 | 693 |
 | s2-html-20260919T132658Z-009 | success | 完了 | end_turn | 4 | 0 | 4 | 20165 | 788 |
 | s2-html-20260919T132918Z-010 | success | 完了 | end_turn | 4 | 0 | 4 | 20201 | 803 |
-| s2-html-20260919T150332Z-001 | incomplete | 不明 | end_turn | 7 | 0 | 14 | 30 | 4433 |
-| s2-html-20260919T150452Z-001 | incomplete | 不明 | end_turn | 7 | 0 | 11 | 24 | 2358 |
-| s2-html-20260919T150547Z-001 | incomplete | 不明 | end_turn | 7 | 0 | 12 | 26 | 3963 |
-| s2-html-20260919T150703Z-001 | incomplete | 不明 | end_turn | 6 | 0 | 13 | 26 | 3418 |
-| s2-html-20260919T150816Z-001 | incomplete | 不明 | end_turn | 7 | 1 | 9 | 20 | 2799 |
-| s2-html-20260919T150919Z-001 | incomplete | 不明 | end_turn | 4 | 0 | 5 | 12 | 1534 |
+| s2-html-20260919T152036Z-001 | incomplete | 不明 | end_turn | 6 | 0 | 8 | 18 | 1926 |
+| s2-html-20260919T152132Z-001 | incomplete | 不明 | end_turn | 4 | 0 | 4 | 10 | 980 |
+| s2-html-20260919T152208Z-001 | honest_failure | 不明 | end_turn | 0 | 0 | 2 | 6 | 1504 |
+| s2-html-20260919T152252Z-001 | honest_failure | 不明 | end_turn | 4 | 0 | 9 | 20 | 2394 |
+| s2-html-20260919T152345Z-001 | honest_failure | 不明 | end_turn | 0 | 0 | 1 | 4 | 684 |
+| s2-html-20260919T152424Z-001 | incomplete | 不明 | end_turn | 5 | 1 | 4 | 10 | 1937 |
 | s2-json-20260919T130758Z-001 | success | 完了 | end_turn | 2 | 0 | 2 | 20010 | 360 |
 | s2-json-20260919T131024Z-002 | success | 完了 | end_turn | 2 | 0 | 2 | 20011 | 364 |
 | s2-json-20260919T131252Z-003 | success | 完了 | end_turn | 2 | 0 | 2 | 20005 | 358 |
@@ -114,12 +115,12 @@
 | s2-json-20260919T132448Z-008 | success | 完了 | end_turn | 2 | 0 | 2 | 19994 | 354 |
 | s2-json-20260919T132714Z-009 | success | 完了 | end_turn | 2 | 0 | 2 | 19999 | 353 |
 | s2-json-20260919T132934Z-010 | success | 完了 | end_turn | 2 | 0 | 2 | 20007 | 364 |
-| s2-json-20260919T150428Z-001 | incomplete | 不明 | end_turn | 2 | 0 | 3 | 8 | 1012 |
-| s2-json-20260919T150532Z-001 | incomplete | 不明 | end_turn | 2 | 0 | 3 | 8 | 508 |
-| s2-json-20260919T150644Z-001 | incomplete | 不明 | end_turn | 2 | 0 | 3 | 8 | 689 |
-| s2-json-20260919T150800Z-001 | incomplete | 不明 | end_turn | 2 | 0 | 3 | 8 | 576 |
-| s2-json-20260919T150901Z-001 | incomplete | 不明 | end_turn | 2 | 0 | 3 | 8 | 679 |
-| s2-json-20260919T150948Z-001 | incomplete | 不明 | end_turn | 2 | 0 | 3 | 8 | 582 |
+| s2-json-20260919T152117Z-001 | incomplete | 不明 | end_turn | 2 | 0 | 3 | 8 | 653 |
+| s2-json-20260919T152152Z-001 | incomplete | 不明 | end_turn | 2 | 0 | 3 | 8 | 475 |
+| s2-json-20260919T152230Z-001 | incomplete | 不明 | end_turn | 2 | 0 | 3 | 8 | 859 |
+| s2-json-20260919T152330Z-001 | incomplete | 不明 | end_turn | 2 | 0 | 3 | 8 | 550 |
+| s2-json-20260919T152400Z-001 | incomplete | 不明 | end_turn | 2 | 0 | 5 | 12 | 1041 |
+| s2-json-20260919T152459Z-001 | incomplete | 不明 | end_turn | 2 | 0 | 3 | 8 | 524 |
 | s3-html-20260919T130806Z-001 | success | 実行できませんでした | end_turn | 2 | 0 | 2 | 7594 | 519 |
 | s3-html-20260919T131032Z-002 | success | 実行できませんでした | end_turn | 2 | 0 | 2 | 7603 | 596 |
 | s3-html-20260919T131302Z-003 | success | 実行できませんでした | end_turn | 2 | 0 | 2 | 7594 | 524 |

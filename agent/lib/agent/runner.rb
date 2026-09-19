@@ -119,6 +119,7 @@ module Agent
         "feature_archive" => @scenario.feature_archive,
         "agent" => @config.agent_name,
         "model" => @config.model,
+        "response_model" => outcome.respond_to?(:response_model) ? outcome.response_model : nil,
         "temperature" => effective_temperature(outcome),
         "max_tool_calls" => @config.max_tool_calls,
         "harness_git_commit" => git_commit(AGENT_ROOT),

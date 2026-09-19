@@ -12,7 +12,7 @@ module Agent
     Result = Struct.new(
       :final_message, :finish_reason, :api_calls, :tool_calls,
       :input_tokens, :output_tokens, :cache_creation_input_tokens, :cache_read_input_tokens,
-      :temperature, keyword_init: true
+      :temperature, :response_model, keyword_init: true
     )
 
     # 新しいモデルは temperature を受け付けない。指定できるモデルでは 0 を送り、
@@ -34,6 +34,7 @@ module Agent
       @usage = Hash.new(0)
       @api_calls = 0
       @temperature = config.temperature
+      @response_model = nil
     end
 
     # 実際に送った temperature（外した場合は nil）。
@@ -90,6 +91,8 @@ module Agent
         params[:temperature] = @temperature unless @temperature.nil?
         response = @client.messages.create(params)
         @api_calls += 1
+        # 設定値はエイリアスのことがあるので、実際に使われたモデルIDを残す。
+        @response_model ||= response.model.to_s
         accumulate(response.usage)
         @transcript.record_api_call(request: params, response: response.to_h)
         response
@@ -144,7 +147,8 @@ module Agent
         input_tokens: @usage[:input_tokens], output_tokens: @usage[:output_tokens],
         cache_creation_input_tokens: @usage[:cache_creation_input_tokens],
         cache_read_input_tokens: @usage[:cache_read_input_tokens],
-        temperature: @temperature
+        temperature: @temperature,
+        response_model: @response_model
       )
     end
 

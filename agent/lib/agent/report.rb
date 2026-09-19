@@ -44,7 +44,7 @@ module Agent
     def summary_section(runs)
       return "実行記録がありません。\n" if runs.empty?
 
-      models = runs.map { |r| r["model"] }.uniq.compact
+      models = runs.map { |r| r["response_model"] || r["model"] }.uniq.compact
       commits = runs.map { |r| r["todo_app_git_commit"].to_s[0, 7] }.uniq.reject(&:empty?)
       dates = runs.map { |r| r["started_at"].to_s[0, 10] }.uniq.sort
       <<~SECTION

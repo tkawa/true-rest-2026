@@ -11,15 +11,16 @@ class LoopTest < Minitest::Test
                      :cache_read_input_tokens, keyword_init: true)
 
   class Response
-    attr_reader :content, :stop_reason, :usage
+    attr_reader :content, :stop_reason, :usage, :model
 
-    def initialize(content:, stop_reason:, usage:)
+    def initialize(content:, stop_reason:, usage:, model: "claude-sonnet-5-20260101")
       @content = content
       @stop_reason = stop_reason
       @usage = usage
+      @model = model
     end
 
-    def to_h = { content: content.map(&:to_h), stop_reason: stop_reason }
+    def to_h = { content: content.map(&:to_h), stop_reason: stop_reason, model: model }
   end
 
   class StubClient
@@ -93,6 +94,7 @@ class LoopTest < Minitest::Test
     assert_equal 2, result.api_calls
     assert_equal 200, result.input_tokens
     assert_equal 40, result.output_tokens
+    assert_equal "claude-sonnet-5-20260101", result.response_model
   end
 
   def test_max_tokens_is_kept_as_the_finish_reason

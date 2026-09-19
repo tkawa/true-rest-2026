@@ -109,18 +109,28 @@ module Agent
       return nil if runs.empty?
 
       lines = [ "## 参考実行（Claude Code）", "" ]
-      lines << "| シナリオ | 条件 | N | 判定の内訳 | HTTPリクエスト | エラー応答 | ターン数 | バージョン |"
-      lines << "|---|---|---|---|---|---|---|---|"
+      lines << "| シナリオ | 条件 | N | 判定の内訳 | HTTPリクエスト | エラー応答 | ツール呼び出し | ツールの内訳 | ターン数 | バージョン |"
+      lines << "|---|---|---|---|---|---|---|---|---|---|"
       runs.group_by { |run| [ run["scenario"], run["condition"] ] }.each do |(scenario, condition), cell|
         breakdown = cell.map { |run| run["verdict"] }.tally.map { |k, v| "#{k} #{v}" }.join(", ")
         lines << [
           "", scenario, condition, cell.size, breakdown,
-          spread(cell, "http_requests"), spread(cell, "error_responses"), spread(cell, "num_turns"),
+          spread(cell, "http_requests"), spread(cell, "error_responses"), spread(cell, "tool_calls"),
+          tool_breakdown(cell), spread(cell, "num_turns"),
           cell.map { |run| run["claude_code_version"] }.uniq.join(", "), ""
         ].join(" | ").strip
       end
       lines << ""
       lines.join("\n")
+    end
+
+    # 既製エージェントがどのツールを何回使ったか。自作ループの tool_calls と並べて読む。
+    def tool_breakdown(cell)
+      tally = Hash.new(0)
+      cell.each { |run| (run["tool_calls_by_name"] || {}).each { |name, count| tally[name] += count } }
+      return "—" if tally.empty?
+
+      tally.sort_by { |_, count| -count }.map { |name, count| "#{name} #{count}" }.join(", ")
     end
 
     def listing_section(runs)

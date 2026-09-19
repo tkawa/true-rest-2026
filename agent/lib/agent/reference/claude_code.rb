@@ -72,37 +72,78 @@ module Agent
         { "ANTHROPIC_API_KEY" => nil }
       end
 
+      # stream-json にすると、最終結果に加えて system イベント（実際のモデル、権限モード、
+      # 認証経路、渡されたツール一覧）と、ツール呼び出しの一つ一つが取れる。
       def build_command
         [
-          "claude", "-p", "--output-format", "json",
+          "claude", "-p", "--output-format", "stream-json", "--verbose",
           "--max-turns", "40", "--model", @config.model,
           "--allowedTools", ENV.fetch("REFERENCE_ALLOWED_TOOLS", DEFAULT_ALLOWED_TOOLS)
         ]
       end
 
       def parse(stdout, status)
-        data = JSON.parse(stdout)
-        usage = data["usage"] || {}
+        events = parse_events(stdout)
+        result = events.reverse.find { |e| e["type"] == "result" }
+        return failed(stdout, status) if result.nil?
+
+        usage = result["usage"] || {}
+        tools = tool_calls_by_name(events)
+
         Result.new(
-          final_message: data["result"].to_s,
-          finish_reason: data["is_error"] ? "api_error" : "end_turn",
-          api_calls: data["num_turns"].to_i,
-          # どのツールを何回使ったかは --output-format json では取れない。
-          tool_calls: nil,
+          final_message: result["result"].to_s,
+          finish_reason: result["is_error"] ? "api_error" : "end_turn",
+          api_calls: result["num_turns"].to_i,
+          tool_calls: tools.values.sum,
           input_tokens: usage["input_tokens"].to_i,
           output_tokens: usage["output_tokens"].to_i,
           cache_creation_input_tokens: usage["cache_creation_input_tokens"].to_i,
           cache_read_input_tokens: usage["cache_read_input_tokens"].to_i,
           extra: {
-            "num_turns" => data["num_turns"],
-            "total_cost_usd" => data["total_cost_usd"],
-            "duration_ms" => data["duration_ms"],
-            "session_id" => data["session_id"],
+            "num_turns" => result["num_turns"],
+            "total_cost_usd" => result["total_cost_usd"],
+            "duration_ms" => result["duration_ms"],
+            "session_id" => result["session_id"],
             "allowed_tools" => ENV.fetch("REFERENCE_ALLOWED_TOOLS", DEFAULT_ALLOWED_TOOLS),
-            "claude_code_version" => self.class.version
-          }
+            "claude_code_version" => self.class.version,
+            "tool_calls_by_name" => tools
+          }.merge(init_metadata(events))
         )
-      rescue JSON::ParserError
+      end
+
+      def parse_events(stdout)
+        stdout.to_s.each_line.filter_map do |line|
+          JSON.parse(line)
+        rescue JSON::ParserError
+          nil
+        end
+      end
+
+      # 参考実行の条件を記録から機械的に読めるようにする。
+      def init_metadata(events)
+        init = events.find { |e| e["type"] == "system" && e["subtype"] == "init" }
+        return {} if init.nil?
+
+        {
+          "response_model" => init["model"],
+          "permission_mode" => init["permissionMode"],
+          "api_key_source" => init["apiKeySource"],
+          "available_tools" => init["tools"]
+        }
+      end
+
+      def tool_calls_by_name(events)
+        events.each_with_object(Hash.new(0)) do |event, tally|
+          next unless event["type"] == "assistant"
+
+          blocks = event.dig("message", "content")
+          next unless blocks.is_a?(Array)
+
+          blocks.each { |block| tally[block["name"].to_s] += 1 if block["type"] == "tool_use" }
+        end
+      end
+
+      def failed(stdout, status)
         Result.new(
           final_message: stdout.to_s, finish_reason: "api_error",
           api_calls: 0, tool_calls: nil, input_tokens: 0, output_tokens: 0,

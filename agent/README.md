@@ -119,6 +119,10 @@ HTML条件で `/api` 以下を叩いた場合、JSON条件で `/api` 以下で�
 | `server.log` | サーバの標準出力・標準エラー |
 | `initial_message.md` | 実際に送った最初のユーザーメッセージ |
 
+参考実行（Claude Code）の `run.json` には、`tool_calls_by_name`、`response_model`、
+`permission_mode`、`api_key_source`、`available_tools` も入ります。
+既製エージェントは自前の認証で動かすので、ハーネスの `ANTHROPIC_API_KEY` は子プロセスに渡しません。
+
 `experiment/runs/` は `.gitignore` で除外してあります。発表に使う記録は `git add -f` で選んで入れてください。
 
 条件を変える前に取った予備実行は `experiment/runs-pilot/` に置き、本番の集計から外します。

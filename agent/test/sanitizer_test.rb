@@ -67,6 +67,40 @@ class SanitizerTest < Minitest::Test
     assert_equal "cwd=<WORKDIR> home=<HOME> sock=<SOCKET>", text
   end
 
+  def test_the_os_user_name_is_replaced_outside_paths
+    listing = "total 0\ndrwx------@ 2 <USER>  staff  64  9 20 00:53 ."
+
+    assert_equal "total 0\ndrwx------@ 2 <USER>  staff  64  9 20 00:53 .",
+                 Sanitizer.redact(listing, home: "/Users/tkawa", user: "tkawa")
+  end
+
+  def test_the_user_name_inside_a_longer_token_is_left_alone
+    token = "authenticity_token=abctkawaxyz"
+
+    assert_equal token, Sanitizer.redact(token, home: "/Users/tkawa", user: "tkawa")
+  end
+
+  def test_a_short_user_name_is_not_replaced
+    text = "drwx------@ 2 ab  staff"
+
+    assert_equal text, Sanitizer.redact(text, home: "/nonexistent", user: "ab")
+  end
+
+  def test_redaction_is_idempotent
+    once = Sanitizer.redact("/Users/tkawa/x 2 <USER> staff", home: "/Users/tkawa", user: "tkawa")
+    twice = Sanitizer.redact(once, home: "/Users/tkawa", user: "tkawa")
+
+    assert_equal once, twice
+    assert_equal "<HOME>/x 2 <USER> staff", once
+  end
+
+  def test_the_stream_is_idempotent
+    once = Sanitizer.stream(stream, home: "/Users/someone")
+    twice = Sanitizer.stream(once, home: "/Users/someone")
+
+    assert_equal once, twice
+  end
+
   def test_the_bare_var_form_of_the_workdir_is_replaced_too
     text = Sanitizer.redact("/var/folders/xx/T/w/openapi.yaml",
                             home: "/Users/someone", workdir: "/private/var/folders/xx/T/w")

@@ -87,9 +87,12 @@ bin/oracle --run ../runs/s1/html/<run_id>   # 1実行の判定をやり直す
   `product_feedback_disabled`、`fast_mode_state`、`fast_mode_disabled_reason`
 - 本文に残るパスは置換する。ホームディレクトリは `<HOME>`、作業ディレクトリは `<WORKDIR>`、
   ソケットのパスは `<SOCKET>`
+- OS の利用者名は `<USER>` に置換する。`ls -la` の所有者欄のように、パスの外にも現れるため。
+  単語境界でのみ置換するので、トークンの中に同じ並びがあっても壊さない
 
 記録時の処理は `lib/agent/reference/sanitizer.rb` にあります。
-2026-09-19 より前に取った記録には `script/sanitize-reference-records` を一度当てました。
+規則を足す前に取った記録には `script/sanitize-reference-records` を当てています。
+このスクリプトは冪等で、何度当てても結果は同じです。
 匿名化しても `run.json` の値と集計結果は変わりません（`response_model`、`permission_mode`、
 `api_key_source`、`available_tools` は残す項目から取っています）。
 

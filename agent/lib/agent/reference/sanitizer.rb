@@ -69,6 +69,32 @@ module Agent
         end
       end
 
+      # 記録に落とす直前の正規化。SDK の応答は素の Hash とは限らないので、
+      # 一度 JSON に通してから伏せる。これで型に関わらず同じ経路になる。
+      # 記録はどのみち JSON にするので、この往復で残る形は変わらない。
+      def redacted_record(value)
+        deep_redact_headers(JSON.parse(JSON.generate(value)))
+      rescue JSON::ParserError, JSON::GeneratorError, TypeError
+        deep_redact_headers(value)
+      end
+
+      # API に送ったメッセージや応答の中の tool_use ブロックにも headers が入る。
+      # 記録のために会話そのものを書き換えないよう、新しい構造を組んで返す。
+      def deep_redact_headers(value)
+        case value
+        when Hash
+          value.to_h do |key, inner|
+            next [ key, headers(inner) ] if key.to_s == "headers" && inner.is_a?(Hash)
+
+            [ key, deep_redact_headers(inner) ]
+          end
+        when Array
+          value.map { |item| deep_redact_headers(item) }
+        else
+          value
+        end
+      end
+
       def parse(line)
         JSON.parse(line)
       rescue JSON::ParserError

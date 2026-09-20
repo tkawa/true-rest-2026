@@ -4,6 +4,7 @@ require "agent/adhoc"
 require "agent/config"
 require "agent/fake_agent"
 require "agent/scenario"
+require "agent/loop"
 require "agent/server"
 
 class AdhocTest < Minitest::Test
@@ -137,6 +138,97 @@ class AdhocTest < Minitest::Test
     entry = entry_for_spec("openapi: 3.0.0\nservers:\n- url: http://x.test/\n")
 
     assert_equal Digest::SHA256.hexdigest(entry.spec_body), entry.spec_sha256
+  end
+
+  # --- 本物の Loop を通した秘匿 -----------------------------------------
+
+  SECRET = "Bearer agent-secret"
+
+  Block = Struct.new(:type, :id, :name, :input, :text, keyword_init: true)
+  Usage = Struct.new(:input_tokens, :output_tokens, :cache_creation_input_tokens,
+                     :cache_read_input_tokens, keyword_init: true)
+
+  class StubResponse
+    attr_reader :content, :stop_reason, :usage, :model
+
+    def initialize(content:, stop_reason:, usage:, model: "claude-sonnet-5")
+      @content = content
+      @stop_reason = stop_reason
+      @usage = usage
+      @model = model
+    end
+
+    def to_h = { content: content.map(&:to_h), stop_reason: stop_reason, model: model }
+  end
+
+  class StubClient
+    attr_reader :requests
+
+    def initialize(responses)
+      @responses = responses
+      @requests = []
+    end
+
+    def messages = self
+
+    def create(params)
+      @requests << params
+      @responses.shift || raise("応答が足りません")
+    end
+  end
+
+  def stub_client_with_authenticated_tool_use
+    usage = Usage.new(input_tokens: 1, output_tokens: 1,
+                      cache_creation_input_tokens: 0, cache_read_input_tokens: 0)
+    StubClient.new([
+      StubResponse.new(
+        content: [ Block.new(type: "tool_use", id: "tu_1", name: "http_request",
+                             input: { "method" => "GET", "url" => "http://localhost:#{PORT}/",
+                                      "headers" => { "Authorization" => SECRET } }) ],
+        stop_reason: "tool_use", usage: usage
+      ),
+      StubResponse.new(
+        content: [ Block.new(type: "text", text: "見てきました。\n結果: 完了") ],
+        stop_reason: "end_turn", usage: usage
+      )
+    ])
+  end
+
+  def test_the_agents_own_auth_header_never_reaches_the_records
+    client = stub_client_with_authenticated_tool_use
+    factory = lambda do |tool:, transcript:, initial_message:|
+      Agent::Loop.new(
+        scenario: nil, condition: nil, http_tool: tool, transcript: transcript,
+        initial_message: initial_message, config: Agent::Config.default, client: client
+      )
+    end
+
+    build(entry_for_url("http://localhost:#{PORT}/")).call(agent_factory: factory)
+
+    recorded = File.read(File.join(@dir, "run.json")) + File.read(File.join(@dir, "transcript.jsonl"))
+
+    refute_includes recorded, "agent-secret"
+    assert_includes recorded, "<REDACTED>"
+  end
+
+  def test_recording_does_not_alter_the_conversation
+    client = stub_client_with_authenticated_tool_use
+    factory = lambda do |tool:, transcript:, initial_message:|
+      Agent::Loop.new(
+        scenario: nil, condition: nil, http_tool: tool, transcript: transcript,
+        initial_message: initial_message, config: Agent::Config.default, client: client
+      )
+    end
+
+    build(entry_for_url("http://localhost:#{PORT}/")).call(agent_factory: factory)
+
+    # 2回目の呼び出しに載る会話履歴は、伏せる前のままでなければならない。
+    sent = client.requests.last[:messages]
+    assistant = sent.find { |message| message[:role] == "assistant" }
+    block = Array(assistant[:content]).find { |b| (b[:type] || b["type"]).to_s == "tool_use" }
+    headers = (block[:input] || block["input"])["headers"]
+
+    assert_equal SECRET, headers["Authorization"]
   end
 
   # --- 通し -----------------------------------------------------------

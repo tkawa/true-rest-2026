@@ -160,19 +160,16 @@ module Agent
       end
 
       def record_api_call(request:, response:)
-        @transcript.record_api_call(request: request, response: response)
+        @transcript.record_api_call(
+          request: Reference::Sanitizer.redacted_record(request),
+          response: Reference::Sanitizer.redacted_record(response)
+        )
       end
 
       def record_tool_call(tool_use, result)
-        safe = tool_use.to_h
-        input = safe[:input] || safe["input"]
-        if input.is_a?(Hash)
-          headers = input["headers"] || input[:headers]
-          input = input.merge("headers" => Reference::Sanitizer.headers(headers)) if headers
-          safe = safe.merge(input.is_a?(Hash) ? { input: input } : {})
-        end
+        safe = Reference::Sanitizer.redacted_record(tool_use.to_h)
         @transcript.record_tool_call(safe, result)
-        @progress&.call(input, result)
+        @progress&.call(tool_use.to_h[:input] || tool_use.to_h["input"], result)
       end
 
       def record_event(name, payload = {})

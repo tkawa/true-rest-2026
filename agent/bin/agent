@@ -1,0 +1,100 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+$LOAD_PATH.unshift File.expand_path("../lib", __dir__)
+
+require "agent/env"
+
+require "optparse"
+require "agent/adhoc"
+require "agent/config"
+
+options = { headers: {} }
+parser = OptionParser.new do |opts|
+  opts.banner = <<~BANNER
+    動いているサービスに、実験と同じエージェントを一回だけ向けます。
+    サーバの起動も成否の判定もしません。判定は記録を読んで行ってください。
+
+    使い方:
+      bin/agent --url http://localhost:3000/ --task "買い物リストに牛乳を追加して"
+      bin/agent --spec path/to/openapi.yaml --task "買い物リストに牛乳を追加して"
+
+  BANNER
+  opts.on("--url URL", "入口のURL（--spec と排他）") { |v| options[:url] = v }
+  opts.on("--spec PATH", "OpenAPI仕様書のパス（--url と排他）") { |v| options[:spec] = v }
+  opts.on("--task TEXT", "指示文") { |v| options[:task] = v }
+  opts.on("--task-file PATH", "指示文をファイルから読む") { |v| options[:task_file] = v }
+  opts.on("--origin ORIGIN", "許可オリジンの上書き") { |v| options[:origin] = v }
+  opts.on("--header 'Name: value'", "全リクエストに付ける固定ヘッダ（繰り返し可）") do |v|
+    name, _, value = v.partition(":")
+    abort("ヘッダの書式は 'Name: value' です: #{v}") if value.strip.empty?
+    options[:headers][name.strip] = value.strip
+  end
+  opts.on("--out DIR", "記録の置き場") { |v| options[:out] = v }
+  opts.on("--model ID", "モデル") { |v| options[:model] = v }
+  opts.on("--max-tool-calls N", Integer, "ツール呼び出しの上限") { |v| options[:max_tool_calls] = v }
+  opts.on("--timeout N", Integer, "1実行の壁時計の上限（秒）") { |v| options[:timeout] = v }
+  opts.on("--dry-run", "APIを呼ばず、初期メッセージと許可オリジンを表示する") { options[:dry_run] = true }
+  opts.on("--quiet", "進行の逐次表示を止める") { options[:quiet] = true }
+  opts.on("-h", "--help") { puts opts; exit }
+end
+parser.parse!
+
+task = options[:task] || (options[:task_file] && File.read(options[:task_file]))
+abort("--task か --task-file が必要です\n\n#{parser}") if task.nil? || task.strip.empty?
+abort("--url か --spec のどちらか一方が必要です\n\n#{parser}") if options[:url].nil? == options[:spec].nil?
+
+entry =
+  if options[:spec]
+    abort("仕様書が見つかりません: #{options[:spec]}") unless File.exist?(options[:spec])
+    Agent::Adhoc::Entry.new(spec_path: File.expand_path(options[:spec]), spec_body: File.read(options[:spec]))
+  else
+    Agent::Adhoc::Entry.new(url: options[:url])
+  end
+
+config = Agent::Config.default
+config.model = options[:model] if options[:model]
+config.max_tool_calls = options[:max_tool_calls] if options[:max_tool_calls]
+config.timeout_seconds = options[:timeout] if options[:timeout]
+config.agent_name = "adhoc"
+
+progress =
+  unless options[:quiet]
+    lambda do |input, result|
+      next unless input.is_a?(Hash)
+
+      status, bytes = result.to_s.then do |text|
+        [ text[/\AHTTP (\d+)/, 1] || "-", text.split("\n\n", 2).last.to_s.bytesize ]
+      end
+      $stdout.puts format("→ %-6s %-52s %3s %6dB", input["method"], input["url"], status, bytes)
+    end
+  end
+
+begin
+  adhoc = Agent::Adhoc.new(
+    entry: entry, task: task.strip, config: config,
+    headers: options[:headers], origin: options[:origin],
+    out_dir: options[:out], progress: progress
+  )
+rescue Agent::Adhoc::Error => e
+  abort(e.message)
+end
+
+if options[:dry_run]
+  $stdout.puts "許可オリジン: #{adhoc.origin}"
+  $stdout.puts
+  $stdout.print adhoc.initial_message
+  exit
+end
+
+data = adhoc.call
+
+$stdout.puts
+$stdout.puts data["final_message"]
+$stdout.puts
+$stdout.puts "記録: #{adhoc.out_dir}"
+$stdout.puts format(
+  "API呼び出し %d / 入力 %d / 出力 %d トークン / リクエスト %d 件 / %s",
+  data["api_calls"], data["input_tokens"], data["output_tokens"],
+  data["client_side_requests"], data["finish_reason"]
+)

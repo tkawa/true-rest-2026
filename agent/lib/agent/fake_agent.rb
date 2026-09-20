@@ -12,7 +12,7 @@ module Agent
       keyword_init: true
     )
 
-    SCRIPTS = %w[correct wrong_list false_claim give_up wander].freeze
+    SCRIPTS = %w[correct wrong_list false_claim give_up wander authenticated].freeze
 
     def initialize(script:, scenario:, condition:, http_tool:, origin:, transcript: nil)
       @script = script
@@ -130,6 +130,17 @@ module Agent
       get("/api/lists") if @scenario.id == "s3"
       get("/api/lists/3") if @scenario.id == "s3"
       gave_up
+    end
+
+    # 秘匿の確認用。エージェント自身が Authorization を指定する一手。
+    def authenticated_html
+      request("GET", "/", headers: { "Authorization" => "Bearer agent-secret" })
+      done("見てきました。")
+    end
+
+    def authenticated_json
+      request("GET", "/api/lists", headers: { "Authorization" => "Bearer agent-secret" })
+      done("見てきました。")
     end
 
     def wander_html

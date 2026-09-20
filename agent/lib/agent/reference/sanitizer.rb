@@ -12,6 +12,9 @@ module Agent
       USER_PLACEHOLDER = "<USER>".freeze
       WORKDIR_PLACEHOLDER = "<WORKDIR>".freeze
       SOCKET_PLACEHOLDER = "<SOCKET>".freeze
+      REDACTED = "<REDACTED>".freeze
+      # 利用者が渡した、あるいはエージェントが自分で指定した認証情報。
+      SECRET_HEADERS = %w[authorization cookie proxy-authorization x-api-key].freeze
       # 短すぎる名前を置換すると本文を壊すので、その場合は何もしない。
       MIN_USER_LENGTH = 3
 
@@ -54,6 +57,16 @@ module Agent
 
         bare = path.delete_prefix("/private")
         [ "/private#{bare}", bare ].uniq.each { |form| yield form }
+      end
+
+      # ツール呼び出しの headers から、認証情報の値だけを伏せる。
+      # 名前は残す（何を送ったかは追えるようにする）。
+      def headers(hash)
+        return hash unless hash.is_a?(Hash)
+
+        hash.to_h do |name, value|
+          [ name, SECRET_HEADERS.include?(name.to_s.downcase) ? REDACTED : value ]
+        end
       end
 
       def parse(line)

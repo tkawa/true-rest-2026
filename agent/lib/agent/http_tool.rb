@@ -40,9 +40,12 @@ module Agent
 
     attr_reader :calls
 
-    def initialize(allowed_origin:, cookie_jar: CookieJar.new)
+    # default_headers は利用者が渡す固定ヘッダ（認証など）。
+    # 実験では渡さないので、既定では何も足さない。
+    def initialize(allowed_origin:, cookie_jar: CookieJar.new, default_headers: {})
       @allowed_origin = allowed_origin
       @cookie_jar = cookie_jar
+      @default_headers = default_headers
       @calls = []
     end
 
@@ -105,6 +108,10 @@ module Agent
       klass = Net::HTTP.const_get(method.capitalize)
       request = klass.new(uri)
       request["user-agent"] = USER_AGENT
+      # 固定ヘッダ → Cookie jar → エージェントの指定 の順に上書きする。
+      # jar に値があれば固定ヘッダの Cookie より優先し、
+      # エージェントが同名を指定すればそれが最も強い（上書きは記録から追える）。
+      @default_headers.each { |name, value| request[name.to_s] = value.to_s }
       cookie = @cookie_jar.header
       request["cookie"] = cookie if cookie
       headers.each { |name, value| request[name.to_s] = value.to_s }

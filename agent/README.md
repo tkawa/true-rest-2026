@@ -70,6 +70,73 @@ bin/report --include-fake  # 装置の確認用に含める
 bin/oracle --run ../runs/s2/json/<run_id>
 ```
 
+## 自分のアプリに向ける
+
+ループとツールは対象を選びません。動いているサービスに、実験と同じエージェントを一回だけ向けられます。
+サーバの起動も成否の判定もしません。判定は記録を読んで自分で行ってください。
+
+```sh
+bin/agent --url http://localhost:3000/ --task "買い物リストに牛乳を追加して"
+bin/agent --spec path/to/openapi.yaml --task "買い物リストに牛乳を追加して"
+```
+
+| オプション | 意味 |
+|---|---|
+| `--url` | ハイパーメディア方式の入口。`--spec` と排他 |
+| `--spec` | カタログ方式の入口。ファイルの本文をそのまま初期メッセージに埋め込む |
+| `--task` / `--task-file` | 指示文。どちらか必須 |
+| `--origin` | 許可オリジンの上書き。仕様書の `servers` が相対URLや不在のときに使う |
+| `--header 'Name: value'` | 全リクエストに付ける固定ヘッダ（繰り返し可） |
+| `--out` | 記録の置き場。既定は `experiment/runs-scratch/adhoc/<UTC時刻>/` |
+| `--dry-run` | APIを呼ばず、初期メッセージと許可オリジンを表示する |
+| `--quiet` | 進行の逐次表示を止める |
+
+`--model`、`--max-tool-calls`、`--timeout` は `bin/run` と同じで、環境変数の既定も共通です。
+
+### 実験の S2 を手元で再現する
+
+`experiment/todo_app/` でサーバを起動します。
+
+```sh
+cp db/seed.sqlite3 /tmp/run.sqlite3
+EXPERIMENT_DB=/tmp/run.sqlite3 SECRET_KEY_BASE=x bin/rails s -e experiment -p 3000
+```
+
+`experiment/agent/` から向けます。
+
+```sh
+bin/agent --url http://localhost:3000/ --task "買い物リストに牛乳を追加して"
+bin/agent --spec ../todo_app/doc/openapi-v1.yaml --task "買い物リストに牛乳を追加して"
+```
+
+前者は4リクエスト、後者は2リクエストで終わります。実験の S2 と同じ経路です。
+
+### 認証が要るアプリ
+
+`--header` で渡したヘッダを、全リクエストに付けます。
+
+```sh
+bin/agent --url https://app.example.com/ --header "Authorization: Bearer $TOKEN" --task "…"
+```
+
+**渡した値は記録に残りません。** `run.json` にはヘッダの名前だけが入ります。
+エージェントが自分で `Authorization`、`Cookie`、`Proxy-Authorization`、`X-Api-Key` を指定した場合も、
+記録では値が `<REDACTED>` になります。CSRFトークンの自動補完はしません（実験と同じ原則）。
+
+エージェントが同名のヘッダを指定したときは、エージェントの指定が優先されます。
+Cookie は、jar に値があればそちらが固定ヘッダより優先されます。
+
+### 成否の判定
+
+自動判定はしません。対象アプリのDBに触れないので原理的にできません。
+`run.json` の `final_message`（最終行が `結果: 完了` などになります）と `tool_call_log` を読んでください。
+`claim` に最終行の読み取り結果が入ります。
+
+### 実験のデータセットとは分かれています
+
+記録は `experiment/runs-scratch/` に置かれ、`.gitignore` で除外されています。
+`bin/report` が読む `experiment/runs/` には混ざりません。
+
 ## シナリオ
 
 | id | 内容 | feature_archive | 条件 |

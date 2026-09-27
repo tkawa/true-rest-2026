@@ -1,0 +1,112 @@
+{
+  "run_id": "s1-html-20260927T054043Z-005",
+  "scenario": "s1",
+  "scenario_name": "完了済みの編集",
+  "condition": "html",
+  "spec_version": null,
+  "feature_archive": false,
+  "agent": "loop",
+  "model": "claude-fable-5-1",
+  "response_model": "claude-fable-5-1",
+  "temperature": null,
+  "thinking": "adaptive",
+  "max_tool_calls": 25,
+  "system_prompt_sha256": "de92377ae447a2441771d916fa032ae3d02873541f66a9ad89bf1ad1dde82b51",
+  "scenario_sha256": "ad509afefa682c706bc1b9cb3f59bb08241b68fbd5bba873f04d3c1ec5ce5ddf",
+  "harness_git_commit": "58fa023963d9eb52a6196c07a7c394c981475da5",
+  "todo_app_git_commit": "58fa023963d9eb52a6196c07a7c394c981475da5",
+  "started_at": "2026-09-27T05:40:43Z",
+  "wall_time_ms": 57776,
+  "finish_reason": "end_turn",
+  "final_message": "依頼の作業が完了しました。\n\n## 実施内容\n\n「仕事」リスト内の ToDo「月次レポート提出」(ID: 3) について、以下の手順で処理しました。\n\n1. **状況確認**: 対象の ToDo は完了済みで、このサービスでは「完了済みのToDoは編集できません」という制約があり、編集ページにアクセスできませんでした。\n2. **一時的に再開**: 編集を可能にするため「再開」操作を行い、未完了状態にしました。\n3. **タイトル変更**: 「月次レポート提出」→「月次レポート提出（9月分）」に更新しました。\n4. **完了に戻す**: 「完了」操作を行い、完了済み状態に復帰させました。\n\n## 最終状態（確認済み）\n- タイトル: **月次レポート提出（9月分）**\n- 状態: **完了済み**\n- リスト: 仕事\n\n結果: 完了",
+  "api_calls": 11,
+  "tool_calls": 10,
+  "input_tokens": 78034,
+  "output_tokens": 2222,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "tool_call_log": [
+    {
+      "method": "GET",
+      "url": "http://localhost:3000/",
+      "status": 200,
+      "request_bytes": 0,
+      "response_bytes": 2215
+    },
+    {
+      "method": "GET",
+      "url": "http://localhost:3000/lists/1",
+      "status": 200,
+      "request_bytes": 0,
+      "response_bytes": 4801
+    },
+    {
+      "method": "GET",
+      "url": "http://localhost:3000/todos/3/edit",
+      "status": 302,
+      "request_bytes": 0,
+      "response_bytes": 0
+    },
+    {
+      "method": "GET",
+      "url": "http://localhost:3000/todos/3",
+      "status": 200,
+      "request_bytes": 0,
+      "response_bytes": 2742
+    },
+    {
+      "method": "POST",
+      "url": "http://localhost:3000/todos/3/completion",
+      "status": 303,
+      "request_bytes": 120,
+      "response_bytes": 0
+    },
+    {
+      "method": "GET",
+      "url": "http://localhost:3000/todos/3/edit",
+      "status": 200,
+      "request_bytes": 0,
+      "response_bytes": 2589
+    },
+    {
+      "method": "POST",
+      "url": "http://localhost:3000/todos/3",
+      "status": 302,
+      "request_bytes": 271,
+      "response_bytes": 0
+    },
+    {
+      "method": "GET",
+      "url": "http://localhost:3000/todos/3",
+      "status": 200,
+      "request_bytes": 0,
+      "response_bytes": 2732
+    },
+    {
+      "method": "POST",
+      "url": "http://localhost:3000/todos/3/completion",
+      "status": 303,
+      "request_bytes": 105,
+      "response_bytes": 0
+    },
+    {
+      "method": "GET",
+      "url": "http://localhost:3000/todos/3",
+      "status": 200,
+      "request_bytes": 0,
+      "response_bytes": 2751
+    }
+  ],
+  "http_requests": 10,
+  "error_responses": 0,
+  "error_responses_by_status": {},
+  "redirects": 4,
+  "response_bytes_total": 17830,
+  "verdict": "success",
+  "claim": "完了",
+  "claim_parse_failed": false,
+  "expected_changes_satisfied": true,
+  "unexpected_changes": [],
+  "protocol_violation": false,
+  "violating_paths": []
+}

@@ -1,0 +1,77 @@
+{
+  "run_id": "s1-json-20260927T053527Z-001",
+  "scenario": "s1",
+  "scenario_name": "完了済みの編集",
+  "condition": "json",
+  "spec_version": "v1",
+  "feature_archive": false,
+  "agent": "loop",
+  "model": "claude-fable-5-1",
+  "response_model": "claude-fable-5-1",
+  "temperature": null,
+  "thinking": "adaptive",
+  "max_tool_calls": 25,
+  "system_prompt_sha256": "de92377ae447a2441771d916fa032ae3d02873541f66a9ad89bf1ad1dde82b51",
+  "scenario_sha256": "ad509afefa682c706bc1b9cb3f59bb08241b68fbd5bba873f04d3c1ec5ce5ddf",
+  "harness_git_commit": "58fa023963d9eb52a6196c07a7c394c981475da5",
+  "todo_app_git_commit": "58fa023963d9eb52a6196c07a7c394c981475da5",
+  "started_at": "2026-09-27T05:35:27Z",
+  "wall_time_ms": 25130,
+  "finish_reason": "end_turn",
+  "final_message": "「仕事」リスト（id: 1）内の「月次レポート提出」（ToDo id: 3）について、以下の操作を行いました。\n\n1. 完了済みのToDoはタイトルを変更できない仕様のため、いったん完了を取り消し（未完了に戻す）\n2. タイトルを「月次レポート提出（9月分）」に変更\n3. 再度完了にして、完了済みの状態に戻す\n\n最終状態: title「月次レポート提出（9月分）」、completed: true です。\nなお、completed_at は再完了時の日時（2026-09-27T05:35:47Z）に更新されています（元は 2026-01-01）。\n\n結果: 完了",
+  "api_calls": 6,
+  "tool_calls": 5,
+  "input_tokens": 43644,
+  "output_tokens": 844,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "tool_call_log": [
+    {
+      "method": "GET",
+      "url": "http://localhost:3000/api/lists",
+      "status": 200,
+      "request_bytes": 0,
+      "response_bytes": 467
+    },
+    {
+      "method": "GET",
+      "url": "http://localhost:3000/api/lists/1",
+      "status": 200,
+      "request_bytes": 0,
+      "response_bytes": 690
+    },
+    {
+      "method": "DELETE",
+      "url": "http://localhost:3000/api/todos/3/completion",
+      "status": 200,
+      "request_bytes": 0,
+      "response_bytes": 173
+    },
+    {
+      "method": "PATCH",
+      "url": "http://localhost:3000/api/todos/3",
+      "status": 200,
+      "request_bytes": 58,
+      "response_bytes": 186
+    },
+    {
+      "method": "POST",
+      "url": "http://localhost:3000/api/todos/3/completion",
+      "status": 200,
+      "request_bytes": 0,
+      "response_bytes": 207
+    }
+  ],
+  "http_requests": 5,
+  "error_responses": 0,
+  "error_responses_by_status": {},
+  "redirects": 0,
+  "response_bytes_total": 1723,
+  "verdict": "success",
+  "claim": "完了",
+  "claim_parse_failed": false,
+  "expected_changes_satisfied": true,
+  "unexpected_changes": [],
+  "protocol_violation": false,
+  "violating_paths": []
+}

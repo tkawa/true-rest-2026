@@ -63,10 +63,27 @@ Claude Code が 2.1.283 に上がっており、`permission_mode` が本番の `
 | `s2/html`、`s2/json`（`agent: claude_code`） | 26 | 参考実行。HTML は前提の一行なし／あり各10回、JSON は各3回 |
 | `s3/`、`s4/`（`agent: loop`） | 50 | 自作ループ。s3 は html / json 各10回、s4 は html / json / json_v2 各10回 |
 
-指示書のステップ 3（自作ループの s0、s1、s2）は回していません。
-`claude-fable-5-1` は s0 と s2 の HTML 条件で `stop_reason: refusal` を返し、応答が空になるためです
-（s0 は 4 回、s2 は 3 回とも再現）。s1、s3、s4 の HTML は通常どおり動きます。
-経緯は `experiment/agent/NOTES.md` に書いてあります。
+| `s0/`、`s1/`、`s2/`（`agent: loop`） | 60 | 自作ループ。各 html / json 10回 |
+
+合計 136 件です。
+
+## s0 と s2 の HTML が拒否されること
+
+`claude-fable-5-1` は、s0 と s2 の HTML 条件で 10/10 とも `stop_reason: refusal` を返します。
+`report.md` には `incomplete 10（refusal 10）` と出ます。
+
+**これは API が返した `stop_reason` であって、エージェントがページを読んだうえでの判断ではありません。**
+最初の API 呼び出し、つまりシステムプロンプトと指示文と「操作対象: URL」を渡した時点で返っています。
+`http_requests` は 0、応答の `content` は空、入力トークンは全件同一（s0 は 962、s2 は 926）です。
+サーバには一度も触れていません。
+
+該当するのは指示文が短く固有名を鉤括弧で囲んでいないもの
+（「すべてのリストの名前を教えて」「買い物リストに牛乳を追加して」）だけです。
+s1、s4 の HTML は 10/10 で動き、s3 の HTML は 10 回中 1 回だけ拒否されました。
+つまり決定的ではなく確率的で、シナリオによって率が違います。
+すべての JSON 条件は影響を受けません。
+
+拒否は本番の `claude-sonnet-5` では一度も起きていません。
 
 ## 再集計
 

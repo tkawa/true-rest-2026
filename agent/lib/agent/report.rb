@@ -74,6 +74,19 @@ module Agent
           .uniq.join(", ")
     end
 
+    # incomplete は、ツール上限・時間切れ・APIエラーと、モデル側の拒否が混ざる。
+    # 拒否は最初のAPI呼び出しで返ることがあり、打ち切りとは別の現象なので数を分けて出す。
+    def verdict_breakdown(cell)
+      VERDICTS.filter_map do |verdict|
+        runs = cell.select { |run| run["verdict"] == verdict }
+        next if runs.empty?
+
+        label = "#{verdict} #{runs.size}"
+        refusals = runs.count { |run| run["finish_reason"] == "refusal" }
+        refusals.positive? ? "#{label}（refusal #{refusals}）" : label
+      end.join(", ")
+    end
+
     # 本番の記録にはこのキーが無い。無い場合は disabled で回している。
     def thinkings(runs)
       runs.map { |run| run["thinking"] || "disabled" }.uniq.join(", ")
@@ -103,10 +116,7 @@ module Agent
     end
 
     def format_cell(scenario, condition, cell)
-      breakdown = VERDICTS.filter_map do |verdict|
-        count = cell.count { |run| run["verdict"] == verdict }
-        "#{verdict} #{count}" if count.positive?
-      end.join(", ")
+      breakdown = verdict_breakdown(cell)
 
       [
         "", scenario, condition, cell.size, breakdown,

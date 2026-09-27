@@ -102,6 +102,27 @@ class ReportTest < Minitest::Test
     assert_includes report.call, "| s2 | html | なし | 3 | 2 | success 1, no_change 2"
   end
 
+  def test_refusals_are_counted_apart_from_other_incompletes
+    write_run(scenario: "s2", condition: "html", agent: "loop", seq: 1,
+              verdict: "incomplete", finish_reason: "refusal")
+    write_run(scenario: "s2", condition: "html", agent: "loop", seq: 2,
+              verdict: "incomplete", finish_reason: "refusal")
+    write_run(scenario: "s2", condition: "html", agent: "loop", seq: 3,
+              verdict: "incomplete", finish_reason: "tool_limit")
+
+    assert_includes report.call, "incomplete 3（refusal 2）"
+  end
+
+  def test_a_cell_without_refusals_is_unchanged
+    write_run(scenario: "s2", condition: "html", agent: "loop", verdict: "success",
+              finish_reason: "end_turn")
+
+    text = report.call
+
+    assert_includes text, "success 1"
+    refute_includes text, "refusal"
+  end
+
   # --- 別のデータセットとの並置 ---------------------------------------
 
   def test_without_against_the_output_is_unchanged

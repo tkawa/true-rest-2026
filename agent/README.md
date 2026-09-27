@@ -215,7 +215,9 @@ HTML条件で `/api` 以下を叩いた場合、JSON条件で `/api` 以下で�
 条件を変える前に取った予備実行は `experiment/runs-pilot/` に置き、本番の集計から外します。
 
 別モデルでの追試は `experiment/runs-<モデルID>/` に置きます。
-現在は `experiment/runs-claude-fable-5-1/` があります（データセットカードは同ディレクトリの README）。
+現在は `experiment/runs-claude-fable-5-1/`（別モデルでの追試）と
+`experiment/runs-claude-sonnet-5-cli-2.1.283/`（参考実行の交絡の切り分け）があります。
+データセットカードは各ディレクトリの README です。
 本番と並べて見るには `--against` を使います。
 
 ```sh

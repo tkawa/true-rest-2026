@@ -11,10 +11,11 @@ module Agent
     REFERENCE_VERDICTS = %w[success no_change collateral].freeze
     CONDITION_ORDER = %w[html json json_v2].freeze
 
-    def initialize(runs_dir: ENV.fetch("RUNS_DIR", RUNS_DIR), include_fake: false)
+    def initialize(runs_dir: ENV.fetch("RUNS_DIR", RUNS_DIR), include_fake: false, against: nil)
       @runs_dir = runs_dir
       @include_fake = include_fake
-      @runs = load_runs
+      @against = against
+      @runs = load_runs(@runs_dir)
     end
 
     def call
@@ -25,6 +26,7 @@ module Agent
         summary_section(loop_runs),
         matrix_section(loop_runs),
         reference_section(reference_runs),
+        comparison_section,
         listing_section(@runs)
       ].compact.join("\n")
     end
@@ -39,8 +41,8 @@ module Agent
     private
 
     # 疑似エージェントの実行は装置の確認用なので、既定では表に混ぜない。
-    def load_runs
-      runs = Dir.glob(File.join(@runs_dir, "**", "run.json")).sort.map { |path| JSON.parse(File.read(path)) }
+    def load_runs(dir)
+      runs = Dir.glob(File.join(dir, "**", "run.json")).sort.map { |path| JSON.parse(File.read(path)) }
       @include_fake ? runs : runs.reject { |run| run["agent"].to_s.start_with?("fake:") }
     end
 
@@ -57,6 +59,7 @@ module Agent
         |---|---|
         | モデル | #{models.join(", ")} |
         | temperature | #{temperatures(runs)} |
+        | thinking | #{thinkings(runs)} |
         | ツール呼び出しの上限 | #{runs.map { |r| r["max_tool_calls"] }.uniq.join(", ")} |
         | todo_app のコミット | #{commits.join(", ")} |
         | 実行日 | #{dates.join(" 〜 ")} |
@@ -69,6 +72,11 @@ module Agent
     def temperatures(runs)
       runs.map { |run| run["temperature"].nil? ? "未指定（モデルが受け付けない）" : run["temperature"] }
           .uniq.join(", ")
+    end
+
+    # 本番の記録にはこのキーが無い。無い場合は disabled で回している。
+    def thinkings(runs)
+      runs.map { |run| run["thinking"] || "disabled" }.uniq.join(", ")
     end
 
     def matrix_section(runs)
@@ -198,6 +206,109 @@ module Agent
       lines << ""
       lines.join("\n")
     end
+
+    # --- 別のデータセットとの並置 ---------------------------------------
+
+    # 向きが同じかを目で見るための節。優劣を言うためのものではない。
+    def comparison_section
+      return nil if @against.nil?
+
+      others = load_runs(@against)
+      return "## 別のデータセットとの並置\n\n#{@against} に実行記録がありません。\n" if others.empty?
+
+      sets = [ [ @runs_dir, @runs ], [ @against, others ] ]
+      [
+        "## 別のデータセットとの並置",
+        "",
+        "各データセットの中で HTML と JSON の差が同じ向きに出るかを見るための節です。",
+        "モデルどうしの優劣を言うためのものではありません。数値の絶対値は比べないでください。",
+        "トークンの列は置いていません。thinking の有無がデータセットごとに違うと、",
+        "出力にも（前のターンの扱いを通じて）入力にも乗るためです。",
+        "",
+        dataset_legend(sets),
+        "",
+        comparison_matrix(sets),
+        comparison_reference(sets)
+      ].compact.join("\n")
+    end
+
+    def dataset_legend(sets)
+      sets.map do |dir, runs|
+        models = runs.map { |run| run["response_model"] || run["model"] }.uniq.compact
+        "- `#{File.basename(dir)}`: #{models.join(', ')}（#{runs.size} 件）"
+      end.join("\n")
+    end
+
+    def comparison_matrix(sets)
+      cells = sets.map { |dir, runs| [ dir, group_loop(runs) ] }
+      keys = cells.flat_map { |_, grouped| grouped.keys }.uniq.sort_by { |s, c| [ s, order_of(c) ] }
+      return nil if keys.empty?
+
+      header = [ "シナリオ", "条件" ] + cells.flat_map do |dir, _|
+        name = File.basename(dir)
+        [ "成否（#{name}）", "HTTP（#{name}）", "エラー応答（#{name}）", "危険な誤操作（#{name}）" ]
+      end
+
+      lines = [ "### 自作ループ", "", "| #{header.join(' | ')} |", "|#{'---|' * header.size}" ]
+      keys.each do |key|
+        row = [ key.first, key.last ] + cells.flat_map { |_, grouped| loop_columns(grouped[key]) }
+        lines << "| #{row.join(' | ')} |"
+      end
+      lines << ""
+      lines.join("\n")
+    end
+
+    def loop_columns(cell)
+      return [ "—", "—", "—", "—" ] if cell.nil? || cell.empty?
+
+      with_errors = cell.count { |run| run["error_responses"].to_i.positive? }
+      dangerous = cell.count { |run| %w[false_success collateral].include?(run["verdict"]) }
+      [
+        "#{cell.count { |run| run['verdict'] == 'success' }}/#{cell.size}",
+        spread(cell, "http_requests"),
+        "#{spread(cell, 'error_responses')}・#{with_errors}/#{cell.size}件",
+        dangerous.to_s
+      ]
+    end
+
+    def comparison_reference(sets)
+      cells = sets.map { |dir, runs| [ dir, group_reference(runs) ] }
+      keys = cells.flat_map { |_, grouped| grouped.keys }.uniq.sort
+      return nil if keys.empty?
+
+      header = [ "シナリオ", "条件", "前提の一行" ] + cells.flat_map do |dir, _|
+        name = File.basename(dir)
+        [ "N（#{name}）", "到達（#{name}）", "success（#{name}）" ]
+      end
+
+      lines = [ "### 参考実行", "", "| #{header.join(' | ')} |", "|#{'---|' * header.size}" ]
+      keys.each do |(scenario, condition, hint)|
+        row = [ scenario, condition, hint.zero? ? "なし" : "あり" ] +
+              cells.flat_map { |_, grouped| reference_columns(grouped[[ scenario, condition, hint ]]) }
+        lines << "| #{row.join(' | ')} |"
+      end
+      lines << ""
+      lines.join("\n")
+    end
+
+    def reference_columns(cell)
+      return [ "—", "—", "—" ] if cell.nil? || cell.empty?
+
+      [ cell.size.to_s, reached(cell).to_s,
+        cell.count { |run| reference_verdict(run) == "success" }.to_s ]
+    end
+
+    def group_loop(runs)
+      runs.reject { |run| run["agent"].to_s == "claude_code" }
+          .group_by { |run| [ run["scenario"], run["condition"] ] }
+    end
+
+    def group_reference(runs)
+      runs.select { |run| run["agent"].to_s == "claude_code" }
+          .group_by { |run| [ run["scenario"], run["condition"], run["hint"] ? 1 : 0 ] }
+    end
+
+    def order_of(condition) = CONDITION_ORDER.index(condition) || CONDITION_ORDER.size
 
     def spread(cell, key)
       values = cell.map { |run| run[key] }.compact.map(&:to_i)

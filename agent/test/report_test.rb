@@ -27,6 +27,20 @@ class ReportTest < Minitest::Test
 
   def report = Agent::Report.new(runs_dir: @dir)
 
+  def write_run_in(dir, scenario:, condition:, agent:, **attrs)
+    path = File.join(dir, scenario, condition, "#{scenario}-#{condition}-#{attrs.fetch(:seq, 1)}")
+    FileUtils.mkdir_p(path)
+    data = {
+      "run_id" => File.basename(path), "scenario" => scenario, "condition" => condition,
+      "agent" => agent, "model" => "m", "response_model" => attrs.delete(:response_model) || "m",
+      "temperature" => nil, "max_tool_calls" => 25, "started_at" => "2026-09-27T00:00:00Z",
+      "verdict" => "success", "expected_changes_satisfied" => true,
+      "unexpected_changes" => [], "http_requests" => 2, "error_responses" => 0,
+      "tool_calls" => 2, "input_tokens" => 1, "output_tokens" => 1
+    }.merge(attrs.transform_keys(&:to_s))
+    File.write(File.join(path, "run.json"), JSON.generate(data))
+  end
+
   def test_reference_runs_are_judged_on_the_database_only
     write_run(scenario: "s2", condition: "json", agent: "claude_code",
               verdict: "incomplete", expected_changes_satisfied: true)
@@ -86,6 +100,68 @@ class ReportTest < Minitest::Test
 
     # N=3、到達 2、success 1 → 到達しなかった1、到達したが止まった1、完遂1
     assert_includes report.call, "| s2 | html | なし | 3 | 2 | success 1, no_change 2"
+  end
+
+  # --- 別のデータセットとの並置 ---------------------------------------
+
+  def test_without_against_the_output_is_unchanged
+    write_run(scenario: "s3", condition: "json", agent: "loop")
+
+    refute_includes report.call, "別のデータセットとの並置"
+  end
+
+  def test_the_comparison_section_puts_both_datasets_side_by_side
+    other = Dir.mktmpdir("report-test-other")
+    write_run_in(@dir, scenario: "s3", condition: "json", agent: "loop",
+                 response_model: "model-a", error_responses: 1, verdict: "success")
+    write_run_in(other, scenario: "s3", condition: "json", agent: "loop",
+                 response_model: "model-b", error_responses: 0, verdict: "collateral",
+                 expected_changes_satisfied: false)
+
+    text = Agent::Report.new(runs_dir: @dir, against: other).call
+
+    assert_includes text, "別のデータセットとの並置"
+    assert_includes text, "model-a"
+    assert_includes text, "model-b"
+    # 成否・エラー応答・危険な誤操作が、データセットごとに並ぶ
+    assert_includes text, "| s3 | json | 1/1 | 2 (2〜2) | 1 (1〜1)・1/1件 | 0 | 0/1 | 2 (2〜2) | 0 (0〜0)・0/1件 | 1 |"
+  ensure
+    FileUtils.rm_rf(other)
+  end
+
+  def test_the_comparison_section_covers_reference_runs
+    other = Dir.mktmpdir("report-test-other")
+    write_run_in(@dir, scenario: "s2", condition: "html", agent: "claude_code",
+                 hint: false, http_requests: 0, expected_changes_satisfied: false)
+    write_run_in(other, scenario: "s2", condition: "html", agent: "claude_code",
+                 hint: false, http_requests: 4, expected_changes_satisfied: true)
+
+    text = Agent::Report.new(runs_dir: @dir, against: other).call
+
+    assert_includes text, "### 参考実行"
+    assert_includes text, "| s2 | html | なし | 1 | 0 | 0 | 1 | 1 | 1 |"
+  ensure
+    FileUtils.rm_rf(other)
+  end
+
+  def test_an_empty_comparison_directory_is_reported
+    other = Dir.mktmpdir("report-test-other")
+    write_run(scenario: "s3", condition: "json", agent: "loop")
+
+    assert_includes Agent::Report.new(runs_dir: @dir, against: other).call, "実行記録がありません"
+  ensure
+    FileUtils.rm_rf(other)
+  end
+
+  def test_the_comparison_section_says_it_is_not_a_ranking
+    other = Dir.mktmpdir("report-test-other")
+    write_run_in(@dir, scenario: "s3", condition: "json", agent: "loop")
+    write_run_in(other, scenario: "s3", condition: "json", agent: "loop")
+
+    assert_includes Agent::Report.new(runs_dir: @dir, against: other).call,
+                    "モデルどうしの優劣を言うためのものではありません"
+  ensure
+    FileUtils.rm_rf(other)
   end
 
   def test_the_reference_table_says_what_is_comparable

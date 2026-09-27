@@ -214,6 +214,14 @@ HTML条件で `/api` 以下を叩いた場合、JSON条件で `/api` 以下で�
 
 条件を変える前に取った予備実行は `experiment/runs-pilot/` に置き、本番の集計から外します。
 
+別モデルでの追試は `experiment/runs-<モデルID>/` に置きます。
+現在は `experiment/runs-claude-fable-5-1/` があります（データセットカードは同ディレクトリの README）。
+本番と並べて見るには `--against` を使います。
+
+```sh
+RUNS_DIR=../runs-claude-fable-5-1 bin/report --against ../runs
+```
+
 ```sh
 RUNS_DIR=../runs-pilot bin/report
 ```

@@ -13,16 +13,18 @@ module Agent
     Result = Struct.new(
       :final_message, :finish_reason, :api_calls, :tool_calls,
       :input_tokens, :output_tokens, :cache_creation_input_tokens, :cache_read_input_tokens,
-      :temperature, :response_model, keyword_init: true
+      :temperature, :response_model, :thinking, keyword_init: true
     )
 
     # 新しいモデルは temperature を受け付けない。指定できるモデルでは 0 を送り、
     # 拒否されたら外して送り直す。どちらの条件も同じ経路を通るので公平性は変わらない。
-    TEMPERATURE_DEPRECATED = /`temperature` is deprecated/
+    # 断り方はモデルによって違う（"is deprecated" / "may only be set to 1 …"）ので、
+    # temperature に言及した 400 をまとめて拾う。外すのは一度だけ。
+    TEMPERATURE_REJECTED = /`temperature`/
 
-    # 既定で思考する（thinking_tokens が出る）モデルがあるので明示的に切る。
-    # 両条件で同じ設定にし、出力トークンの比較を素の応答だけで行う。
-    THINKING_DISABLED = { type: "disabled" }.freeze
+    # 既定で思考するモデルがあるので明示的に指定する。両条件で同じ設定にする。
+    # 思考を切れるモデルでは disabled、切れないモデルでは adaptive（§4.0）。
+    # temperature と違い、拒否されても黙って外さない。何を送ったかを記録から曖昧にしないため。
 
     def initialize(scenario:, condition:, http_tool:, transcript:, initial_message:, config:, client: nil)
       @scenario = scenario
@@ -90,7 +92,7 @@ module Agent
         params = {
           model: @config.model, max_tokens: MAX_TOKENS,
           system: system_prompt, tools: [ HttpTool::DEFINITION ], messages: messages,
-          thinking: THINKING_DISABLED
+          thinking: { type: @config.thinking }
         }
         params[:temperature] = @temperature unless @temperature.nil?
         response = @client.messages.create(params)
@@ -101,7 +103,7 @@ module Agent
         @transcript.record_api_call(request: params, response: response.to_h)
         response
       rescue Anthropic::Errors::APIError => e
-        if TEMPERATURE_DEPRECATED.match?(e.message) && !@temperature.nil?
+        if TEMPERATURE_REJECTED.match?(e.message) && !@temperature.nil?
           @transcript.record_event("temperature_dropped", model: @config.model)
           @temperature = nil
           attempt -= 1
@@ -152,7 +154,8 @@ module Agent
         cache_creation_input_tokens: @usage[:cache_creation_input_tokens],
         cache_read_input_tokens: @usage[:cache_read_input_tokens],
         temperature: @temperature,
-        response_model: @response_model
+        response_model: @response_model,
+        thinking: @config.thinking
       )
     end
 

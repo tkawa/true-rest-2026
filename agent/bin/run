@@ -23,6 +23,7 @@ parser = OptionParser.new do |opts|
   opts.on("--model ID", "モデル") { |v| options[:model] = v }
   opts.on("--port N", Integer, "ポート（既定 3000）") { |v| options[:port] = v }
   opts.on("--max-tool-calls N", Integer, "ツール呼び出しの上限") { |v| options[:max_tool_calls] = v }
+  opts.on("--thinking MODE", Agent::Config::THINKING_MODES, "思考の指定（#{Agent::Config::THINKING_MODES.join(' / ')}）") { |v| options[:thinking] = v }
   opts.on("-h", "--help") { puts opts; exit }
 end
 parser.parse!
@@ -36,6 +37,7 @@ config = Agent::Config.default
 config.model = options[:model] if options[:model]
 config.port = options[:port] if options[:port]
 config.max_tool_calls = options[:max_tool_calls] if options[:max_tool_calls]
+config.thinking = options[:thinking] if options[:thinking]
 config.agent_name = options[:fake] ? "fake:#{options[:fake]}" : "loop"
 # 疑似エージェントはモデルを使わないので、表のモデル欄を汚さないよう記録しない。
 config.model = nil if options[:fake]

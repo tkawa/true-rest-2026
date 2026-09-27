@@ -121,6 +121,7 @@ module Agent
         "model" => @config.model,
         "response_model" => outcome.respond_to?(:response_model) ? outcome.response_model : nil,
         "temperature" => effective_temperature(outcome),
+        "thinking" => outcome.respond_to?(:thinking) ? outcome.thinking : nil,
         "max_tool_calls" => @config.max_tool_calls,
         "system_prompt_sha256" => system_prompt_sha256(agent),
         "scenario_sha256" => @scenario.sha256,

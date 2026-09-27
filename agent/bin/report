@@ -10,11 +10,12 @@ require "agent/report"
 
 options = { include_fake: false }
 OptionParser.new do |opts|
-  opts.banner = "使い方: bin/report [--include-fake]"
+  opts.banner = "使い方: bin/report [--include-fake] [--against DIR]"
   opts.on("--include-fake", "疑似エージェントの実行も表に含める") { options[:include_fake] = true }
+  opts.on("--against DIR", "別のデータセットと並置する節を末尾に足す") { |v| options[:against] = v }
   opts.on("-h", "--help") { puts opts; exit }
 end.parse!
 
-report = Agent::Report.new(include_fake: options[:include_fake])
+report = Agent::Report.new(include_fake: options[:include_fake], against: options[:against])
 path = report.write
 puts "#{path} を書きました（実行数 #{report.run_count}）"

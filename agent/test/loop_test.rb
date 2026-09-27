@@ -72,8 +72,8 @@ class LoopTest < Minitest::Test
     Response.new(content: [ Block.new(type: "text", text: text) ], stop_reason: "end_turn", usage: usage)
   end
 
-  def build(responses, max_tool_calls: 25, tool: StubTool.new)
-    config = Agent::Config.default(max_tool_calls: max_tool_calls)
+  def build(responses, max_tool_calls: 25, tool: StubTool.new, thinking: "disabled")
+    config = Agent::Config.default(max_tool_calls: max_tool_calls, thinking: thinking)
     transcript = Agent::Transcript.new(File.join(Dir.mktmpdir, "transcript.jsonl"))
     loop_agent = Agent::Loop.new(
       scenario: Agent::Scenario.load("s0"), condition: Agent::Scenario::Condition.new(name: "html"),
@@ -95,6 +95,55 @@ class LoopTest < Minitest::Test
     assert_equal 200, result.input_tokens
     assert_equal 40, result.output_tokens
     assert_equal "claude-sonnet-5-20260101", result.response_model
+  end
+
+  # 思考を切れないモデルでは、応答に thinking ブロックが入る。
+  # 署名付きのまま assistant メッセージに積み直さないと次のターンが通らない。
+  def test_a_thinking_block_survives_the_round_trip
+    thinking = Block.new(type: "thinking", text: "考え中")
+    with_thinking = Response.new(
+      content: [ thinking,
+                 Block.new(type: "tool_use", id: "tu_1", name: "http_request",
+                           input: { "method" => "GET", "url" => "http://localhost:3000/" }) ],
+      stop_reason: "tool_use", usage: usage
+    )
+    loop_agent, tool = build([ with_thinking, end_response("できました。\n結果: 完了") ])
+
+    result = loop_agent.run
+
+    assert_equal 1, tool.call_count
+    assert_equal "end_turn", result.finish_reason
+    # 2回目の送信に thinking ブロックがそのまま載っている
+    sent = loop_agent.instance_variable_get(:@client).requests.last[:messages]
+    assistant = sent.find { |message| message[:role] == "assistant" }
+    types = Array(assistant[:content]).map { |block| block[:type] || block["type"] }
+
+    assert_includes types, "thinking"
+    assert_includes types, "tool_use"
+  end
+
+  def test_the_final_message_ignores_thinking_blocks
+    response = Response.new(
+      content: [ Block.new(type: "thinking", text: "内心の独り言"),
+                 Block.new(type: "text", text: "報告です。\n結果: 完了") ],
+      stop_reason: "end_turn", usage: usage
+    )
+    loop_agent, = build([ response ])
+
+    result = loop_agent.run
+
+    assert_equal "報告です。\n結果: 完了", result.final_message
+    refute_includes result.final_message, "内心の独り言"
+  end
+
+  def test_the_thinking_mode_is_sent_and_recorded
+    loop_agent, = build([ end_response("結果: 完了") ], thinking: "adaptive")
+
+    result = loop_agent.run
+    request = loop_agent.instance_variable_get(:@client).requests.first
+
+    assert_equal({ type: "adaptive" }, request[:thinking])
+    assert_equal "adaptive", result.thinking
   end
 
   def test_max_tokens_is_kept_as_the_finish_reason

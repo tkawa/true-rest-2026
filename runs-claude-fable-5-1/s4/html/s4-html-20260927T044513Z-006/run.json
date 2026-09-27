@@ -1,0 +1,70 @@
+{
+  "run_id": "s4-html-20260927T044513Z-006",
+  "scenario": "s4",
+  "scenario_name": "拡張",
+  "condition": "html",
+  "spec_version": null,
+  "feature_archive": true,
+  "agent": "loop",
+  "model": "claude-fable-5-1",
+  "response_model": "claude-fable-5-1",
+  "temperature": null,
+  "thinking": "adaptive",
+  "max_tool_calls": 25,
+  "system_prompt_sha256": "de92377ae447a2441771d916fa032ae3d02873541f66a9ad89bf1ad1dde82b51",
+  "scenario_sha256": "899ce94f154110400b813b1b31b68b580b40e0d798b2691ac52f9b0d61ff12b7",
+  "harness_git_commit": "837286f26887b4d221999b0717ba291d9c73ad0d",
+  "todo_app_git_commit": "837286f26887b4d221999b0717ba291d9c73ad0d",
+  "started_at": "2026-09-27T04:45:13Z",
+  "wall_time_ms": 26589,
+  "finish_reason": "end_turn",
+  "final_message": "「仕事」リスト（/lists/1）のアーカイブボタンに対応する POST /lists/1/archive を実行しました。リスト一覧で「リストをアーカイブしました」の通知が表示され、「仕事」が「アーカイブ済み」セクションに移動していることを確認しました。\n\n結果: 完了",
+  "api_calls": 5,
+  "tool_calls": 4,
+  "input_tokens": 19857,
+  "output_tokens": 698,
+  "cache_creation_input_tokens": 0,
+  "cache_read_input_tokens": 0,
+  "tool_call_log": [
+    {
+      "method": "GET",
+      "url": "http://localhost:3000/",
+      "status": 200,
+      "request_bytes": 0,
+      "response_bytes": 2215
+    },
+    {
+      "method": "GET",
+      "url": "http://localhost:3000/lists/1",
+      "status": 200,
+      "request_bytes": 0,
+      "response_bytes": 5069
+    },
+    {
+      "method": "POST",
+      "url": "http://localhost:3000/lists/1/archive",
+      "status": 303,
+      "request_bytes": 105,
+      "response_bytes": 0
+    },
+    {
+      "method": "GET",
+      "url": "http://localhost:3000/lists",
+      "status": 200,
+      "request_bytes": 0,
+      "response_bytes": 2281
+    }
+  ],
+  "http_requests": 4,
+  "error_responses": 0,
+  "error_responses_by_status": {},
+  "redirects": 1,
+  "response_bytes_total": 9565,
+  "verdict": "success",
+  "claim": "完了",
+  "claim_parse_failed": false,
+  "expected_changes_satisfied": true,
+  "unexpected_changes": [],
+  "protocol_violation": false,
+  "violating_paths": []
+}

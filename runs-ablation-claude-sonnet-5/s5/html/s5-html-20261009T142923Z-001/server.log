@@ -1,0 +1,19 @@
+=> Booting Puma
+=> Rails 8.1.3.1 application starting in experiment 
+=> Run `bin/rails server --help` for more startup options
+Puma starting in single mode...
+* Puma version: 8.0.2 ("Into the Arena")
+* Ruby version: ruby 4.0.7 (2026-09-15 revision 229531a6cf) +PRISM [arm64-darwin24]
+*  Min threads: 3
+*  Max threads: 3
+*  Environment: experiment
+*          PID: 55624
+* Listening on http://0.0.0.0:3000
+Use Ctrl-C to stop
+[e378077d-3ad9-46f4-8333-bf5df1308be3] Can't verify CSRF token authenticity.
+[e378077d-3ad9-46f4-8333-bf5df1308be3]   
+[e378077d-3ad9-46f4-8333-bf5df1308be3] ActionController::InvalidAuthenticityToken (Can't verify CSRF token authenticity.):
+[e378077d-3ad9-46f4-8333-bf5df1308be3]   
+[e378077d-3ad9-46f4-8333-bf5df1308be3] lib/request_recorder.rb:18:in 'RequestRecorder#call'
+- Gracefully stopping, waiting for requests to finish
+Exiting

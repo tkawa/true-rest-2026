@@ -44,6 +44,9 @@ EXPERIMENT_DB=/tmp/run.sqlite3 EXPERIMENT_LOG=/tmp/run.jsonl FEATURE_ARCHIVE=1 S
 | `EXPERIMENT_DB` | 使用するSQLiteファイル。既定は `storage/experiment.sqlite3` |
 | `EXPERIMENT_LOG` | リクエスト記録の出力先（JSONL）。未設定なら記録しない |
 | `FEATURE_ARCHIVE` | `1` でアーカイブ操作を有効にする |
+| `FEATURE_TITLE_LIMIT` | `1` で ToDo のタイトルを100文字以内に制限する（モデルの検証と、編集フォームの `maxlength`） |
+| `UPDATE_NO_CONTENT` | `1` で JSON の更新（`PATCH /api/lists/{id}`、`PATCH /api/todos/{id}`）の成功応答を 204 にする |
+| `OPENAPI_STYLE` | 仕様書の生成時のみ。`terse` で「この操作では変わりません」型の警告文を外す（既定は `full`） |
 | `SECRET_KEY_BASE` | 未設定なら `experiment-only-fixed-key` を使う |
 
 CSSとJavaScriptを配信する場合は、先に `bin/rails assets:precompile RAILS_ENV=experiment SECRET_KEY_BASE=x` を実行してください。
@@ -125,6 +128,9 @@ rm -f doc/openapi-v1.yaml doc/openapi-v2.yaml
 FEATURE_ARCHIVE=0 OPENAPI=1 bundle exec rspec spec/requests/api
 FEATURE_ARCHIVE=1 OPENAPI=1 bundle exec rspec spec/requests/api
 ```
+
+ファイル名は `openapi-<line>[-terse][-nocontent][-titlelimit].yaml` で、`OPENAPI_STYLE`、`UPDATE_NO_CONTENT`、`FEATURE_TITLE_LIMIT` の指定から決まります。
+rspec-openapi は同じステータスの例を後勝ちで記録します。`FEATURE_TITLE_LIMIT=1` の「100文字以内」の一文は、上限を確かめる spec を `openapi: false` で記録から外し、完了済みの 422 の `description` に載せています。
 
 `doc/openapi-v1.yaml` と `doc/openapi-v2.yaml` の差分は、アーカイブ系エンドポイントの追加だけになります。
 

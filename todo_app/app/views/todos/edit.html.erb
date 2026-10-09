@@ -7,7 +7,7 @@
 
   <div>
     <%= form.label :title, "タイトル" %>
-    <%= form.text_field :title %>
+    <%= form.text_field :title, **(title_limit_enabled? ? { maxlength: 100 } : {}) %>
   </div>
 
   <div>

@@ -4,4 +4,10 @@ module ApplicationHelper
   def archive_feature_enabled?
     Rails.configuration.x.features.archive
   end
+
+  # タイトルの文字数上限が有効かどうか。HTML の maxlength を出すかどうかだけを決める。
+  # 検証そのものはモデルが行う。
+  def title_limit_enabled?
+    Rails.configuration.x.features.title_limit
+  end
 end

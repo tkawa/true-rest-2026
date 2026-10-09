@@ -45,7 +45,13 @@ class ListsController < ApplicationController
     respond_to do |format|
       if @list.update(list_params)
         format.html { redirect_to @list, notice: "リストを更新しました" }
-        format.json { render json: ListResource.new(@list) }
+        format.json do
+          if Rails.configuration.x.responses.update_no_content
+            head :no_content
+          else
+            render json: ListResource.new(@list)
+          end
+        end
       else
         format.html { render :edit, status: :unprocessable_content }
         format.json { render json: { errors: @list.errors.full_messages }, status: :unprocessable_content }

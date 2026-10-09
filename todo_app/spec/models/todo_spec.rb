@@ -12,6 +12,39 @@ RSpec.describe Todo do
     end
   end
 
+  describe "タイトルの文字数上限（FEATURE_TITLE_LIMIT）" do
+    around do |example|
+      original = Rails.configuration.x.features.title_limit
+      Rails.configuration.x.features.title_limit = flag
+      example.run
+    ensure
+      Rails.configuration.x.features.title_limit = original
+    end
+
+    context "フラグ ON" do
+      let(:flag) { true }
+
+      it "101文字は無効" do
+        todo = list.todos.build(title: "あ" * 101)
+
+        expect(todo).not_to be_valid
+        expect(todo.errors.full_messages).to include("タイトルは100文字以内で入力してください")
+      end
+
+      it "100文字は有効" do
+        expect(list.todos.build(title: "あ" * 100)).to be_valid
+      end
+    end
+
+    context "フラグ OFF" do
+      let(:flag) { false }
+
+      it "101文字も有効" do
+        expect(list.todos.build(title: "あ" * 101)).to be_valid
+      end
+    end
+  end
+
   describe "業務ルール: アーカイブ済みのリストには追加できない" do
     it "アーカイブ済みのリストへの新規作成を拒む" do
       list.archive!

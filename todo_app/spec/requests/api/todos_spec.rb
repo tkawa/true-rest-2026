@@ -62,17 +62,29 @@ RSpec.describe "Todos", type: :request do
   describe "PATCH /api/todos/:id" do
     it "タイトルを変える", openapi: {
       summary: "ToDoのタイトル変更",
-      description: "ToDoのタイトルだけを変更します。完了状態はこの操作では変わりません。"
+      description: OpenapiText.pick(
+        full: "ToDoのタイトルだけを変更します。完了状態はこの操作では変わりません。",
+        terse: "ToDoのタイトルを変更します。"
+      )
     } do
       patch "/api/todos/#{todo.id}", params: { todo: { title: "変更後のテストToDo" } }, as: :json
 
-      expect(response).to have_http_status(:ok)
-      expect(response.parsed_body["title"]).to eq("変更後のテストToDo")
+      if Rails.configuration.x.responses.update_no_content
+        expect(response).to have_http_status(:no_content)
+        expect(response.body).to be_empty
+      else
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body["title"]).to eq("変更後のテストToDo")
+      end
+      expect(todo.reload.title).to eq("変更後のテストToDo")
     end
 
     it "完了済みなら422を返す", openapi: {
       summary: "ToDoのタイトル変更",
-      description: "完了済みのToDoは編集できず、422を返します。先に DELETE /todos/{todo_id}/completion で完了を取り消してください。"
+      description: [
+        "完了済みのToDoは編集できず、422を返します。先に DELETE /todos/{todo_id}/completion で完了を取り消してください。",
+        ("タイトルは100文字以内です。超える場合は422を返します。" if Rails.configuration.x.features.title_limit)
+      ].compact.join(" ")
     } do
       todo.complete!
 
@@ -80,6 +92,17 @@ RSpec.describe "Todos", type: :request do
 
       expect(response).to have_http_status(:unprocessable_content)
       expect(response.parsed_body["errors"]).to eq([ "完了済みのToDoは編集できません。先に再開してください" ])
+    end
+  end
+
+  describe "PATCH /api/todos/:id（タイトルの文字数上限）" do
+    # 挙動の検証だけを行い、仕様書には記録しない（同じ 422 の説明を後勝ちで上書きするため）。
+    # 100文字の一文は、完了済みの 422 の description に載せている。
+    it "タイトルが100文字を超えると422を返す", if: Rails.configuration.x.features.title_limit, openapi: false do
+      patch "/api/todos/#{todo.id}", params: { todo: { title: "あ" * 101 } }, as: :json
+
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response.parsed_body["errors"]).to be_present
     end
   end
 

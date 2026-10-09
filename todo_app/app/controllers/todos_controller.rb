@@ -31,7 +31,13 @@ class TodosController < ApplicationController
     respond_to do |format|
       if @todo.update(todo_params)
         format.html { redirect_to @todo.list, notice: "ToDoを更新しました" }
-        format.json { render json: TodoResource.new(@todo) }
+        format.json do
+          if Rails.configuration.x.responses.update_no_content
+            head :no_content
+          else
+            render json: TodoResource.new(@todo)
+          end
+        end
       else
         format.html { render :edit, status: :unprocessable_content }
         format.json { render json: { errors: @todo.errors.full_messages }, status: :unprocessable_content }

@@ -68,12 +68,21 @@ RSpec.describe "Lists", type: :request do
   describe "PATCH /api/lists/:id" do
     it "リスト名を変える", openapi: {
       summary: "リスト名の変更",
-      description: "リストの名前だけを変更します。アーカイブ状態はこの操作では変わりません。"
+      description: OpenapiText.pick(
+        full: "リストの名前だけを変更します。アーカイブ状態はこの操作では変わりません。",
+        terse: "リストの名前を変更します。"
+      )
     } do
       patch "/api/lists/#{list.id}", params: { list: { name: "変更後のテスト用リスト" } }, as: :json
 
-      expect(response).to have_http_status(:ok)
-      expect(response.parsed_body["name"]).to eq("変更後のテスト用リスト")
+      if Rails.configuration.x.responses.update_no_content
+        expect(response).to have_http_status(:no_content)
+        expect(response.body).to be_empty
+      else
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body["name"]).to eq("変更後のテスト用リスト")
+      end
+      expect(list.reload.name).to eq("変更後のテスト用リスト")
     end
 
     it "名前が空なら422を返す", openapi: {

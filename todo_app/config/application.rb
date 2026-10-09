@@ -46,6 +46,11 @@ module TodoApp
     # 実験の条件切り替え用の機能フラグ。
     # アーカイブ「操作」の有無だけを制御する（カラムやバリデーションは常に存在する）。
     config.x.features.archive = ENV["FEATURE_ARCHIVE"] == "1"
+    # ToDo のタイトルの文字数上限（100）。モデルの検証と、HTML の maxlength が参照する。
+    config.x.features.title_limit = ENV["FEATURE_TITLE_LIMIT"] == "1"
+
+    # 更新（PATCH）の成功応答を 204 No Content にする。作成・完了・アーカイブ・削除には及ばない。
+    config.x.responses.update_no_content = ENV["UPDATE_NO_CONTENT"] == "1"
 
     # 例外時の応答。/api 以下は JSON、それ以外は public/*.html（Rails既定）。
     require_relative "../lib/exceptions_app"

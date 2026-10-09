@@ -2,6 +2,7 @@ class Todo < ApplicationRecord
   belongs_to :list
 
   validates :title, presence: true
+  validates :title, length: { maximum: 100 }, if: -> { Rails.configuration.x.features.title_limit }
   validate :list_must_not_be_archived, on: :create
   validate :title_frozen_while_completed, on: :update
 

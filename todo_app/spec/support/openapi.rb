@@ -1,9 +1,17 @@
 require "rspec/openapi"
+require_relative "openapi_text"
 
 # 仕様書は手で書かず、request spec の実行結果から生成する。
 # 出力先は機能フラグで分ける（OFF: v1、ON: v2）。
+# ファイル名は doc/openapi-<line>[-terse][-nocontent][-titlelimit].yaml。
 RSpec::OpenAPI.path = ENV.fetch("OPENAPI_PATH") do
-  Rails.configuration.x.features.archive ? "doc/openapi-v2.yaml" : "doc/openapi-v1.yaml"
+  line = Rails.configuration.x.features.archive ? "v2" : "v1"
+  suffix = [
+    (OpenapiText.terse? ? "terse" : nil),
+    (Rails.configuration.x.responses.update_no_content ? "nocontent" : nil),
+    (Rails.configuration.x.features.title_limit ? "titlelimit" : nil)
+  ].compact
+  "doc/openapi-#{[ line, *suffix ].join('-')}.yaml"
 end
 
 RSpec::OpenAPI.title = "ToDo API"

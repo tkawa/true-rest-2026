@@ -149,9 +149,12 @@ Cookie は、jar に値があればそちらが固定ヘッダより優先され
 | s1 | 完了済みのToDoのタイトルを変える（完了状態はそのまま） | false | html, json |
 | s2 | 名前で指したリストにToDoを追加する | false | html, json |
 | s3 | アーカイブ済みのリストにToDoを追加する（できない） | false | html, json |
-| s4 | リストをアーカイブする | **true** | html, json（古い仕様書）, json_v2（対照） |
+| s4 | リストをアーカイブする | **true** | html, json（古い仕様書）, json_v2（対照）, json_terse（警告文なし）, json_terse_nocontent（警告文なし + 更新が 204） |
+| s5 | 上限を超えるタイトルへの変更（途中で失敗する多段の編集）。`feature_title_limit: true` | false | html, json（`v1-titlelimit`） |
+| s6 | ToDo を別のリストに移す（操作が存在しない） | false | html, json, json_terse, json_terse_nocontent |
 
 条件を足すときは `scenarios/*.yml` の `conditions` に書き足します。
+条件ごとにサーバへ渡す環境変数は `server_env` に書きます（指定できるキーは `UPDATE_NO_CONTENT` のみ）。`run.json` に `server_env` と `feature_title_limit` として記録します。
 
 ## 判定
 

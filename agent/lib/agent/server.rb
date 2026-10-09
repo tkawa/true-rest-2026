@@ -11,13 +11,16 @@ module Agent
 
     attr_reader :port
 
-    def initialize(app_dir:, port:, database_path:, log_path:, server_log_path:, feature_archive: false)
+    def initialize(app_dir:, port:, database_path:, log_path:, server_log_path:, feature_archive: false,
+                   feature_title_limit: false, extra_env: {})
       @app_dir = File.expand_path(app_dir)
       @port = port
       @database_path = File.expand_path(database_path)
       @log_path = File.expand_path(log_path)
       @server_log_path = File.expand_path(server_log_path)
       @feature_archive = feature_archive
+      @feature_title_limit = feature_title_limit
+      @extra_env = extra_env || {}
       @pid = nil
     end
 
@@ -51,18 +54,24 @@ module Agent
       false
     end
 
+    # テストから、起動時に渡す環境変数を確かめるために公開する。
+    def env = build_env
+
     private
 
     # ハーネス側の Bundler 環境を子プロセスに持ち込むと、
     # アプリが自分の Gemfile ではなくこちらの Gemfile を読んでしまう。
-    def env
+    def build_env
       unbundled.merge(
         "RAILS_ENV" => "experiment",
         "EXPERIMENT_DB" => @database_path,
         "EXPERIMENT_LOG" => @log_path,
         "SECRET_KEY_BASE" => "x",
         "LANG" => ENV.fetch("LANG", "C.UTF-8")
-      ).tap { |e| e["FEATURE_ARCHIVE"] = "1" if @feature_archive }
+      ).tap do |e|
+        e["FEATURE_ARCHIVE"] = "1" if @feature_archive
+        e["FEATURE_TITLE_LIMIT"] = "1" if @feature_title_limit
+      end.merge(@extra_env)
     end
 
     def unbundled

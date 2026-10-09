@@ -6,9 +6,12 @@ module Agent
   class Scenario
     DEFAULT_DIR = File.expand_path("../../scenarios", __dir__).freeze
 
-    Condition = Struct.new(:name, :spec_version, keyword_init: true)
+    # 条件ごとにサーバへ渡せる環境変数。フラグの意味が yml に散らばらないよう、キーを限定する。
+    ALLOWED_SERVER_ENV_KEYS = %w[UPDATE_NO_CONTENT].freeze
 
-    attr_reader :id, :name, :instruction, :feature_archive, :conditions, :expected
+    Condition = Struct.new(:name, :spec_version, :server_env, keyword_init: true)
+
+    attr_reader :id, :name, :instruction, :feature_archive, :feature_title_limit, :conditions, :expected
 
     def self.dir = ENV.fetch("SCENARIO_DIR", DEFAULT_DIR)
 
@@ -37,11 +40,28 @@ module Agent
       @name = data.fetch("name")
       @instruction = data.fetch("instruction")
       @feature_archive = data.fetch("feature_archive", false)
+      @feature_title_limit = data.fetch("feature_title_limit", false)
       @expected = data.fetch("expected", {})
       @conditions = data.fetch("conditions").map do |condition_name, settings|
-        Condition.new(name: condition_name, spec_version: (settings || {})["spec"])
+        settings ||= {}
+        Condition.new(
+          name: condition_name, spec_version: settings["spec"],
+          server_env: validate_server_env(condition_name, settings.fetch("server_env", {}))
+        )
       end
     end
+
+    def validate_server_env(condition_name, server_env)
+      server_env = (server_env || {}).to_h { |key, value| [ key.to_s, value.to_s ] }
+      unknown = server_env.keys - ALLOWED_SERVER_ENV_KEYS
+      unless unknown.empty?
+        raise ArgumentError,
+              "シナリオ #{id} の条件 #{condition_name} の server_env に指定できないキー: #{unknown.join(', ')}" \
+              "（指定できるのは #{ALLOWED_SERVER_ENV_KEYS.join(', ')} のみ）"
+      end
+      server_env.freeze
+    end
+    private :validate_server_env
 
     def condition(name)
       conditions.find { |c| c.name == name } ||

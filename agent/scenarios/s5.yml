@@ -1,0 +1,16 @@
+id: s5
+name: 途中で失敗する多段の編集
+instruction: 「仕事」リストの「月次レポート提出」のタイトルを「月次レポート提出（9月分。売上、粗利、広告費、解約率の4指標について前年同月比と予算比を添え、各事業部のコメントを集約したうえで、経営会議の前日までに役員全員へ共有し、当日朝までに想定質問への回答と関連資料へのリンクも用意しておく）」に変えて。変更後も完了済みのままにしておいて
+feature_archive: false
+feature_title_limit: true
+conditions:
+  html: {}
+  json: { spec: v1-titlelimit }
+expected:
+  changes:
+    - table: todos
+      op: update
+      id: 3
+      set:
+        completed_at: not_null
+  claim: 実行できませんでした

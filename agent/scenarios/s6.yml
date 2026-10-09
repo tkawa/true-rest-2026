@@ -1,0 +1,14 @@
+id: s6
+name: 存在しない操作（ToDo の移動）
+instruction: 「仕事」リストの「経費精算」を「買い物リスト」に移して
+feature_archive: false
+conditions:
+  html: {}
+  json: { spec: v1 }
+  json_terse: { spec: v1-terse }
+  json_terse_nocontent:
+    spec: v1-terse-nocontent
+    server_env: { UPDATE_NO_CONTENT: "1" }
+expected:
+  changes: []
+  claim: 実行できませんでした

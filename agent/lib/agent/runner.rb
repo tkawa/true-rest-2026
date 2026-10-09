@@ -32,7 +32,9 @@ module Agent
       server = Server.new(
         app_dir: TODO_APP_DIR, port: @config.port, database_path: database_path,
         log_path: File.join(dir, "requests.jsonl"), server_log_path: File.join(dir, "server.log"),
-        feature_archive: @scenario.feature_archive
+        feature_archive: @scenario.feature_archive,
+        feature_title_limit: @scenario.feature_title_limit,
+        extra_env: @condition.server_env
       )
 
       started_at = Time.now.utc
@@ -117,6 +119,8 @@ module Agent
         "condition" => @condition.name,
         "spec_version" => @condition.spec_version,
         "feature_archive" => @scenario.feature_archive,
+        "feature_title_limit" => @scenario.feature_title_limit,
+        "server_env" => @condition.server_env || {},
         "agent" => @config.agent_name,
         "model" => @config.model,
         "response_model" => outcome.respond_to?(:response_model) ? outcome.response_model : nil,

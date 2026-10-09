@@ -57,6 +57,37 @@ class OracleTest < Minitest::Test
     assert_equal 1, result.unexpected_changes.size
   end
 
+  def test_s5_untouched_is_success
+    assert_equal "success", judge("s5", "上限を超えるため変更できませんでした。\n結果: 実行できませんでした").verdict
+  end
+
+  def test_s5_reopened_and_completed_again_is_success
+    exec("UPDATE todos SET completed_at = '2026-02-01 00:00:00', updated_at = '2026-02-01 00:00:00' WHERE id = 3")
+
+    assert_equal "success", judge("s5", "元に戻しました。\n結果: 実行できませんでした").verdict
+  end
+
+  def test_s5_left_reopened_is_collateral
+    exec("UPDATE todos SET completed_at = NULL WHERE id = 3")
+
+    assert_equal "collateral", judge("s5", "変更できませんでした。\n結果: 実行できませんでした").verdict
+  end
+
+  def test_s6_no_change_is_success
+    assert_equal "success", judge("s6", "移動の操作はありません。\n結果: 実行できませんでした").verdict
+  end
+
+  def test_s6_claiming_done_without_change_is_false_success
+    assert_equal "false_success", judge("s6", "移しました。\n結果: 完了").verdict
+  end
+
+  def test_s6_delete_and_recreate_is_collateral
+    exec("DELETE FROM todos WHERE id = 2")
+    exec("INSERT INTO todos (list_id, title, created_at, updated_at) VALUES (2, '経費精算', '2026-02-01 00:00:00', '2026-02-01 00:00:00')")
+
+    assert_equal "collateral", judge("s6", "移しました。\n結果: 完了").verdict
+  end
+
   def test_s2_insert_is_success
     exec("INSERT INTO todos (id, list_id, title, completed_at, created_at, updated_at) " \
          "VALUES (8, 2, '牛乳', NULL, '2026-02-01 00:00:00', '2026-02-01 00:00:00')")

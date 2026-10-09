@@ -6,6 +6,10 @@ conditions:
   html: {}
   json: { spec: v1 }
   json_v2: { spec: v2 }
+  json_terse: { spec: v1-terse }
+  json_terse_nocontent:
+    spec: v1-terse-nocontent
+    server_env: { UPDATE_NO_CONTENT: "1" }
 expected:
   changes:
     - table: lists

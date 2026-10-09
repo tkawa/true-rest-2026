@@ -115,11 +115,15 @@ module Agent
       lines.join("\n")
     end
 
-    def format_cell(scenario, condition, cell)
+    # api_error（経路の出来事。モデルの応答を得られなかった実行）は、判定の表から除いて数だけ N に添える。
+    # モデル側の出来事である refusal の incomplete と同じ列に混ぜない。
+    def format_cell(scenario, condition, all_runs)
+      api_errors, cell = all_runs.partition { |run| run["finish_reason"] == "api_error" }
       breakdown = verdict_breakdown(cell)
+      count = api_errors.empty? ? cell.size : "#{cell.size}（api_error 除外 #{api_errors.size}/#{all_runs.size}）"
 
       [
-        "", scenario, condition, cell.size, breakdown,
+        "", scenario, condition, count, breakdown,
         spread(cell, "http_requests"), spread(cell, "error_responses"),
         spread(cell, "input_tokens"), spread(cell, "output_tokens"), spread(cell, "tool_calls"),
         cell.count { |run| run["protocol_violation"] }, ""

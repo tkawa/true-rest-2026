@@ -113,6 +113,18 @@ class ReportTest < Minitest::Test
     assert_includes report.call, "incomplete 3（refusal 2）"
   end
 
+  def test_api_errors_are_excluded_from_the_cell_and_counted_in_n
+    write_run(scenario: "s4", condition: "json", agent: "loop", seq: 1,
+              verdict: "incomplete", finish_reason: "api_error")
+    write_run(scenario: "s4", condition: "json", agent: "loop", seq: 2,
+              verdict: "honest_failure", finish_reason: "end_turn")
+
+    text = report.call
+
+    assert_includes text, "| s4 | json | 1（api_error 除外 1/2） | honest_failure 1 |"
+    refute_includes text, "incomplete 1"
+  end
+
   def test_a_cell_without_refusals_is_unchanged
     write_run(scenario: "s2", condition: "html", agent: "loop", verdict: "success",
               finish_reason: "end_turn")

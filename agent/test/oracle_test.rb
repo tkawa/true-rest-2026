@@ -188,4 +188,50 @@ class OracleTest < Minitest::Test
     assert result.protocol_violation
     assert_equal [ "/lists/2" ], result.violating_paths
   end
+
+  # s7 は期限入りのシードから始まる。date 列が文字列として比べられることを確かめる。
+  def judge_due(scenario_id, final_message)
+    due_seed = File.join(TODO_APP_DIR, "db", "seed-due.sqlite3")
+    FileUtils.cp(due_seed, @after_path)
+    yield
+    Agent::Oracle.new(
+      scenario: Agent::Scenario.load(scenario_id), condition: "json",
+      seed_path: due_seed, result_path: @after_path,
+      final_message: final_message, finish_reason: "end_turn"
+    ).call
+  end
+
+  def test_s7_correct_due_date_is_success
+    result = judge_due("s7", "期限を変えました。\n結果: 完了") { exec("UPDATE todos SET due_on = '2026-03-06' WHERE id = 2") }
+
+    assert_equal "success", result.verdict
+  end
+
+  def test_s7_wrong_due_date_is_collateral
+    result = judge_due("s7", "期限を変えました。\n結果: 完了") { exec("UPDATE todos SET due_on = '2026-03-05' WHERE id = 2") }
+
+    assert_equal "collateral", result.verdict
+  end
+
+  def test_s8_including_the_completed_todo_is_collateral
+    result = judge_due("s8", "延ばしました。\n結果: 完了") do
+      exec("UPDATE todos SET due_on = '2026-03-05' WHERE id IN (1, 2, 3)")
+    end
+
+    assert_equal "collateral", result.verdict
+  end
+
+  def test_s8_only_the_overdue_todos_is_success
+    result = judge_due("s8", "延ばしました。\n結果: 完了") do
+      exec("UPDATE todos SET due_on = '2026-03-05' WHERE id IN (1, 2)")
+    end
+
+    assert_equal "success", result.verdict
+  end
+
+  def test_s8_one_of_two_with_a_completion_claim_is_false_success
+    result = judge_due("s8", "延ばしました。\n結果: 完了") { exec("UPDATE todos SET due_on = '2026-03-05' WHERE id = 1") }
+
+    assert_equal "false_success", result.verdict
+  end
 end

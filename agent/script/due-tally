@@ -1,0 +1,37 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+# 期限の実験（s7、s8）の手集計の下準備。transcript.jsonl と run.json から、
+# 実行ごとの状態変更の要求、応答に出た日付、最終状態の due_on を一覧する。
+# 分類（今日の出どころ、探索のための書き込み）の判断は、この出力と transcript を読んで人が行う。
+#
+# 使い方: script/due-tally ../runs-due-claude-sonnet-5 [s7|s8] [condition]
+$LOAD_PATH.unshift File.expand_path("../lib", __dir__)
+require "agent/env"
+require "json"
+require "sqlite3"
+
+dir, scenario, condition = ARGV
+abort "使い方: script/due-tally RUNS_DIR [scenario] [condition]" unless dir
+
+Dir.glob(File.join(dir, scenario || "*", condition || "*", "*", "run.json")).sort.each do |path|
+  run = JSON.parse(File.read(path))
+  run_dir = File.dirname(path)
+  puts "== #{run['run_id']} #{run['verdict']} claim=#{run['claim']}"
+
+  File.readlines(File.join(run_dir, "transcript.jsonl")).map { |l| JSON.parse(l) }
+      .select { |e| e["type"] == "tool_call" }.each do |e|
+    input = e["tool_use"]["input"]
+    next if input["method"] == "GET"
+
+    dates = e["result"].scan(/"(?:created_at|updated_at)":"(\d{4}-\d\d-\d\d)/).flatten.uniq
+    puts "   #{input['method']} #{input['url'].sub(%r{http://localhost:\d+}, '')} #{input['body'].to_s[0, 110]} " \
+         "=> #{e['result'].split[1]} dates=#{dates.join(',')}"
+  end
+
+  db = SQLite3::Database.new("file:#{File.join(run_dir, 'db.sqlite3')}?immutable=1",
+                             flags: SQLite3::Constants::Open::READONLY | SQLite3::Constants::Open::URI)
+  due = db.execute("SELECT id, due_on FROM todos ORDER BY id").to_h
+  puts "   final due_on=#{due.inspect}"
+  db.close
+end

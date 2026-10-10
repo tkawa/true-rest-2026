@@ -65,4 +65,61 @@ class ScenarioTest < Minitest::Test
     assert_equal "1", env["FEATURE_TITLE_LIMIT"]
     assert_equal "experiment", env["RAILS_ENV"]
   end
+
+  def test_due_settings_default_to_off
+    scenario = Agent::Scenario.load("s0")
+
+    assert_equal "default", scenario.seed
+    assert_equal "seed.sqlite3", scenario.seed_file
+    refute scenario.feature_due
+    assert_nil scenario.today
+  end
+
+  def test_s7_and_s8_use_the_due_seed_and_a_fixed_today
+    %w[s7 s8].each do |id|
+      scenario = Agent::Scenario.load(id)
+
+      assert_equal "due", scenario.seed
+      assert_equal "seed-due.sqlite3", scenario.seed_file
+      assert scenario.feature_due
+      assert_equal "2026-03-04", scenario.today
+      assert_equal %w[html json json_situated], scenario.condition_names
+      assert_equal "v1-due", scenario.condition("json").spec_version
+      assert_equal({ "API_SITUATED" => "1" }, scenario.condition("json_situated").server_env)
+    end
+  end
+
+  def test_feature_due_without_today_is_rejected_at_load
+    error = assert_raises(ArgumentError) do
+      Agent::Scenario.new(
+        { "id" => "sx", "name" => "x", "instruction" => "x", "feature_due" => true, "conditions" => { "html" => {} } }
+      )
+    end
+
+    assert_includes error.message, "today"
+  end
+
+  def test_unknown_seed_is_rejected_at_load
+    error = assert_raises(ArgumentError) do
+      Agent::Scenario.new(
+        { "id" => "sx", "name" => "x", "instruction" => "x", "seed" => "nope", "conditions" => { "html" => {} } }
+      )
+    end
+
+    assert_includes error.message, "nope"
+  end
+
+  def test_server_env_carries_due_and_today
+    env = server(feature_due: true, today: "2026-03-04").env
+
+    assert_equal "1", env["FEATURE_DUE"]
+    assert_equal "2026-03-04", env["EXPERIMENT_TODAY"]
+  end
+
+  def test_server_env_has_no_due_keys_by_default
+    env = server.env
+
+    refute env["FEATURE_DUE"]
+    refute env["EXPERIMENT_TODAY"]
+  end
 end

@@ -75,6 +75,7 @@ module Agent
       case @scenario.id
       when "s1" then correct_s1_html
       when "s2" then correct_s2_html
+      when "s7" then correct_s7_html
       else raise ArgumentError, "correct(html) は #{@scenario.id} に用意されていません"
       end
     end
@@ -84,6 +85,13 @@ module Agent
       page = get("/lists/2")
       form_post("/lists/2/todos", { "todo[title]" => "牛乳" }, page: page)
       done("牛乳を追加しました。")
+    end
+
+    def correct_s7_html
+      get("/lists/1")
+      edit = get("/todos/2/edit")
+      form_post("/todos/2", { "_method" => "patch", "todo[due_on]" => "2026-03-06" }, page: edit)
+      done("期限を 2026-03-06 にしました。")
     end
 
     def correct_s1_html
@@ -103,6 +111,10 @@ module Agent
         id = list_id_by_name(body, "買い物リスト")
         json_post("POST", "/api/lists/#{id}/todos", { todo: { title: "牛乳" } })
         done("牛乳を追加しました。")
+      when "s7"
+        get("/api/lists/1")
+        json_post("PATCH", "/api/todos/2", { todo: { due_on: "2026-03-06" } })
+        done("期限を 2026-03-06 にしました。")
       else
         raise ArgumentError, "correct(json) は #{@scenario.id} に用意されていません"
       end

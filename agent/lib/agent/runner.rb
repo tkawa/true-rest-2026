@@ -34,6 +34,7 @@ module Agent
         log_path: File.join(dir, "requests.jsonl"), server_log_path: File.join(dir, "server.log"),
         feature_archive: @scenario.feature_archive,
         feature_title_limit: @scenario.feature_title_limit,
+        feature_due: @scenario.feature_due, today: @scenario.today,
         extra_env: @condition.server_env
       )
 
@@ -53,7 +54,9 @@ module Agent
 
     private
 
-    def seed_path = File.join(TODO_APP_DIR, "db", "seed.sqlite3")
+    def seed_path
+      File.join(TODO_APP_DIR, "db", @scenario.seed_file)
+    end
 
     # WAL を本体に畳み込み、db.sqlite3 単体で実行後の状態を表すようにする。
     def checkpoint(path)
@@ -120,6 +123,9 @@ module Agent
         "spec_version" => @condition.spec_version,
         "feature_archive" => @scenario.feature_archive,
         "feature_title_limit" => @scenario.feature_title_limit,
+        "seed" => @scenario.seed,
+        "feature_due" => @scenario.feature_due,
+        "today" => @scenario.today,
         "server_env" => @condition.server_env || {},
         "agent" => @config.agent_name,
         "model" => @config.model,

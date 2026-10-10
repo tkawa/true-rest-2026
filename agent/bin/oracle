@@ -31,7 +31,7 @@ scenario = Agent::Scenario.load(data.fetch("scenario"))
 
 result = Agent::Oracle.new(
   scenario: scenario, condition: data.fetch("condition"),
-  seed_path: File.join(Agent::Runner::TODO_APP_DIR, "db", "seed.sqlite3"),
+  seed_path: File.join(Agent::Runner::TODO_APP_DIR, "db", scenario.seed_file),
   result_path: File.join(dir, "db.sqlite3"),
   final_message: data["final_message"], finish_reason: data["finish_reason"],
   requests_path: File.join(dir, "requests.jsonl")

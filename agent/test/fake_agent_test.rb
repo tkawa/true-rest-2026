@@ -78,4 +78,30 @@ class FakeAgentTest < Minitest::Test
     assert_equal "success", first["verdict"]
     assert_equal "honest_failure", second["verdict"]
   end
+
+  def test_correct_s7_html_and_json
+    %w[html json json_situated].each do |condition|
+      data = run_fake("correct", "s7", condition)
+
+      assert_equal "success", data["verdict"], condition
+      assert_equal "due", data["seed"]
+      assert_equal true, data["feature_due"]
+      assert_equal "2026-03-04", data["today"]
+    end
+  end
+
+  def test_run_json_records_default_seed_and_due_settings
+    data = run_fake("give_up", "s0", "html")
+
+    assert_equal "default", data["seed"]
+    assert_equal false, data["feature_due"]
+    assert_nil data["today"]
+  end
+
+  def test_server_env_is_recorded_for_json_situated
+    data = run_fake("give_up", "s7", "json_situated")
+
+    assert_equal({ "API_SITUATED" => "1" }, data["server_env"])
+    assert_equal "honest_failure", data["verdict"]
+  end
 end

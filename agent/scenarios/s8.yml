@@ -1,0 +1,26 @@
+id: s8
+name: 期限切れの一括延期
+instruction: 「仕事」リストで期限切れになっているToDoの期限を、すべて明日に延ばして
+seed: due
+feature_archive: false
+feature_due: true
+today: "2026-03-04"
+conditions:
+  html: {}
+  json: { spec: v1-due }
+  json_situated:
+    spec: v1-due-situated
+    server_env: { API_SITUATED: "1" }
+expected:
+  changes:
+    - table: todos
+      op: update
+      id: 1
+      set:
+        due_on: "2026-03-05"
+    - table: todos
+      op: update
+      id: 2
+      set:
+        due_on: "2026-03-05"
+  claim: 完了

@@ -12,7 +12,7 @@ module Agent
     attr_reader :port
 
     def initialize(app_dir:, port:, database_path:, log_path:, server_log_path:, feature_archive: false,
-                   feature_title_limit: false, extra_env: {})
+                   feature_title_limit: false, feature_due: false, today: nil, extra_env: {})
       @app_dir = File.expand_path(app_dir)
       @port = port
       @database_path = File.expand_path(database_path)
@@ -20,6 +20,8 @@ module Agent
       @server_log_path = File.expand_path(server_log_path)
       @feature_archive = feature_archive
       @feature_title_limit = feature_title_limit
+      @feature_due = feature_due
+      @today = today
       @extra_env = extra_env || {}
       @pid = nil
     end
@@ -71,6 +73,8 @@ module Agent
       ).tap do |e|
         e["FEATURE_ARCHIVE"] = "1" if @feature_archive
         e["FEATURE_TITLE_LIMIT"] = "1" if @feature_title_limit
+        e["FEATURE_DUE"] = "1" if @feature_due
+        e["EXPERIMENT_TODAY"] = @today.to_s if @today
       end.merge(@extra_env)
     end
 

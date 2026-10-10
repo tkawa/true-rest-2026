@@ -152,9 +152,13 @@ Cookie は、jar に値があればそちらが固定ヘッダより優先され
 | s4 | リストをアーカイブする | **true** | html, json（古い仕様書）, json_v2（対照）, json_terse（警告文なし）, json_terse_nocontent（警告文なし + 更新が 204） |
 | s5 | 上限を超えるタイトルへの変更（途中で失敗する多段の編集）。`feature_title_limit: true` | false | html, json（`v1-titlelimit`） |
 | s6 | ToDo を別のリストに移す（操作が存在しない） | false | html, json, json_terse, json_terse_nocontent |
+| s7 | 「経費精算」の期限を明後日にする。`seed: due`、`feature_due: true`、`today: 2026-03-04` | false | html, json（`v1-due`）, json_situated（`v1-due-situated`、`API_SITUATED=1`） |
+| s8 | 「仕事」リストの期限切れをすべて明日に延ばす。設定は s7 と同じ | false | html, json, json_situated |
 
 条件を足すときは `scenarios/*.yml` の `conditions` に書き足します。
-条件ごとにサーバへ渡す環境変数は `server_env` に書きます（指定できるキーは `UPDATE_NO_CONTENT` のみ）。`run.json` に `server_env` と `feature_title_limit` として記録します。
+条件ごとにサーバへ渡す環境変数は `server_env` に書きます（指定できるキーは `UPDATE_NO_CONTENT` と `API_SITUATED`）。`run.json` に `server_env` と `feature_title_limit` として記録します。
+
+期限のシナリオは yml に `seed`（`default` か `due`。`due` は `db/seed-due.sqlite3` から始める）、`feature_due`（`FEATURE_DUE=1`）、`today`（`EXPERIMENT_TODAY`）を書きます。`feature_due: true` なら `today` が必須です。`run.json` に `seed`、`feature_due`、`today` として記録します。
 
 ## 判定
 

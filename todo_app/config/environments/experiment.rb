@@ -2,6 +2,7 @@ require "active_support/core_ext/integer/time"
 
 # 環境ファイルは autoload より先に評価されるので、明示的に読み込む。
 require_relative "../../lib/request_recorder"
+require_relative "../../lib/experiment_clock"
 
 Rails.application.configure do
   # 実験用の環境。本番相当の応答をローカルで出すためのもので、
@@ -32,6 +33,12 @@ Rails.application.configure do
 
   # リクエスト記録。EXPERIMENT_LOG が設定されているときだけ書き出す。
   config.middleware.use RequestRecorder
+
+  # EXPERIMENT_TODAY があるときは、サーバの時計そのものを固定の今日の 09:00 起点に合わせる。
+  # 書き込み時刻（created_at など）が config.x.today と食い違う世界にならないようにする。
+  config.after_initialize do
+    ExperimentClock.start(ENV["EXPERIMENT_TODAY"]) if ENV["EXPERIMENT_TODAY"].present?
+  end
 
   # Log to STDOUT with the current request id as a default log tag.
   config.log_tags = [ :request_id ]

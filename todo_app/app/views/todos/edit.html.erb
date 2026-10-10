@@ -10,6 +10,13 @@
     <%= form.text_field :title, **(title_limit_enabled? ? { maxlength: 100 } : {}) %>
   </div>
 
+  <% if due_feature_enabled? %>
+    <div>
+      <%= form.label :due_on, "期限" %>
+      <%= form.date_field :due_on %>
+    </div>
+
+  <% end %>
   <div>
     <%= form.submit "保存" %>
   </div>

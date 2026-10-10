@@ -4,6 +4,10 @@
 
 <p>状態: <%= @todo.completed? ? "完了済み" : "未完了" %></p>
 
+<% if due_feature_enabled? && @todo.due_on.present? %>
+  <p>期限: <%= @todo.due_on.iso8601 %><% if @todo.overdue?(today) %> 期限切れ<% end %></p>
+
+<% end %>
 <p>リスト: <%= link_to @todo.list.name, @todo.list %></p>
 
 <p><%= render "todos/actions", todo: @todo %></p>

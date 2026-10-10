@@ -26,8 +26,8 @@ module TodoApp
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
     # Common ones are `templates`, `generators`, or `middleware`, for example.
-    # request_recorder.rb は experiment.rb から require_relative するので autoload の対象外にする。
-    config.autoload_lib(ignore: %w[assets tasks request_recorder.rb exceptions_app.rb])
+    # request_recorder.rb と experiment_clock.rb は experiment.rb から require_relative するので autoload の対象外にする。
+    config.autoload_lib(ignore: %w[assets tasks request_recorder.rb exceptions_app.rb experiment_clock.rb])
 
     # Configuration for the application, engines, and railties goes here.
     #
@@ -48,6 +48,15 @@ module TodoApp
     config.x.features.archive = ENV["FEATURE_ARCHIVE"] == "1"
     # ToDo のタイトルの文字数上限（100）。モデルの検証と、HTML の maxlength が参照する。
     config.x.features.title_limit = ENV["FEATURE_TITLE_LIMIT"] == "1"
+
+    # ToDo の期限（due_on）の読み書きを出すかどうか。カラムは常にあり、フラグが制御するのは表示と permit だけ。
+    config.x.features.due = ENV["FEATURE_DUE"] == "1"
+    # サーバの「今日」。ビュー、overdue?、JSON の today がすべてこの値を参照する。
+    # 期限を使うときは実験の再現性のため明示を必須にする。
+    abort "FEATURE_DUE=1 には EXPERIMENT_TODAY=YYYY-MM-DD が必要です" if config.x.features.due && ENV["EXPERIMENT_TODAY"].blank?
+    config.x.today = ENV["EXPERIMENT_TODAY"].present? ? Date.iso8601(ENV["EXPERIMENT_TODAY"]) : Date.current
+    # JSON の応答に today と overdue を足す（表現に状況を書く条件）。
+    config.x.api.situated = ENV["API_SITUATED"] == "1"
 
     # 更新（PATCH）の成功応答を 204 No Content にする。作成・完了・アーカイブ・削除には及ばない。
     config.x.responses.update_no_content = ENV["UPDATE_NO_CONTENT"] == "1"

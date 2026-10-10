@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_17_070507) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_10_000000) do
   create_table "lists", force: :cascade do |t|
     t.datetime "archived_at"
     t.datetime "created_at", null: false
@@ -21,6 +21,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_17_070507) do
   create_table "todos", force: :cascade do |t|
     t.datetime "completed_at"
     t.datetime "created_at", null: false
+    t.date "due_on"
     t.integer "list_id", null: false
     t.string "title", null: false
     t.datetime "updated_at", null: false

@@ -66,4 +66,24 @@ RSpec.describe "HTML表現のToDo", type: :request do
       expect(Todo.exists?(todo.id)).to be false
     end
   end
+
+  describe "期限（FEATURE_DUE）", if: Rails.configuration.x.features.due do
+    it "リスト詳細に今日と期限、期限切れの印を出す" do
+      overdue = list.todos.create!(title: "遅れたToDo", due_on: Rails.configuration.x.today - 1)
+      list.todos.create!(title: "今日のToDo", due_on: Rails.configuration.x.today)
+
+      get list_path(list)
+
+      expect(response.body).to include("今日: #{Rails.configuration.x.today.iso8601}（")
+      expect(response.body.scan("期限切れ").size).to eq(1)
+      expect(response.body).to include("期限: #{overdue.due_on.iso8601}")
+    end
+
+    it "編集フォームに期限の date 入力を出す" do
+      get edit_todo_path(todo)
+
+      expect(response.body).to include(%(type="date"))
+      expect(response.body).to include(%(name="todo[due_on]"))
+    end
+  end
 end

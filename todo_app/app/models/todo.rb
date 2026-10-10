@@ -10,6 +10,9 @@ class Todo < ApplicationRecord
   def complete!  = update!(completed_at: Time.current)
   def reopen!    = update!(completed_at: nil)
 
+  # 未完了で、期限が今日より前。今日が期限のものは期限切れではない。
+  def overdue?(today) = !completed? && due_on.present? && due_on < today
+
   private
 
   def list_must_not_be_archived

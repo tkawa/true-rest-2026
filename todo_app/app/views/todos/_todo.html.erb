@@ -3,4 +3,8 @@
 <% else %>
   <%= link_to todo.title, todo %>
 <% end %>
+<% if due_feature_enabled? && todo.due_on.present? %>
+  期限: <%= todo.due_on.iso8601 %>
+  <% if todo.overdue?(today) %>期限切れ<% end %>
+<% end %>
 <%= render "todos/actions", todo: todo %>

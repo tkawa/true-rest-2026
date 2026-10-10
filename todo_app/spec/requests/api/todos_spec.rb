@@ -41,7 +41,11 @@ RSpec.describe "Todos", type: :request do
   describe "GET /api/todos/:id" do
     it "ToDoを返す", openapi: {
       summary: "ToDo詳細",
-      description: "ToDoを1件返します。completed は完了済みかどうかを表します。"
+      description: [
+        "ToDoを1件返します。completed は完了済みかどうかを表します。",
+        ("due_on は期限の日付です。" if Rails.configuration.x.features.due),
+        ("overdue は、未完了で期限が今日より前なら true です。" if Rails.configuration.x.api.situated)
+      ].compact.join(" ")
     } do
       get "/api/todos/#{todo.id}"
 
@@ -92,6 +96,45 @@ RSpec.describe "Todos", type: :request do
 
       expect(response).to have_http_status(:unprocessable_content)
       expect(response.parsed_body["errors"]).to eq([ "完了済みのToDoは編集できません。先に再開してください" ])
+    end
+  end
+
+  describe "PATCH /api/todos/:id（期限）" do
+    it "期限を変える", if: Rails.configuration.x.features.due, openapi: {
+      summary: "ToDoのタイトル変更",
+      description: [
+        OpenapiText.pick(
+          full: "ToDoのタイトルだけを変更します。完了状態はこの操作では変わりません。",
+          terse: "ToDoのタイトルを変更します。"
+        ),
+        "due_on は期限の日付（YYYY-MM-DD）です。未設定にするには null を送ります。"
+      ].join(" ")
+    } do
+      patch "/api/todos/#{todo.id}", params: { todo: { title: "変更後のテストToDo", due_on: "2026-03-06" } }, as: :json
+
+      if Rails.configuration.x.responses.update_no_content
+        expect(response).to have_http_status(:no_content)
+      else
+        expect(response).to have_http_status(:ok)
+        expect(response.parsed_body["due_on"]).to eq("2026-03-06")
+      end
+      expect(todo.reload.due_on).to eq(Date.new(2026, 3, 6))
+    end
+
+    it "null を送ると期限を外す", if: Rails.configuration.x.features.due, openapi: false do
+      todo.update!(due_on: Date.new(2026, 3, 6))
+
+      patch "/api/todos/#{todo.id}", params: { todo: { due_on: nil } }, as: :json
+
+      expect(todo.reload.due_on).to be_nil
+    end
+
+    it "完了済みでも期限は変えられる", if: Rails.configuration.x.features.due, openapi: false do
+      todo.complete!
+
+      patch "/api/todos/#{todo.id}", params: { todo: { due_on: "2026-03-06" } }, as: :json
+
+      expect(todo.reload.due_on).to eq(Date.new(2026, 3, 6))
     end
   end
 

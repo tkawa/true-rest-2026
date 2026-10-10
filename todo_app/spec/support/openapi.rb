@@ -3,13 +3,15 @@ require_relative "openapi_text"
 
 # 仕様書は手で書かず、request spec の実行結果から生成する。
 # 出力先は機能フラグで分ける（OFF: v1、ON: v2）。
-# ファイル名は doc/openapi-<line>[-terse][-nocontent][-titlelimit].yaml。
+# ファイル名は doc/openapi-<line>[-terse][-nocontent][-titlelimit][-due][-situated].yaml。
 RSpec::OpenAPI.path = ENV.fetch("OPENAPI_PATH") do
   line = Rails.configuration.x.features.archive ? "v2" : "v1"
   suffix = [
     (OpenapiText.terse? ? "terse" : nil),
     (Rails.configuration.x.responses.update_no_content ? "nocontent" : nil),
-    (Rails.configuration.x.features.title_limit ? "titlelimit" : nil)
+    (Rails.configuration.x.features.title_limit ? "titlelimit" : nil),
+    (Rails.configuration.x.features.due ? "due" : nil),
+    (Rails.configuration.x.api.situated ? "situated" : nil)
   ].compact
   "doc/openapi-#{[ line, *suffix ].join('-')}.yaml"
 end

@@ -20,5 +20,18 @@ todos = [
   { id: 7, list_id: 3, title: "フルマラソン完走", completed_at: nil }
 ]
 
+# SEED_VARIANT=due: 期限（due_on）つきの 9 行。「今日」は 2026-03-04 を想定している。
+if ENV["SEED_VARIANT"] == "due"
+  due = {
+    1 => Date.new(2026, 3, 2), 2 => Date.new(2026, 3, 3), 3 => Date.new(2026, 2, 27),
+    4 => Date.new(2026, 3, 4), 7 => Date.new(2026, 3, 1)
+  }
+  todos = todos.map { |attrs| attrs.merge(due_on: due[attrs[:id]]) }
+  todos += [
+    { id: 8, list_id: 1, title: "来期の計画", completed_at: nil, due_on: Date.new(2026, 3, 4) },
+    { id: 9, list_id: 1, title: "勉強会の申込", completed_at: nil, due_on: Date.new(2026, 3, 11) }
+  ]
+end
+
 List.insert_all!(lists.map { |attrs| attrs.merge(created_at: BASE_TIME, updated_at: BASE_TIME) })
 Todo.insert_all!(todos.map { |attrs| attrs.merge(created_at: BASE_TIME, updated_at: BASE_TIME) })

@@ -96,4 +96,24 @@ RSpec.describe Todo do
       expect { todo.reopen! }.to change { todo.reload.completed? }.from(true).to(false)
     end
   end
+
+  describe "#overdue?" do
+    let(:today) { Date.new(2026, 3, 4) }
+
+    it "未完了で期限が今日より前なら期限切れ" do
+      expect(list.todos.build(title: "x", due_on: today - 1)).to be_overdue(today)
+    end
+
+    it "今日が期限なら期限切れではない" do
+      expect(list.todos.build(title: "x", due_on: today)).not_to be_overdue(today)
+    end
+
+    it "完了済みなら期限が過去でも期限切れではない" do
+      expect(list.todos.build(title: "x", due_on: today - 1, completed_at: Time.current)).not_to be_overdue(today)
+    end
+
+    it "期限がなければ期限切れではない" do
+      expect(list.todos.build(title: "x")).not_to be_overdue(today)
+    end
+  end
 end

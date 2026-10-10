@@ -25,6 +25,9 @@
 
   <body>
     <%= render "shared/flash" %>
+    <% if due_feature_enabled? %>
+      <p>今日: <%= I18n.l(today, format: "%Y-%m-%d（%a）") %></p>
+    <% end %>
     <%= yield %>
   </body>
 </html>

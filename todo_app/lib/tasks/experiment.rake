@@ -1,9 +1,10 @@
 namespace :experiment do
-  desc "シード投入済みのSQLiteスナップショット db/seed.sqlite3 を作り直す"
+  desc "シード投入済みのSQLiteスナップショット db/seed.sqlite3 を作り直す（SEED_VARIANT=due なら db/seed-due.sqlite3）"
   task :snapshot do
     require "fileutils"
 
-    snapshot_path = Rails.root.join("db/seed.sqlite3")
+    variant = ENV["SEED_VARIANT"]
+    snapshot_path = Rails.root.join(variant == "due" ? "db/seed-due.sqlite3" : "db/seed.sqlite3")
     work_path = Rails.root.join("tmp/seed-snapshot.sqlite3")
 
     FileUtils.mkdir_p(work_path.dirname)
@@ -12,7 +13,8 @@ namespace :experiment do
     env = {
       "RAILS_ENV" => "experiment",
       "EXPERIMENT_DB" => work_path.to_s,
-      "SECRET_KEY_BASE" => ENV.fetch("SECRET_KEY_BASE", "experiment-only-fixed-key")
+      "SECRET_KEY_BASE" => ENV.fetch("SECRET_KEY_BASE", "experiment-only-fixed-key"),
+      "SEED_VARIANT" => variant.to_s
     }
     %w[db:schema:load db:seed].each do |task|
       system(env, "bin/rails", task, chdir: Rails.root.to_s, exception: true)

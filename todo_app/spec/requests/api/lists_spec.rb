@@ -6,7 +6,10 @@ RSpec.describe "Lists", type: :request do
   describe "GET /api/lists" do
     it "アーカイブ済みを含む全リストを返す", openapi: {
       summary: "リスト一覧",
-      description: "アーカイブ済みを含むすべてのリストを返します。archived が true のリストにはToDoを追加できません。"
+      description: [
+        "アーカイブ済みを含むすべてのリストを返します。archived が true のリストにはToDoを追加できません。",
+        ("today はサーバの今日の日付（YYYY-MM-DD）で、期限の計算の基準です。" if Rails.configuration.x.api.situated)
+      ].compact.join(" ")
     } do
       List.create!(name: "テスト用アーカイブリスト").archive!
 
@@ -21,7 +24,11 @@ RSpec.describe "Lists", type: :request do
   describe "GET /api/lists/:id" do
     it "ToDoを埋め込んだリストを返す", openapi: {
       summary: "リスト詳細",
-      description: "リストと、そのリストに属するToDoをまとめて返します。"
+      description: [
+        "リストと、そのリストに属するToDoをまとめて返します。",
+        ("today はサーバの今日の日付（YYYY-MM-DD）で、期限の計算の基準です。" if Rails.configuration.x.api.situated),
+        ("overdue は、未完了で期限が今日より前なら true です。" if Rails.configuration.x.api.situated)
+      ].compact.join(" ")
     } do
       list.todos.create!(title: "テストToDo")
 

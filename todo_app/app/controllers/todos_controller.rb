@@ -63,6 +63,8 @@ class TodosController < ApplicationController
 
   # list_params と同じ理由で require/permit を使う。
   def todo_params
-    params.require(:todo).permit(:title)
+    permitted = [ :title ]
+    permitted << :due_on if Rails.configuration.x.features.due
+    params.require(:todo).permit(*permitted)
   end
 end

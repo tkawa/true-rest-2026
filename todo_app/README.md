@@ -45,6 +45,10 @@ EXPERIMENT_DB=/tmp/run.sqlite3 EXPERIMENT_LOG=/tmp/run.jsonl FEATURE_ARCHIVE=1 S
 | `EXPERIMENT_LOG` | リクエスト記録の出力先（JSONL）。未設定なら記録しない |
 | `FEATURE_ARCHIVE` | `1` でアーカイブ操作を有効にする |
 | `FEATURE_TITLE_LIMIT` | `1` で ToDo のタイトルを100文字以内に制限する（モデルの検証と、編集フォームの `maxlength`） |
+| `FEATURE_DUE` | `1` で ToDo の期限（`due_on`）の表示、編集、JSON の読み書きを有効にし、HTML に今日を描く。`EXPERIMENT_TODAY` が必須（なければ起動時に `abort`） |
+| `EXPERIMENT_TODAY` | サーバの「今日」（`YYYY-MM-DD`）。ビュー、期限切れの判定、JSON の `today` がすべてこの値を参照する。未指定なら `Date.current`。`experiment` 環境では、指定があるとサーバの時計もその日の 09:00 起点に合わせる（`lib/experiment_clock.rb`。凍結ではなく時差で、時刻は進み続ける）ので、`created_at` などの書き込み時刻も同じ日になる |
+| `API_SITUATED` | `1` で JSON の一覧と詳細に `today`、ToDo に `overdue` を足す |
+| `SEED_VARIANT` | スナップショットの生成時のみ。`due` で期限入りの 9 行を投入する |
 | `UPDATE_NO_CONTENT` | `1` で JSON の更新（`PATCH /api/lists/{id}`、`PATCH /api/todos/{id}`）の成功応答を 204 にする |
 | `OPENAPI_STYLE` | 仕様書の生成時のみ。`terse` で「この操作では変わりません」型の警告文を外す（既定は `full`） |
 | `SECRET_KEY_BASE` | 未設定なら `experiment-only-fixed-key` を使う |
@@ -129,7 +133,8 @@ FEATURE_ARCHIVE=0 OPENAPI=1 bundle exec rspec spec/requests/api
 FEATURE_ARCHIVE=1 OPENAPI=1 bundle exec rspec spec/requests/api
 ```
 
-ファイル名は `openapi-<line>[-terse][-nocontent][-titlelimit].yaml` で、`OPENAPI_STYLE`、`UPDATE_NO_CONTENT`、`FEATURE_TITLE_LIMIT` の指定から決まります。
+ファイル名は `openapi-<line>[-terse][-nocontent][-titlelimit][-due][-situated].yaml` で、`OPENAPI_STYLE`、`UPDATE_NO_CONTENT`、`FEATURE_TITLE_LIMIT`、`FEATURE_DUE`、`API_SITUATED` の指定から決まります。
+期限の仕様書は `FEATURE_DUE=1 EXPERIMENT_TODAY=2026-03-04 OPENAPI=1 bundle exec rspec spec/requests/api`（`-due`）と、これに `API_SITUATED=1` を足したもの（`-due-situated`）で生成します。
 rspec-openapi は同じステータスの例を後勝ちで記録します。`FEATURE_TITLE_LIMIT=1` の「100文字以内」の一文は、上限を確かめる spec を `openapi: false` で記録から外し、完了済みの 422 の `description` に載せています。
 
 `doc/openapi-v1.yaml` と `doc/openapi-v2.yaml` の差分は、アーカイブ系エンドポイントの追加だけになります。
@@ -147,6 +152,15 @@ bin/rake experiment:snapshot
 ```
 
 `db/seed.sqlite3` が書き換わります。このファイルはコミットします。
+期限入りのスナップショット `db/seed-due.sqlite3`（s7、s8 用。9 行、今日は 2026-03-04 を想定）は `SEED_VARIANT=due bin/rake experiment:snapshot` で作り直します。
+
+`due_on` 列の追加（マイグレーション `20261010000000`）で `db/seed.sqlite3` は作り直しています。7 行の `id`、`list_id`、`title`、`completed_at`、`created_at`、`updated_at` とリストの 3 行は従来と同じで、`due_on` はすべて null です。
+
+| | SHA-256 |
+|---|---|
+| 旧 `db/seed.sqlite3`（列追加前） | `46ba264743c15f60c0d0ae107b91d570c3a66b06f7547846427686202cbc5e6c` |
+| 新 `db/seed.sqlite3` | `f7eeb161479579a186c436b8281c70d52b0b73acc618ea1e49f878f8d7f32d5f` |
+| `db/seed-due.sqlite3` | `1e2dc33121a816cd81e7f168814e5ad4ab7c9c3fc58a8a8beaf2d01747adab9a` |
 
 | id | リスト | 状態 | ToDo |
 |---|---|---|---|

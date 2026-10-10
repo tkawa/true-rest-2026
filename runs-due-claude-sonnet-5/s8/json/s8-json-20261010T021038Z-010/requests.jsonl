@@ -1,0 +1,4 @@
+{"time":"2026-03-04T09:00:03.553Z","method":"GET","path":"/api/lists","status":200,"request_bytes":0,"response_bytes":467,"accept":"*/*","content_type":null,"response_content_type":"application/json; charset=utf-8","duration_ms":15.584}
+{"time":"2026-03-04T09:00:05.332Z","method":"GET","path":"/api/lists/1","status":200,"request_bytes":0,"response_bytes":1133,"accept":"*/*","content_type":null,"response_content_type":"application/json; charset=utf-8","duration_ms":15.943}
+{"time":"2026-03-04T09:00:07.904Z","method":"GET","path":"/api/lists/1","status":200,"request_bytes":0,"response_bytes":1133,"accept":"*/*","content_type":null,"response_content_type":"application/json; charset=utf-8","duration_ms":4.502}
+{"time":"2026-03-04T09:00:10.409Z","method":"GET","path":"/api/todos/1","status":200,"request_bytes":0,"response_bytes":204,"accept":"*/*","content_type":null,"response_content_type":"application/json; charset=utf-8","duration_ms":3.639}

@@ -1,0 +1,19 @@
+=> Booting Puma
+=> Rails 8.1.3.1 application starting in experiment 
+=> Run `bin/rails server --help` for more startup options
+Puma starting in single mode...
+* Puma version: 8.0.2 ("Into the Arena")
+* Ruby version: ruby 4.0.7 (2026-09-15 revision 229531a6cf) +PRISM [arm64-darwin24]
+*  Min threads: 3
+*  Max threads: 3
+*  Environment: experiment
+*          PID: 17009
+* Listening on http://0.0.0.0:3013
+Use Ctrl-C to stop
+[547fcd82-09b9-417b-b3db-22cef6eb1717]   
+[547fcd82-09b9-417b-b3db-22cef6eb1717] ActiveRecord::RecordNotFound (Couldn't find List with 'id'="999999"):
+[547fcd82-09b9-417b-b3db-22cef6eb1717]   
+[547fcd82-09b9-417b-b3db-22cef6eb1717] app/controllers/lists_controller.rb:74:in 'ListsController#set_list'
+[547fcd82-09b9-417b-b3db-22cef6eb1717] lib/request_recorder.rb:18:in 'RequestRecorder#call'
+- Gracefully stopping, waiting for requests to finish
+Exiting

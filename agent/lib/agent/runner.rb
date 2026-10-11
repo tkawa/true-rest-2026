@@ -35,6 +35,7 @@ module Agent
         feature_archive: @scenario.feature_archive,
         feature_title_limit: @scenario.feature_title_limit,
         feature_due: @scenario.feature_due, today: @scenario.today,
+        feature_comments: @scenario.feature_comments, feature_subtasks: @scenario.feature_subtasks,
         extra_env: @condition.server_env
       )
 
@@ -126,6 +127,8 @@ module Agent
         "seed" => @scenario.seed,
         "feature_due" => @scenario.feature_due,
         "today" => @scenario.today,
+        "feature_comments" => @scenario.feature_comments,
+        "feature_subtasks" => @scenario.feature_subtasks,
         "server_env" => @condition.server_env || {},
         "agent" => @config.agent_name,
         "model" => @config.model,

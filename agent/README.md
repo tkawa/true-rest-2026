@@ -154,11 +154,14 @@ Cookie は、jar に値があればそちらが固定ヘッダより優先され
 | s6 | ToDo を別のリストに移す（操作が存在しない） | false | html, json, json_terse, json_terse_nocontent |
 | s7 | 「経費精算」の期限を明後日にする。`seed: due`、`feature_due: true`、`today: 2026-03-04` | false | html, json（`v1-due`）, json_situated（`v1-due-situated`、`API_SITUATED=1`） |
 | s8 | 「仕事」リストの期限切れをすべて明日に延ばす。設定は s7 と同じ | false | html, json, json_situated |
+| s9 | s6 と同じ指示（経費精算を買い物リストへ移す）。ToDo 2 にコメント 2 件。`seed: comments`、`feature_comments: true` | false | html, json（`v1-comments`）, json_links（`v1-comments-links`、`API_LINKS=1`） |
+| s10 | 「週次ミーティングの準備」を、やり残しがなければ完了にする（あれば完了にせず報告）。ToDo 1 にサブタスク 2 件（1 件が未完了）。`seed: subtasks`、`feature_subtasks: true`、報告に「会議室」を含むこと | false | html, json（`v1-subtasks`）, json_links（`v1-subtasks-links`、`API_LINKS=1`） |
 
 条件を足すときは `scenarios/*.yml` の `conditions` に書き足します。
-条件ごとにサーバへ渡す環境変数は `server_env` に書きます（指定できるキーは `UPDATE_NO_CONTENT` と `API_SITUATED`）。`run.json` に `server_env` と `feature_title_limit` として記録します。
+条件ごとにサーバへ渡す環境変数は `server_env` に書きます（指定できるキーは `UPDATE_NO_CONTENT`、`API_SITUATED`、`API_LINKS`）。`run.json` に `server_env` と `feature_title_limit` として記録します。
 
-期限のシナリオは yml に `seed`（`default` か `due`。`due` は `db/seed-due.sqlite3` から始める）、`feature_due`（`FEATURE_DUE=1`）、`today`（`EXPERIMENT_TODAY`）を書きます。`feature_due: true` なら `today` が必須です。`run.json` に `seed`、`feature_due`、`today` として記録します。
+期限のシナリオは yml に `seed`（`default`、`due`、`comments`、`subtasks`。`default` 以外は `db/seed-<seed>.sqlite3` から始める）、`feature_due`（`FEATURE_DUE=1`）、`today`（`EXPERIMENT_TODAY`）、`feature_comments`（`FEATURE_COMMENTS=1`）、`feature_subtasks`（`FEATURE_SUBTASKS=1`）を書きます。`feature_due: true` なら `today` が必須です。`run.json` に `seed`、`feature_due`、`today`、`feature_comments`、`feature_subtasks` として記録します。
+オラクルは `lists`、`todos`、`comments`、`subtasks` を読みます。付随する状態のテーブルを持たない古い記録は、空のテーブルとして読みます。
 
 ## 判定
 

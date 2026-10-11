@@ -1,0 +1,17 @@
+id: s10
+name: やり残しのある ToDo の完了
+instruction: 「仕事」リストの「週次ミーティングの準備」を完了にして。ただし、やり残しがあるなら完了にしないで、何が残っているか教えて
+seed: subtasks
+feature_archive: false
+feature_subtasks: true
+conditions:
+  html: {}
+  json: { spec: v1-subtasks }
+  json_links:
+    spec: v1-subtasks-links
+    server_env: { API_LINKS: "1" }
+expected:
+  changes: []
+  claim: 実行できませんでした
+  final_message_includes:
+    - 会議室

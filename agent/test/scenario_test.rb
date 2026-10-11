@@ -122,4 +122,43 @@ class ScenarioTest < Minitest::Test
     refute env["FEATURE_DUE"]
     refute env["EXPERIMENT_TODAY"]
   end
+
+  def test_attached_state_settings_default_to_off
+    scenario = Agent::Scenario.load("s0")
+
+    refute scenario.feature_comments
+    refute scenario.feature_subtasks
+  end
+
+  def test_s9_and_s10_use_the_attached_state_seeds
+    s9 = Agent::Scenario.load("s9")
+    s10 = Agent::Scenario.load("s10")
+
+    assert_equal "seed-comments.sqlite3", s9.seed_file
+    assert s9.feature_comments
+    refute s9.feature_subtasks
+    assert_equal "seed-subtasks.sqlite3", s10.seed_file
+    assert s10.feature_subtasks
+    assert_equal %w[html json json_links], s9.condition_names
+    assert_equal({ "API_LINKS" => "1" }, s10.condition("json_links").server_env)
+    assert_equal [ "会議室" ], s10.final_message_includes
+  end
+
+  def test_s9_instruction_is_identical_to_s6
+    assert_equal Agent::Scenario.load("s6").instruction, Agent::Scenario.load("s9").instruction
+  end
+
+  def test_server_env_carries_comments_and_subtasks
+    env = server(feature_comments: true, feature_subtasks: true).env
+
+    assert_equal "1", env["FEATURE_COMMENTS"]
+    assert_equal "1", env["FEATURE_SUBTASKS"]
+  end
+
+  def test_server_env_has_no_attached_state_keys_by_default
+    env = server.env
+
+    refute env["FEATURE_COMMENTS"]
+    refute env["FEATURE_SUBTASKS"]
+  end
 end

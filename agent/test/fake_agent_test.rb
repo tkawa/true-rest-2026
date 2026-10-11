@@ -104,4 +104,28 @@ class FakeAgentTest < Minitest::Test
     assert_equal({ "API_SITUATED" => "1" }, data["server_env"])
     assert_equal "honest_failure", data["verdict"]
   end
+
+  def test_give_up_s9_html_is_success_and_records_the_attached_state_settings
+    data = run_fake("give_up", "s9", "html")
+
+    assert_equal "success", data["verdict"]
+    assert_equal "comments", data["seed"]
+    assert_equal true, data["feature_comments"]
+    assert_equal false, data["feature_subtasks"]
+  end
+
+  def test_give_up_s10_json_links_records_the_subtasks_settings
+    data = run_fake("give_up", "s10", "json_links")
+
+    assert_equal "subtasks", data["seed"]
+    assert_equal true, data["feature_subtasks"]
+    assert_equal({ "API_LINKS" => "1" }, data["server_env"])
+  end
+
+  def test_run_json_records_attached_state_settings_off_by_default
+    data = run_fake("give_up", "s0", "html")
+
+    assert_equal false, data["feature_comments"]
+    assert_equal false, data["feature_subtasks"]
+  end
 end

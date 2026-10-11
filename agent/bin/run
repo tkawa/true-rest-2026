@@ -14,7 +14,7 @@ require "agent/scenario"
 options = { runs: 1, all: false }
 parser = OptionParser.new do |opts|
   opts.banner = "使い方: bin/run --scenario s2 --condition json [--runs 10]"
-  opts.on("--scenario ID", "シナリオ（s0〜s8）") { |v| options[:scenario] = v }
+  opts.on("--scenario ID", "シナリオ（s0〜s10）") { |v| options[:scenario] = v }
   opts.on("--condition NAME", "条件（シナリオ yml の conditions のキー）") { |v| options[:condition] = v }
   opts.on("--all", "全シナリオ × 全条件") { options[:all] = true }
   opts.on("--runs N", Integer, "繰り返し回数（既定 1）") { |v| options[:runs] = v }

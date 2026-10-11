@@ -5,7 +5,7 @@ module Agent
   # 実行前後のDBを読み比べ、シナリオの期待と照合して判定を出す。
   # エージェントの自己申告は最終メッセージの最終行からだけ読む。
   class Oracle
-    TABLES = %w[lists todos].freeze
+    TABLES = %w[lists todos comments subtasks].freeze
     # 更新のたびに動く列。期待に書かれた行では変化を許す。
     VOLATILE_COLUMN = "updated_at".freeze
     CLAIMS = %w[完了 実行できませんでした 不明].freeze
@@ -84,7 +84,11 @@ module Agent
         "file:#{path}?immutable=1", results_as_hash: true,
         flags: SQLite3::Constants::Open::READONLY | SQLite3::Constants::Open::URI
       )
+      existing = db.execute("SELECT name FROM sqlite_master WHERE type = 'table'").map { |row| row["name"] }
       TABLES.to_h do |table|
+        # 付随する状態のテーブルを持たない古い記録も、空のテーブルとして読めるようにする。
+        next [ table, {} ] unless existing.include?(table)
+
         rows = db.execute("SELECT * FROM #{table} ORDER BY id").map { |row| row.transform_keys(&:to_s) }
         [ table, rows.to_h { |row| [ row["id"], row ] } ]
       end

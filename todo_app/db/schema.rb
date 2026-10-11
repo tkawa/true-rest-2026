@@ -10,12 +10,29 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_10_000000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_11_000001) do
+  create_table "comments", force: :cascade do |t|
+    t.text "body", null: false
+    t.datetime "created_at", null: false
+    t.integer "todo_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["todo_id"], name: "index_comments_on_todo_id"
+  end
+
   create_table "lists", force: :cascade do |t|
     t.datetime "archived_at"
     t.datetime "created_at", null: false
     t.string "name", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "subtasks", force: :cascade do |t|
+    t.datetime "completed_at"
+    t.datetime "created_at", null: false
+    t.string "title", null: false
+    t.integer "todo_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["todo_id"], name: "index_subtasks_on_todo_id"
   end
 
   create_table "todos", force: :cascade do |t|
@@ -28,5 +45,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_10_000000) do
     t.index ["list_id"], name: "index_todos_on_list_id"
   end
 
+  add_foreign_key "comments", "todos"
+  add_foreign_key "subtasks", "todos"
   add_foreign_key "todos", "lists"
 end

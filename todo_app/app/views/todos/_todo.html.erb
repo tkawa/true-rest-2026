@@ -7,4 +7,10 @@
   期限: <%= todo.due_on.iso8601 %>
   <% if todo.overdue?(today) %>期限切れ<% end %>
 <% end %>
+<% if comments_feature_enabled? && todo.comments.any? %>
+  <%= link_to "コメント #{todo.comments.size}件", todo %>
+<% end %>
 <%= render "todos/actions", todo: todo %>
+<% if subtasks_feature_enabled? && todo.subtasks.any? %>
+  <%= render "todos/subtasks", todo: todo %>
+<% end %>

@@ -116,4 +116,22 @@ RSpec.describe Todo do
       expect(list.todos.build(title: "x")).not_to be_overdue(today)
     end
   end
+
+  describe "付随する状態" do
+    it "削除するとコメントとサブタスクも消える" do
+      todo = list.todos.create!(title: "x")
+      todo.comments.create!(body: "コメント")
+      todo.subtasks.create!(title: "サブタスク")
+
+      expect { todo.destroy! }.to change(Comment, :count).by(-1).and change(Subtask, :count).by(-1)
+    end
+
+    it "サブタスクが未完了でも親は完了にできる" do
+      todo = list.todos.create!(title: "x")
+      todo.subtasks.create!(title: "サブタスク")
+
+      expect { todo.complete! }.not_to raise_error
+      expect(todo).to be_completed
+    end
+  end
 end

@@ -1,0 +1,14 @@
+<p>サブタスク <%= todo.subtasks.count(&:completed?) %>/<%= todo.subtasks.size %> 完了</p>
+<ul>
+  <% todo.subtasks.sort_by(&:id).each do |subtask| %>
+    <li>
+      <% if subtask.completed? %>
+        <s><%= subtask.title %></s>
+        <%= button_to "再開", subtask_completion_path(subtask), method: :delete %>
+      <% else %>
+        <%= subtask.title %>
+        <%= button_to "完了", subtask_completion_path(subtask), method: :post %>
+      <% end %>
+    </li>
+  <% end %>
+</ul>

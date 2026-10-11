@@ -86,4 +86,52 @@ RSpec.describe "HTML表現のToDo", type: :request do
       expect(response.body).to include(%(name="todo[due_on]"))
     end
   end
+
+  describe "コメント（FEATURE_COMMENTS）", if: Rails.configuration.x.features.comments do
+    it "行にコメント件数を、詳細にコメントの本文を出す" do
+      todo.comments.create!(body: "一つ目のコメント")
+      todo.comments.create!(body: "二つ目のコメント")
+
+      get list_path(list)
+      expect(response.body).to include("コメント 2件")
+
+      get todo_path(todo)
+      expect(response.body).to include("一つ目のコメント", "二つ目のコメント")
+    end
+
+    it "コメントがないToDoの行には件数を出さない" do
+      get list_path(list)
+
+      expect(response.body).not_to include("コメント ")
+    end
+
+    it "コメントを追加する" do
+      post todo_comments_path(todo), params: { comment: { body: "追加したコメント" } }
+
+      expect(response).to redirect_to(todo_path(todo))
+      expect(todo.comments.pluck(:body)).to eq([ "追加したコメント" ])
+    end
+  end
+
+  describe "サブタスク（FEATURE_SUBTASKS）", if: Rails.configuration.x.features.subtasks do
+    it "行の下にサブタスクと完了数を出し、完了済みは取り消し線にする" do
+      todo.subtasks.create!(title: "終わったサブタスク", completed_at: Time.current)
+      todo.subtasks.create!(title: "残っているサブタスク")
+
+      get list_path(list)
+
+      expect(response.body).to include("サブタスク 1/2 完了")
+      expect(response.body).to include("<s>終わったサブタスク</s>")
+      expect(response.body).to include("残っているサブタスク")
+    end
+
+    it "サブタスクを完了にする" do
+      subtask = todo.subtasks.create!(title: "残っているサブタスク")
+
+      post subtask_completion_path(subtask)
+
+      expect(response).to redirect_to(list_path(list))
+      expect(subtask.reload).to be_completed
+    end
+  end
 end

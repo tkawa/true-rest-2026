@@ -39,11 +39,16 @@ RSpec.describe "Todos", type: :request do
   end
 
   describe "GET /api/todos/:id" do
+    comments_links = Rails.configuration.x.api.links && Rails.configuration.x.features.comments
+    subtasks_links = Rails.configuration.x.api.links && Rails.configuration.x.features.subtasks
+
     it "ToDoを返す", openapi: {
       summary: "ToDo詳細",
       description: [
         "ToDoを1件返します。completed は完了済みかどうかを表します。",
         ("due_on は期限の日付です。" if Rails.configuration.x.features.due),
+        ("comments_count はコメント数、links.comments はコメント一覧のURLです。" if comments_links),
+        ("subtasks_count はサブタスク数、open_subtasks_count は未完了のサブタスク数、links.subtasks はサブタスク一覧のURLです。" if subtasks_links),
         ("overdue は、未完了で期限が今日より前なら true です。" if Rails.configuration.x.api.situated)
       ].compact.join(" ")
     } do

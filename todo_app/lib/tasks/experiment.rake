@@ -1,10 +1,10 @@
 namespace :experiment do
-  desc "シード投入済みのSQLiteスナップショット db/seed.sqlite3 を作り直す（SEED_VARIANT=due なら db/seed-due.sqlite3）"
+  desc "シード投入済みのSQLiteスナップショット db/seed.sqlite3 を作り直す（SEED_VARIANT=due、comments、subtasks なら db/seed-<variant>.sqlite3）"
   task :snapshot do
     require "fileutils"
 
     variant = ENV["SEED_VARIANT"]
-    snapshot_path = Rails.root.join(variant == "due" ? "db/seed-due.sqlite3" : "db/seed.sqlite3")
+    snapshot_path = Rails.root.join(%w[due comments subtasks].include?(variant) ? "db/seed-#{variant}.sqlite3" : "db/seed.sqlite3")
     work_path = Rails.root.join("tmp/seed-snapshot.sqlite3")
 
     FileUtils.mkdir_p(work_path.dirname)

@@ -10,6 +10,14 @@ module ApplicationHelper
     Rails.configuration.x.features.due
   end
 
+  def comments_feature_enabled?
+    Rails.configuration.x.features.comments
+  end
+
+  def subtasks_feature_enabled?
+    Rails.configuration.x.features.subtasks
+  end
+
   # サーバの「今日」。期限の判定はすべてこの値を使う。
   def today
     Rails.configuration.x.today

@@ -51,6 +51,11 @@ module TodoApp
 
     # ToDo の期限（due_on）の読み書きを出すかどうか。カラムは常にあり、フラグが制御するのは表示と permit だけ。
     config.x.features.due = ENV["FEATURE_DUE"] == "1"
+    # 付随する状態。テーブルは常にあり、フラグが制御するのは経路と表示だけ。
+    config.x.features.comments = ENV["FEATURE_COMMENTS"] == "1"
+    config.x.features.subtasks = ENV["FEATURE_SUBTASKS"] == "1"
+    # JSON の ToDo に件数とリンクを足す（表現に付随する状態の在りかを書く条件）。
+    config.x.api.links = ENV["API_LINKS"] == "1"
     # サーバの「今日」。ビュー、overdue?、JSON の today がすべてこの値を参照する。
     # 期限を使うときは実験の再現性のため明示を必須にする。
     abort "FEATURE_DUE=1 には EXPERIMENT_TODAY=YYYY-MM-DD が必要です" if config.x.features.due && ENV["EXPERIMENT_TODAY"].blank?

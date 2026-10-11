@@ -10,6 +10,17 @@ Rails.application.routes.draw do
     end
     resources :todos, format: false, only: (api ? %i[show update destroy] : %i[show edit update destroy]) do
       resource :completion, only: %i[create destroy], module: :todos, format: false
+      if Rails.configuration.x.features.comments
+        resources :comments, only: (api ? %i[index create] : %i[create]), format: false
+      end
+      if Rails.configuration.x.features.subtasks
+        resources :subtasks, only: (api ? %i[index create] : %i[create]), format: false
+      end
+    end
+    if Rails.configuration.x.features.subtasks
+      resources :subtasks, only: [], format: false do
+        resource :completion, only: %i[create destroy], module: :subtasks, format: false
+      end
     end
   end
 

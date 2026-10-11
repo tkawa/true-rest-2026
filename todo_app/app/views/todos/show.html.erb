@@ -10,4 +10,30 @@
 <% end %>
 <p>リスト: <%= link_to @todo.list.name, @todo.list %></p>
 
+<% if comments_feature_enabled? %>
+  <h2>コメント</h2>
+  <ul>
+    <% @todo.comments.order(:id).each do |comment| %>
+      <li><%= comment.body %>（<%= I18n.l(comment.created_at, format: :short) %>）</li>
+    <% end %>
+  </ul>
+  <%= form_with model: [ @todo, Comment.new ] do |form| %>
+    <%= form.label :body, "コメント" %>
+    <%= form.text_area :body %>
+    <%= form.submit "コメントを追加" %>
+  <% end %>
+
+<% end %>
+<% if subtasks_feature_enabled? %>
+  <h2>サブタスク</h2>
+  <% if @todo.subtasks.any? %>
+    <%= render "todos/subtasks", todo: @todo %>
+  <% end %>
+  <%= form_with model: [ @todo, Subtask.new ] do |form| %>
+    <%= form.label :title, "サブタスク" %>
+    <%= form.text_field :title %>
+    <%= form.submit "サブタスクを追加" %>
+  <% end %>
+
+<% end %>
 <p><%= render "todos/actions", todo: @todo %></p>

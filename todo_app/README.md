@@ -48,7 +48,10 @@ EXPERIMENT_DB=/tmp/run.sqlite3 EXPERIMENT_LOG=/tmp/run.jsonl FEATURE_ARCHIVE=1 S
 | `FEATURE_DUE` | `1` で ToDo の期限（`due_on`）の表示、編集、JSON の読み書きを有効にし、HTML に今日を描く。`EXPERIMENT_TODAY` が必須（なければ起動時に `abort`） |
 | `EXPERIMENT_TODAY` | サーバの「今日」（`YYYY-MM-DD`）。ビュー、期限切れの判定、JSON の `today` がすべてこの値を参照する。未指定なら `Date.current`。`experiment` 環境では、指定があるとサーバの時計もその日の 09:00 起点に合わせる（`lib/experiment_clock.rb`。凍結ではなく時差で、時刻は進み続ける）ので、`created_at` などの書き込み時刻も同じ日になる |
 | `API_SITUATED` | `1` で JSON の一覧と詳細に `today`、ToDo に `overdue` を足す |
-| `SEED_VARIANT` | スナップショットの生成時のみ。`due` で期限入りの 9 行を投入する |
+| `FEATURE_COMMENTS` | `1` でコメントの経路と表示を有効にする（HTML は行に「コメント N件」、詳細に本文と追加フォーム。JSON は `GET`/`POST /api/todos/{id}/comments`）。テーブルは常にある |
+| `FEATURE_SUBTASKS` | `1` でサブタスクの経路と表示を有効にする（HTML は行の下と詳細に一覧と完了/再開。JSON は `/api/todos/{id}/subtasks` と `/api/subtasks/{id}/completion`）。親の完了はサブタスクの状態で止めない |
+| `API_LINKS` | `1` で JSON の ToDo に件数（`comments_count`、`subtasks_count`、`open_subtasks_count`）と `links` を足す。`FEATURE_COMMENTS`、`FEATURE_SUBTASKS` のうち立っているものだけ |
+| `SEED_VARIANT` | スナップショットの生成時のみ。`due` で期限入りの 9 行、`comments` で ToDo 2 に二件のコメント、`subtasks` で ToDo 1 に二つのサブタスクを投入する |
 | `UPDATE_NO_CONTENT` | `1` で JSON の更新（`PATCH /api/lists/{id}`、`PATCH /api/todos/{id}`）の成功応答を 204 にする |
 | `OPENAPI_STYLE` | 仕様書の生成時のみ。`terse` で「この操作では変わりません」型の警告文を外す（既定は `full`） |
 | `SECRET_KEY_BASE` | 未設定なら `experiment-only-fixed-key` を使う |
@@ -133,7 +136,7 @@ FEATURE_ARCHIVE=0 OPENAPI=1 bundle exec rspec spec/requests/api
 FEATURE_ARCHIVE=1 OPENAPI=1 bundle exec rspec spec/requests/api
 ```
 
-ファイル名は `openapi-<line>[-terse][-nocontent][-titlelimit][-due][-situated].yaml` で、`OPENAPI_STYLE`、`UPDATE_NO_CONTENT`、`FEATURE_TITLE_LIMIT`、`FEATURE_DUE`、`API_SITUATED` の指定から決まります。
+ファイル名は `openapi-<line>[-terse][-nocontent][-titlelimit][-due][-situated][-comments][-subtasks][-links].yaml` で、`OPENAPI_STYLE`、`UPDATE_NO_CONTENT`、`FEATURE_TITLE_LIMIT`、`FEATURE_DUE`、`API_SITUATED`、`FEATURE_COMMENTS`、`FEATURE_SUBTASKS`、`API_LINKS` の指定から決まります。
 期限の仕様書は `FEATURE_DUE=1 EXPERIMENT_TODAY=2026-03-04 OPENAPI=1 bundle exec rspec spec/requests/api`（`-due`）と、これに `API_SITUATED=1` を足したもの（`-due-situated`）で生成します。
 rspec-openapi は同じステータスの例を後勝ちで記録します。`FEATURE_TITLE_LIMIT=1` の「100文字以内」の一文は、上限を確かめる spec を `openapi: false` で記録から外し、完了済みの 422 の `description` に載せています。
 
@@ -160,7 +163,17 @@ bin/rake experiment:snapshot
 |---|---|
 | 旧 `db/seed.sqlite3`（列追加前） | `46ba264743c15f60c0d0ae107b91d570c3a66b06f7547846427686202cbc5e6c` |
 | 新 `db/seed.sqlite3` | `f7eeb161479579a186c436b8281c70d52b0b73acc618ea1e49f878f8d7f32d5f` |
-| `db/seed-due.sqlite3` | `1e2dc33121a816cd81e7f168814e5ad4ab7c9c3fc58a8a8beaf2d01747adab9a` |
+| `db/seed-due.sqlite3`（`due_on` 追加時） | `1e2dc33121a816cd81e7f168814e5ad4ab7c9c3fc58a8a8beaf2d01747adab9a` |
+
+付随する状態（`comments`、`subtasks` テーブルの追加。マイグレーション `20261011000000`、`20261011000001`）でも `seed.sqlite3` と `seed-due.sqlite3` を作り直しています。`seed.sqlite3` の 7 行は `due_on` 以外が従来と同じで、新しい二つのテーブルは空です。`seed-due.sqlite3` の 9 行も `due-date-design.md` §8.1 と一致し、新しいテーブルは空です。
+`SEED_VARIANT=comments`（`db/seed-comments.sqlite3`）は `todos` と `lists` が現行と同じで `comments` に 2 行（ToDo 2）、`SEED_VARIANT=subtasks`（`db/seed-subtasks.sqlite3`）は `subtasks` に 2 行（ToDo 1）です。
+
+| | SHA-256 |
+|---|---|
+| `db/seed.sqlite3`（テーブル追加後） | `10e1f60fc186239ef933f4af913c57aa63ea642a2afadb8e5b244125dc8793fb` |
+| `db/seed-due.sqlite3`（テーブル追加後） | `8cc84821603845a7c6b710455cc7b567305e42245275f49332caf8d96f839b2e` |
+| `db/seed-comments.sqlite3` | `34f20d462f421d3dff9f69cccc7737a0c867d7e692e4fd8ab7b70c944d679a65` |
+| `db/seed-subtasks.sqlite3` | `c57bcdb2fc1ef6db131145dccd6eadc5b75b70790c08568c0256ce6b764b4751` |
 
 | id | リスト | 状態 | ToDo |
 |---|---|---|---|

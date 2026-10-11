@@ -1,5 +1,8 @@
 class Todo < ApplicationRecord
   belongs_to :list
+  # 削除はコメントとサブタスクを道連れにする（付随する状態の実験の前提）。
+  has_many :comments, dependent: :destroy
+  has_many :subtasks, dependent: :destroy
 
   validates :title, presence: true
   validates :title, length: { maximum: 100 }, if: -> { Rails.configuration.x.features.title_limit }

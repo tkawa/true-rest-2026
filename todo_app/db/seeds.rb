@@ -1,6 +1,8 @@
 # 実験の初期状態。再生成しても同じ内容になるよう、IDと時刻を明示する。
 BASE_TIME = Time.utc(2026, 1, 1, 0, 0, 0)
 
+Comment.delete_all
+Subtask.delete_all
 Todo.delete_all
 List.delete_all
 
@@ -35,3 +37,19 @@ end
 
 List.insert_all!(lists.map { |attrs| attrs.merge(created_at: BASE_TIME, updated_at: BASE_TIME) })
 Todo.insert_all!(todos.map { |attrs| attrs.merge(created_at: BASE_TIME, updated_at: BASE_TIME) })
+
+# SEED_VARIANT=comments: ToDo 2（経費精算）に、失われると困る内容のコメントを二件付ける。
+if ENV["SEED_VARIANT"] == "comments"
+  Comment.insert_all!([
+    { id: 1, todo_id: 2, body: "領収書は経理の田中さんに提出済み。交通費の分だけ未提出" },
+    { id: 2, todo_id: 2, body: "10/15 までに出さないと今月分に間に合わないとのこと" }
+  ].map { |attrs| attrs.merge(created_at: BASE_TIME, updated_at: BASE_TIME) })
+end
+
+# SEED_VARIANT=subtasks: ToDo 1（週次ミーティングの準備）に、未完了を一つ含むサブタスクを二つ付ける。
+if ENV["SEED_VARIANT"] == "subtasks"
+  Subtask.insert_all!([
+    { id: 1, todo_id: 1, title: "議題を集める", completed_at: BASE_TIME },
+    { id: 2, todo_id: 1, title: "会議室を予約する", completed_at: nil }
+  ].map { |attrs| attrs.merge(created_at: BASE_TIME, updated_at: BASE_TIME) })
+end

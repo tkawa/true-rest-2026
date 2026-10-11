@@ -1,0 +1,2 @@
+{"time":"2026-10-10T05:45:11.363Z","method":"GET","path":"/","status":200,"request_bytes":0,"response_bytes":2215,"accept":"*/*","content_type":null,"response_content_type":"text/html; charset=utf-8","duration_ms":23.459}
+{"time":"2026-10-10T05:45:12.931Z","method":"GET","path":"/lists/1","status":200,"request_bytes":0,"response_bytes":5541,"accept":"*/*","content_type":null,"response_content_type":"text/html; charset=utf-8","duration_ms":21.83}

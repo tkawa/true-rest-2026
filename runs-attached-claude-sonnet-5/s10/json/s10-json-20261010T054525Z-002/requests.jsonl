@@ -1,0 +1,3 @@
+{"time":"2026-10-10T05:45:29.059Z","method":"GET","path":"/api/lists","status":200,"request_bytes":0,"response_bytes":467,"accept":"*/*","content_type":null,"response_content_type":"application/json; charset=utf-8","duration_ms":7.751}
+{"time":"2026-10-10T05:45:30.561Z","method":"GET","path":"/api/lists/1","status":200,"request_bytes":0,"response_bytes":690,"accept":"*/*","content_type":null,"response_content_type":"application/json; charset=utf-8","duration_ms":15.165}
+{"time":"2026-10-10T05:45:32.078Z","method":"GET","path":"/api/todos/1/subtasks","status":200,"request_bytes":0,"response_bytes":364,"accept":"*/*","content_type":null,"response_content_type":"application/json; charset=utf-8","duration_ms":3.89}

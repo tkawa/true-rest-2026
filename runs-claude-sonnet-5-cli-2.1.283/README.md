@@ -1,7 +1,7 @@
 # 交絡の切り分け（claude-sonnet-5、Claude Code 2.1.283）
 
-`experiment/runs-claude-fable-5-1/` の参考実行が 26/26 で到達・成功したのに対し、
-本番（`experiment/runs/`、`claude-sonnet-5`、Claude Code 2.1.275）は
+`runs-claude-fable-5-1/` の参考実行が 26/26 で到達・成功したのに対し、
+本番（`runs/`、`claude-sonnet-5`、Claude Code 2.1.275）は
 前提の一行なしで到達 7/10、success 3/10 でした。
 
 この差がモデルによるものか、CLI のバージョンによるものかを分けるための 10 実行です。

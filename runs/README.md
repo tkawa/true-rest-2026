@@ -10,11 +10,11 @@ Kaigi on Rails 2026 の発表「真のREST 2026」で示す比較実験の、実
 
 | 場所 | 件数 | 内容 |
 |---|---|---|
-| `experiment/runs/` | 110 | 本番。自作ループ、シナリオ5本 × 条件2〜3、各 N=10 |
-| `experiment/runs/s2/` のうち `agent: claude_code` | 26 | 参考実行（Claude Code）。HTML は前提の一行なし／あり各10回、JSON は各3回 |
-| `experiment/runs-pilot/` | 44 | 予備実行。**古いシステムプロンプトと古い S1 指示文**、および**設定条件が違う参考実行**24件 |
+| `runs/` | 110 | 本番。自作ループ、シナリオ5本 × 条件2〜3、各 N=10 |
+| `runs/s2/` のうち `agent: claude_code` | 26 | 参考実行（Claude Code）。HTML は前提の一行なし／あり各10回、JSON は各3回 |
+| `runs-pilot/` | 44 | 予備実行。**古いシステムプロンプトと古い S1 指示文**、および**設定条件が違う参考実行**24件 |
 
-`runs-pilot/` は本番の集計に入りません。条件を変えた経緯（`experiment/agent/NOTES.md`）の
+`runs-pilot/` は本番の集計に入りません。条件を変えた経緯（`agent/NOTES.md`）の
 裏づけとして残してあります。プロンプトの変更前後は `run.json` の `system_prompt_sha256` と
 `scenario_sha256` で、参考実行の設定条件は `setting_sources` で判別できます。
 `runs-pilot/` にある参考実行は実行した人の個人設定（出力スタイル、プラグイン、スキル）を
@@ -63,7 +63,7 @@ Kaigi on Rails 2026 の発表「真のREST 2026」で示す比較実験の、実
 
 ## 再集計と再判定
 
-`experiment/agent/` で実行します。
+`agent/` で実行します。
 
 ```sh
 bin/report                                  # runs/ から report.md を作り直す
@@ -71,7 +71,7 @@ RUNS_DIR=../runs-pilot bin/report           # 予備実行の集計
 bin/oracle --run ../runs/s1/html/<run_id>   # 1実行の判定をやり直す
 ```
 
-判定はシードDB（`experiment/todo_app/db/seed.sqlite3`）と各実行の `db.sqlite3` の差分から出ます。
+判定はシードDB（`todo_app/db/seed.sqlite3`）と各実行の `db.sqlite3` の差分から出ます。
 アプリを動かさなくても再判定できます。
 
 ## 匿名化
@@ -102,4 +102,4 @@ APIキーは記録のどこにも含まれません。
 
 この実験記録は [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.ja) で公開します。
 出典として、この発表とリポジトリを示してください。
-コード（`experiment/todo_app/` と `experiment/agent/`）のライセンスは別に定めます。
+コード（`todo_app/` と `agent/`）のライセンスは別に定めます。

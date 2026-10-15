@@ -1,6 +1,6 @@
 # 切除実験の記録（claude-sonnet-5、thinking なし）
 
-設計書 `scenario-extension-design.md` の §10 に従って回した実行記録です。条件、指示文、N は設計書のとおりで、予想（§1 の表）は結果を見たあとも書き直していません。
+設計書 [`scenario-extension-design.md`](../docs/scenario-extension-design.md) の §10 に従って回した実行記録です。条件、指示文、N は設計書のとおりで、予想（§1 の表）は結果を見たあとも書き直していません。設計書は実行の時点では版管理していなかったので、このことはリポジトリ上では検証できません。
 モデルと実行条件は本番（`runs/`）と同じです。集計は `bin/report` の出力（`report.md`）で、以下の「手集計」の列だけ `transcript.jsonl` から数えました。
 
 ## 変更点
@@ -87,3 +87,7 @@ s6:
 ### 試し打ちとの差
 
 試し打ち（N=1）で s6 の `html` は見送りでしたが、本実行では 10 件中 6 件が削除と再作成を実行しました。試し打ちの結果は `runs-probes/ablation-probe2/s6/html/s6-html-20261009T085446Z-001/` にあり、本実行の外です。
+
+## ライセンス
+
+この記録は CC BY 4.0 です（ルートの [`LICENSE-DATA`](../LICENSE-DATA)）。

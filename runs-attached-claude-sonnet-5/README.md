@@ -1,6 +1,6 @@
 # 付随する状態の記録（claude-sonnet-5、thinking なし）
 
-設計書 `attached-state-design.md` の §10 に従って回した 60 実行の記録です。事前の予想（§1 の表）は結果を見たあとも書き直していません。
+設計書 [`attached-state-design.md`](../docs/attached-state-design.md) の §10 に従って回した 60 実行の記録です。事前の予想（§1 の表）は結果を見たあとも書き直していません。設計書は実行の時点では版管理していなかったので、このことはリポジトリ上では検証できません。
 モデルと実行条件は `runs/` と同じです。実行は 2026-10-10 で、s9 → s10、各シナリオで `html` → `json` → `json_links` の順に回しました。試し打ち（各条件 1 回）は `runs-probes/attached-probe/` にあり、集計には含めていません。
 
 ## 実行の条件と注意
@@ -84,3 +84,7 @@ s10 で数字として使うのは、「親を完了にしたか（巻き添え�
 ## 付記: 状態の変化
 
 s9 の `html` と `json_links` で見送った実行、s10 の全実行は、判定が `unexpected_changes` なしです。`updated_at` が動いた行もありません。
+
+## ライセンス
+
+この記録は CC BY 4.0 です（ルートの [`LICENSE-DATA`](../LICENSE-DATA)）。

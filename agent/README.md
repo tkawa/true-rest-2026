@@ -1,6 +1,6 @@
 # agent
 
-`experiment/todo_app/` の二つの表現（`/` と `/api`）に対して、同じエージェントに同じ自然言語の指示を与え、
+`todo_app/` の二つの表現（`/` と `/api`）に対して、同じエージェントに同じ自然言語の指示を与え、
 表現の違いだけで挙動がどう変わるかを計測する装置です。
 
 構成は四つです。LLM を呼ぶ薄いループ、唯一のツールである汎用HTTPツール、
@@ -39,7 +39,7 @@ cp .env.example .env    # ANTHROPIC_API_KEY を書く
 | `MAX_TOOL_CALLS` | ツール呼び出しの上限（既定 25） |
 | `RUN_TIMEOUT_SECONDS` | 1実行の壁時計の上限（既定 600） |
 | `REFERENCE_ALLOWED_TOOLS` | 参考実行で Claude Code に許すツール |
-| `RUNS_DIR` | 実行記録の置き場（既定は `experiment/runs/`） |
+| `RUNS_DIR` | 実行記録の置き場（既定は `runs/`） |
 
 ## 実行
 
@@ -87,7 +87,7 @@ bin/agent --spec path/to/openapi.yaml --task "買い物リストに牛乳を追�
 | `--task` / `--task-file` | 指示文。どちらか必須 |
 | `--origin` | 許可オリジンの上書き。仕様書の `servers` が相対URLや不在のときに使う |
 | `--header 'Name: value'` | 全リクエストに付ける固定ヘッダ（繰り返し可） |
-| `--out` | 記録の置き場。既定は `experiment/runs-scratch/adhoc/<UTC時刻>/` |
+| `--out` | 記録の置き場。既定は `runs-scratch/adhoc/<UTC時刻>/` |
 | `--dry-run` | APIを呼ばず、初期メッセージと許可オリジンを表示する |
 | `--quiet` | 進行の逐次表示を止める |
 
@@ -95,14 +95,14 @@ bin/agent --spec path/to/openapi.yaml --task "買い物リストに牛乳を追�
 
 ### 実験の S2 を手元で再現する
 
-`experiment/todo_app/` でサーバを起動します。
+`todo_app/` でサーバを起動します。
 
 ```sh
 cp db/seed.sqlite3 /tmp/run.sqlite3
 EXPERIMENT_DB=/tmp/run.sqlite3 SECRET_KEY_BASE=x bin/rails s -e experiment -p 3000
 ```
 
-`experiment/agent/` から向けます。
+`agent/` から向けます。
 
 ```sh
 bin/agent --url http://localhost:3000/ --task "買い物リストに牛乳を追加して"
@@ -138,8 +138,8 @@ Cookie は、jar に値があればそちらが固定ヘッダより優先され
 
 ### 実験のデータセットとは分かれています
 
-記録は `experiment/runs-scratch/` に置かれ、`.gitignore` で除外されています。
-`bin/report` が読む `experiment/runs/` には混ざりません。
+記録は `runs-scratch/` に置かれ、`.gitignore` で除外されています。
+`bin/report` が読む `runs/` には混ざりません。
 
 ## シナリオ
 
@@ -202,7 +202,7 @@ HTML条件で `/api` 以下を叩いた場合、JSON条件で `/api` 以下で�
 
 ## 記録の形式
 
-実行記録は `experiment/runs/<scenario>/<condition>/<run_id>/` に置かれます。
+実行記録は `runs/<scenario>/<condition>/<run_id>/` に置かれます。
 
 | ファイル | 内容 |
 |---|---|
@@ -217,16 +217,16 @@ HTML条件で `/api` 以下を叩いた場合、JSON条件で `/api` 以下で�
 `permission_mode`、`api_key_source`、`available_tools` も入ります。
 既製エージェントは自前の認証で動かすので、ハーネスの `ANTHROPIC_API_KEY` は子プロセスに渡しません。
 
-`experiment/runs/` は公開データセットとしてコミットしてあります。説明は
+`runs/` は公開データセットとしてコミットしてあります。説明は
 [runs/README.md](../runs/README.md) を見てください。取った実行をすべて残す方針です。
 
-試し打ちは `RUNS_DIR=../runs-scratch` に向けてください（`experiment/.gitignore` で除外してあります）。
+試し打ちは `RUNS_DIR=../runs-scratch` に向けてください（`.gitignore` で除外してあります）。
 
-条件を変える前に取った予備実行は `experiment/runs-pilot/` に置き、本番の集計から外します。
+条件を変える前に取った予備実行は `runs-pilot/` に置き、本番の集計から外します。
 
-別モデルでの追試は `experiment/runs-<モデルID>/` に置きます。
-現在は `experiment/runs-claude-fable-5-1/`（別モデルでの追試）と
-`experiment/runs-claude-sonnet-5-cli-2.1.283/`（参考実行の交絡の切り分け）があります。
+別モデルでの追試は `runs-<モデルID>/` に置きます。
+現在は `runs-claude-fable-5-1/`（別モデルでの追試）と
+`runs-claude-sonnet-5-cli-2.1.283/`（参考実行の交絡の切り分け）があります。
 データセットカードは各ディレクトリの README です。
 本番と並べて見るには `--against` を使います。
 
@@ -246,7 +246,7 @@ LLM を呼ばずに、ランナー・ツール・オラクルが正しいこと�
 bundle exec rake test
 ```
 
-テストの実行記録は一時ディレクトリに書かれるので、`experiment/runs/` は汚れません。
+テストの実行記録は一時ディレクトリに書かれるので、`runs/` は汚れません。
 文字コードはシェルのロケールに関わらず UTF-8 に固定してあり、`LANG` が未設定でも同じ結果になります。
 
 疑似エージェントは本物と同じ `HttpTool` を使うので、Cookie と CSRF トークンの扱いも同じ経路を通ります。

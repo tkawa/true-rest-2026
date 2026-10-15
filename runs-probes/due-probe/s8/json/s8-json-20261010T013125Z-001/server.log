@@ -1,0 +1,19 @@
+=> Booting Puma
+=> Rails 8.1.3.1 application starting in experiment 
+=> Run `bin/rails server --help` for more startup options
+Puma starting in single mode...
+* Puma version: 8.0.2 ("Into the Arena")
+* Ruby version: ruby 4.0.7 (2026-09-15 revision 229531a6cf) +PRISM [arm64-darwin24]
+*  Min threads: 3
+*  Max threads: 3
+*  Environment: experiment
+*          PID: 8259
+* Listening on http://0.0.0.0:3012
+Use Ctrl-C to stop
+[dbe3461f-6c4b-46ba-873f-5508a9057f03]   
+[dbe3461f-6c4b-46ba-873f-5508a9057f03] ActiveRecord::RecordNotFound (Couldn't find Todo with 'id'="999999"):
+[dbe3461f-6c4b-46ba-873f-5508a9057f03]   
+[dbe3461f-6c4b-46ba-873f-5508a9057f03] app/controllers/todos_controller.rb:61:in 'TodosController#set_todo'
+[dbe3461f-6c4b-46ba-873f-5508a9057f03] lib/request_recorder.rb:18:in 'RequestRecorder#call'
+- Gracefully stopping, waiting for requests to finish
+Exiting

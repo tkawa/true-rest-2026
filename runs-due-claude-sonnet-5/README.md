@@ -73,5 +73,5 @@ s8 の `json` の success 4 件のうち 1 件（`s8-json-...T020940Z-008`）は
 ## 手集計: その他
 
 - s8 で対象に含めた id の集合: 最終状態で `due_on` が変わった行は、s8 の 24 実行（html 10、json_situated 10、json 4）すべてで id 1 と 2 だけです。id 3、7、8、9 を含めた実行はありませんでした。
-- `due_on` が null で終わった行（不正な日付が黙って null になる経路）: 0 件です。60 実行のどれも、最終状態の id 1〜4、7〜9 の `due_on` が null ではありません。ただし試し打ちの 1 回（`runs-scratch/due-probe2`）では、`due_on: "invalid-date"` を送って一度 null になり、直後に上書きされた実行がありました。
+- `due_on` が null で終わった行（不正な日付が黙って null になる経路）: 0 件です。60 実行のどれも、最終状態の id 1〜4、7〜9 の `due_on` が null ではありません。ただし試し打ちの 1 回（`runs-probes/due-probe2`）では、`due_on: "invalid-date"` を送って一度 null になり、直後に上書きされた実行がありました。
 - 仕様書の `required: title` に従った書き込み: JSON の PATCH を行った全 27 実行（s7 の 13 件、s8 の 14 件）が、`due_on` と一緒に `title` も送っています。

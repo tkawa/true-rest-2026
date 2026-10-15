@@ -1,7 +1,7 @@
 # 付随する状態の記録（claude-sonnet-5、thinking なし）
 
 設計書 `attached-state-design.md` の §10 に従って回した 60 実行の記録です。事前の予想（§1 の表）は結果を見たあとも書き直していません。
-モデルと実行条件は `runs/` と同じです。実行は 2026-10-10 で、s9 → s10、各シナリオで `html` → `json` → `json_links` の順に回しました。試し打ち（各条件 1 回）は `runs-scratch/attached-probe/` にあり、集計には含めていません。
+モデルと実行条件は `runs/` と同じです。実行は 2026-10-10 で、s9 → s10、各シナリオで `html` → `json` → `json_links` の順に回しました。試し打ち（各条件 1 回）は `runs-probes/attached-probe/` にあり、集計には含めていません。
 
 ## 実行の条件と注意
 

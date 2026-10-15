@@ -20,7 +20,7 @@ Kaigi on Rails 2026 の発表「真のREST 2026」で示した比較実験の、
 | ディレクトリ | 実行数 | モデル | 実行日（UTC） | 目的 |
 |---|---|---|---|---|
 | [`runs/`](runs/README.md) | 136 | `claude-sonnet-5` | 2026-09-19 | 本番。s0〜s4 の自作ループ 110 件と、s2 の参考実行（Claude Code）26 件 |
-| [`runs-pilot/`](runs-pilot/report.md) | 44 | `claude-sonnet-5` | 2026-09-19 | 予備実行。条件を固定する前のもの。本番の集計に入らない（説明は [`runs/README.md`](runs/README.md)） |
+| [`runs-pilot/`](runs-pilot/README.md) | 44 | `claude-sonnet-5` | 2026-09-19 | 予備実行。条件を固定する前のもの。本番の集計に入らない |
 | [`runs-claude-fable-5-1/`](runs-claude-fable-5-1/README.md) | 136 | `claude-fable-5-1` | 2026-09-27 | 本番と同じ装置で、モデルだけを変えた追試 |
 | [`runs-claude-sonnet-5-cli-2.1.283/`](runs-claude-sonnet-5-cli-2.1.283/README.md) | 10 | `claude-sonnet-5` | 2026-09-27 | 参考実行の差がモデルによるか CLI の版によるかの切り分け |
 | [`runs-ablation-claude-sonnet-5/`](runs-ablation-claude-sonnet-5/README.md) | 98 | `claude-sonnet-5` | 2026-10-09 | 切除実験（s4 の仕様書の文言、s5 の文字数制限、s6 の移動）。api_error で除外した 8 件を含む |
@@ -89,7 +89,7 @@ RUNS_DIR=../runs-scratch bin/run --scenario s2 --condition json --runs 1
 
 取った実行は、選ばずにすべて入れています。
 API のタイムアウトで応答を得られなかった実行（api_error）も、集計からは除きますが記録は残しています。
-集計に入れない探りの実行も、文書から引いているものは `runs-probes/` に入れています。
+`bin/agent` の任意の実行を除き、探りの実行もすべて `runs-probes/` に入れています。撮り直しと最初の試行の関係は `runs-probes/README.md` にあります。
 
 参考実行（Claude Code）の記録には実行した人の環境が含まれるため、記録時と後処理の二段で匿名化しています。
 記録時の処理は `agent/lib/agent/reference/sanitizer.rb`、後から取った記録への処理は `agent/script/sanitize-reference-records` です。

@@ -1,0 +1,129 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="1600" height="900" font-family="'Hiragino Sans', 'Noto Sans CJK JP', 'Noto Sans JP', 'Yu Gothic', sans-serif">
+<defs><pattern id="hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" fill="#fcfcfb"/><line x1="0" y1="0" x2="0" y2="8" stroke="#c3c2b7" stroke-width="2"/></pattern></defs>
+<rect width="1600" height="900" fill="#fcfcfb"/>
+<text x="40" y="58" font-size="32" fill="#0b0b0b" text-anchor="start" font-weight="bold" >参考  既製エージェント（Claude Code）に同じ指示を向けた場合</text>
+<text x="40" y="92" font-size="18" fill="#52514e" text-anchor="start" font-weight="normal" >S2「買い物リストに牛乳を追加して」。素のシステムプロンプト、個人設定なし、ツールは curl（Bash）・Read・Write。判定はDB差分。</text>
+<text x="40" y="140" font-size="19" fill="#0b0b0b" text-anchor="start" font-weight="bold" >モデル / CLI</text>
+<text x="330" y="140" font-size="19" fill="#0b0b0b" text-anchor="start" font-weight="bold" >表現</text>
+<text x="520" y="140" font-size="19" fill="#0b0b0b" text-anchor="start" font-weight="bold" >前提の一行</text>
+<text x="520" y="160" font-size="13" fill="#8a8983" text-anchor="start" font-weight="normal" >「このサービスには HTTP で</text>
+<text x="520" y="176" font-size="13" fill="#8a8983" text-anchor="start" font-weight="normal" >アクセスできます。」</text>
+<text x="640" y="140" font-size="19" fill="#0b0b0b" text-anchor="start" font-weight="bold" >1回の実行 = 1マス</text>
+<text x="1440" y="140" font-size="19" fill="#0b0b0b" text-anchor="middle" font-weight="bold" >HTTPリクエスト</text>
+<text x="1440" y="160" font-size="13" fill="#8a8983" text-anchor="middle" font-weight="normal" >中央値（範囲）</text>
+<line x1="40" y1="186" x2="1560" y2="186" stroke="#0b0b0b" stroke-width="1.5"/>
+<text x="40" y="293.0" font-size="19" fill="#0b0b0b" text-anchor="start" font-weight="bold" >claude-sonnet-5</text>
+<text x="40" y="314.0" font-size="14" fill="#52514e" text-anchor="start" font-weight="normal" >Claude Code 2.1.275</text>
+<text x="330" y="226.0" font-size="19" fill="#0b0b0b" text-anchor="start" font-weight="normal" >HTML</text>
+<text x="520" y="226.0" font-size="19" fill="#0b0b0b" text-anchor="start" font-weight="normal" >なし</text>
+<rect x="640" y="197.0" width="48" height="32" rx="5" fill="url(#hatch)" stroke="#c3c2b7" stroke-width="1.5"/>
+<rect x="696" y="197.0" width="48" height="32" rx="5" fill="url(#hatch)" stroke="#c3c2b7" stroke-width="1.5"/>
+<rect x="752" y="197.0" width="48" height="32" rx="5" fill="url(#hatch)" stroke="#c3c2b7" stroke-width="1.5"/>
+<rect x="808" y="197.0" width="48" height="32" rx="5" fill="#eb6834"/>
+<rect x="864" y="197.0" width="48" height="32" rx="5" fill="#eb6834"/>
+<rect x="920" y="197.0" width="48" height="32" rx="5" fill="#eb6834"/>
+<rect x="976" y="197.0" width="48" height="32" rx="5" fill="#eb6834"/>
+<rect x="1032" y="197.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="1088" y="197.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="1144" y="197.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<text x="640" y="249.0" font-size="14" fill="#8a8983" text-anchor="start" font-weight="normal" >到達せず 3  /  停止 4  /  完遂 3</text>
+<text x="1440" y="226.0" font-size="19" fill="#0b0b0b" text-anchor="middle" font-weight="normal" >3（0〜11）</text>
+<line x1="330" y1="260" x2="1560" y2="260" stroke="#efeee9" stroke-width="1"/>
+<text x="330" y="300.0" font-size="19" fill="#0b0b0b" text-anchor="start" font-weight="normal" >HTML</text>
+<text x="520" y="300.0" font-size="19" fill="#0b0b0b" text-anchor="start" font-weight="normal" >あり</text>
+<rect x="640" y="271.0" width="48" height="32" rx="5" fill="#eb6834"/>
+<rect x="696" y="271.0" width="48" height="32" rx="5" fill="#eb6834"/>
+<rect x="752" y="271.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="808" y="271.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="864" y="271.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="920" y="271.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="976" y="271.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="1032" y="271.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="1088" y="271.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="1144" y="271.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<text x="640" y="323.0" font-size="14" fill="#8a8983" text-anchor="start" font-weight="normal" >停止 2  /  完遂 8</text>
+<text x="1440" y="300.0" font-size="19" fill="#0b0b0b" text-anchor="middle" font-weight="normal" >5（2〜7）</text>
+<line x1="330" y1="334" x2="1560" y2="334" stroke="#efeee9" stroke-width="1"/>
+<text x="330" y="374.0" font-size="19" fill="#52514e" text-anchor="start" font-weight="normal" >JSON（仕様書）</text>
+<text x="520" y="374.0" font-size="19" fill="#0b0b0b" text-anchor="start" font-weight="normal" >なし・あり</text>
+<rect x="640" y="345.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="696" y="345.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="752" y="345.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="808" y="345.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="864" y="345.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="920" y="345.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<text x="640" y="397.0" font-size="14" fill="#8a8983" text-anchor="start" font-weight="normal" >完遂 6</text>
+<text x="1440" y="374.0" font-size="19" fill="#0b0b0b" text-anchor="middle" font-weight="normal" >2</text>
+<line x1="40" y1="408" x2="1560" y2="408" stroke="#d9d8d2" stroke-width="1"/>
+<text x="40" y="441.0" font-size="19" fill="#0b0b0b" text-anchor="start" font-weight="bold" >claude-sonnet-5</text>
+<text x="40" y="462.0" font-size="14" fill="#52514e" text-anchor="start" font-weight="normal" >Claude Code 2.1.283（CLI だけ更新した対照）</text>
+<text x="330" y="448.0" font-size="19" fill="#0b0b0b" text-anchor="start" font-weight="normal" >HTML</text>
+<text x="520" y="448.0" font-size="19" fill="#0b0b0b" text-anchor="start" font-weight="normal" >なし</text>
+<rect x="640" y="419.0" width="48" height="32" rx="5" fill="url(#hatch)" stroke="#c3c2b7" stroke-width="1.5"/>
+<rect x="696" y="419.0" width="48" height="32" rx="5" fill="url(#hatch)" stroke="#c3c2b7" stroke-width="1.5"/>
+<rect x="752" y="419.0" width="48" height="32" rx="5" fill="url(#hatch)" stroke="#c3c2b7" stroke-width="1.5"/>
+<rect x="808" y="419.0" width="48" height="32" rx="5" fill="url(#hatch)" stroke="#c3c2b7" stroke-width="1.5"/>
+<rect x="864" y="419.0" width="48" height="32" rx="5" fill="#eb6834"/>
+<rect x="920" y="419.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="976" y="419.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="1032" y="419.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="1088" y="419.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="1144" y="419.0" width="48" height="32" rx="5" fill="#0b0b0b"/>
+<text x="640" y="471.0" font-size="14" fill="#8a8983" text-anchor="start" font-weight="normal" >到達せず 4  /  停止 1  /  完遂 4  /  巻き添え 1</text>
+<text x="1440" y="448.0" font-size="19" fill="#0b0b0b" text-anchor="middle" font-weight="normal" >3（0〜7）</text>
+<line x1="40" y1="482" x2="1560" y2="482" stroke="#d9d8d2" stroke-width="1"/>
+<text x="40" y="589.0" font-size="19" fill="#0b0b0b" text-anchor="start" font-weight="bold" >claude-fable-5-1</text>
+<text x="40" y="610.0" font-size="14" fill="#52514e" text-anchor="start" font-weight="normal" >Claude Code 2.1.283</text>
+<text x="330" y="522.0" font-size="19" fill="#0b0b0b" text-anchor="start" font-weight="normal" >HTML</text>
+<text x="520" y="522.0" font-size="19" fill="#0b0b0b" text-anchor="start" font-weight="normal" >なし</text>
+<rect x="640" y="493.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="696" y="493.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="752" y="493.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="808" y="493.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="864" y="493.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="920" y="493.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="976" y="493.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="1032" y="493.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="1088" y="493.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="1144" y="493.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<text x="640" y="545.0" font-size="14" fill="#8a8983" text-anchor="start" font-weight="normal" >完遂 10</text>
+<text x="1440" y="522.0" font-size="19" fill="#0b0b0b" text-anchor="middle" font-weight="normal" >4</text>
+<line x1="330" y1="556" x2="1560" y2="556" stroke="#efeee9" stroke-width="1"/>
+<text x="330" y="596.0" font-size="19" fill="#0b0b0b" text-anchor="start" font-weight="normal" >HTML</text>
+<text x="520" y="596.0" font-size="19" fill="#0b0b0b" text-anchor="start" font-weight="normal" >あり</text>
+<rect x="640" y="567.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="696" y="567.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="752" y="567.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="808" y="567.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="864" y="567.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="920" y="567.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="976" y="567.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="1032" y="567.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="1088" y="567.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="1144" y="567.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<text x="640" y="619.0" font-size="14" fill="#8a8983" text-anchor="start" font-weight="normal" >完遂 10</text>
+<text x="1440" y="596.0" font-size="19" fill="#0b0b0b" text-anchor="middle" font-weight="normal" >4</text>
+<line x1="330" y1="630" x2="1560" y2="630" stroke="#efeee9" stroke-width="1"/>
+<text x="330" y="670.0" font-size="19" fill="#52514e" text-anchor="start" font-weight="normal" >JSON（仕様書）</text>
+<text x="520" y="670.0" font-size="19" fill="#0b0b0b" text-anchor="start" font-weight="normal" >なし・あり</text>
+<rect x="640" y="641.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="696" y="641.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="752" y="641.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="808" y="641.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="864" y="641.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="920" y="641.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<text x="640" y="693.0" font-size="14" fill="#8a8983" text-anchor="start" font-weight="normal" >完遂 6</text>
+<text x="1440" y="670.0" font-size="19" fill="#0b0b0b" text-anchor="middle" font-weight="normal" >2</text>
+<line x1="40" y1="704" x2="1560" y2="704" stroke="#d9d8d2" stroke-width="1"/>
+<rect x="40" y="722" width="30" height="22" rx="4" fill="url(#hatch)" stroke="#c3c2b7" stroke-width="1.5"/>
+<text x="80" y="738" font-size="15" fill="#52514e" text-anchor="start" font-weight="normal" >到達しなかった: HTTP で叩けることに気づかず、リクエストを一度も送らない</text>
+<rect x="820" y="722" width="30" height="22" rx="4" fill="#eb6834"/>
+<text x="860" y="738" font-size="15" fill="#52514e" text-anchor="start" font-weight="normal" >到達したが止まった: 書き込みの手前で「実行してよろしいですか？」と確認を求める</text>
+<rect x="40" y="752" width="30" height="22" rx="4" fill="#2a78d6"/>
+<text x="80" y="768" font-size="15" fill="#52514e" text-anchor="start" font-weight="normal" >完遂: Cookie とフォームごとの CSRF トークンを自力で扱い、フォームを送信して追加</text>
+<rect x="820" y="752" width="30" height="22" rx="4" fill="#0b0b0b"/>
+<text x="860" y="768" font-size="15" fill="#52514e" text-anchor="start" font-weight="normal" >巻き添え: 302 を失敗と読み違えて POST を二度送り、牛乳が 2 件入った（報告は 1 件）</text>
+<text x="40" y="812" font-size="14" fill="#52514e" text-anchor="start" font-weight="normal" >到達した HTML 側の実行のうち、ハイパーメディアを読めずに失敗した回は 0（sonnet-5 17 件、fable-5.1 20 件）。sonnet-5 の失敗はエージェント側の既定の姿勢（ツールの選び方、確認を取る癖）による。</text>
+<text x="40" y="838" font-size="14" fill="#52514e" text-anchor="start" font-weight="normal" >CLI だけを上げた対照が本番とほぼ同じ（4/10）なので、fable-5.1 の 10/10 はモデルの差。同じ fable-5.1 でも、自作ループでは URL 一つと短い指示が API の安全機構で止まる（主表の脚注）。</text>
+<text x="40" y="864" font-size="14" fill="#52514e" text-anchor="start" font-weight="normal" >--setting-sources &quot;&quot;、~/.claude/CLAUDE.md なし、空の一時ディレクトリ。sonnet-5 は 2026-09-19〜20、対照と fable-5.1 は 2026-09-27。</text>
+</svg>

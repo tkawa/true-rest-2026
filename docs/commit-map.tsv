@@ -1,0 +1,57 @@
+original	public	subject
+128215196db959b80b16838b41b8fefa97f18d7d	38e103e124327bafa0b10e8d120868d465a80213	todo_app: scaffold Rails 8.1 app with RSpec, Alba and ja locale
+d43134ce629d39e8a739e951012e75692765f4ff	0db4c66c9063c0b2d9637c004483402ee6801974	todo_app: add List and Todo models with business rules
+01e7dc3096faa166543fa6d09286a61ae5d22e01	e5b946ed8835a86b1163d68f155b54291579f532	todo_app: add dual-scope routes, controllers and HTML views
+b356ea7d53f9f2eb396b17e3fe72345a86c49487	05ec121241e2e8858137b30f5a821b8c65a184c9	todo_app: add JSON resources, API request specs and OpenAPI docs
+221d873457e81613f7129c45085303e973e39335	999995b0539d1c3fabd7daf3f86752678b4dc2b7	todo_app: add deterministic seeds and seed database snapshot
+1c190d6ba1e2559fa72b0da273677b34e53966ab	7369b9771517506346a0b8420105b21f57a74ad7	todo_app: add experiment environment and request recorder
+f3df076bbb4c11b22cd8f5396727a394a3918e31	35e56ea040094b5c507fc470093cdfde9e44221d	todo_app: let JSON clients skip CSRF, ignore unpermitted attributes, add README
+2f9b9685e4cc99c27b0f3a4cceb0fbfbcbc7c844	6b1d58d8e247908f1625c3d985cc7647833a65d1	todo_app: switch to Ruby 4.0.7
+4f9cfd7bf6c90e2e0420d5144ee47e0aa4306543	7948ffde5683bfbb72f29618463493fe3571134c	todo_app: pin each representation to its scope
+121e5e4d92e5121365f3fc9fea155da8da5b9aca	6cdfee4beea4b25d5a36d97f3468b9f4693f1665	todo_app: emit ISO 8601 timestamps in JSON
+2ba43422035724f1849201a4cba6ebe14fcfecc3	30d8bcfd2d55d68b412eef974024f759ab0d894f	todo_app: return JSON error bodies for bad params and unknown /api paths
+36d537fcb44338dc50a45b186ba54da42c6d2de0	c54681e1d3ad7faf7d4e73ab4b6d4e6c5b4851e2	todo_app: regenerate OpenAPI docs and document representation pinning
+b2564f8c2ac92ff3ac04f6c5a0b027a68f83ac50	bb4caeb9136499ed85035ce131d45aa5da584c8c	todo_app: handle exception responses through config.exceptions_app
+e692e98153a5832dfafba02766bfa030e777080d	26ace0a6d8803061726e8f2c635eceb6074cb62f	agent: add harness project skeleton, HTTP tool and server control
+0b1c8b1b9fd724855ea4f852de1d95895be0f7fc	bfd8186714b3f9eece9ee399398e57121423d66e	agent: add scenarios and the DB-diff oracle
+6738adbfd7fb6b1211aad5fa7ad193b504d57a21	9e7aa655f08f6a31b40267262502e43424e3a8fb	agent: add runner, transcript and scripted fake agents
+ee0c8756d8660b775fb002fb30029fdbf1ac748b	9bbb49f35958dd99fd726b1014b39dd89dafbc88	agent: add the LLM loop, report generator and oracle CLI
+4ab39701d631b92a2ff7f9564646bb78005ad842	c4fdd2268212ba7538771bd0d118189d5143e9a7	agent: add Claude Code reference runner and README
+84892898fa4f423e446058e29f70c0817608ac28	7aa50988501a2f88108e09e80e52dcb94ac10c30	agent: pass the reference-run prompt over stdin
+afc5f9ce68124511340367e36828460bd2cc3bbb	f5e29ba0aec9bd6991099e90869cc9b3697eb638	agent: read credentials from .env via dotenv
+5ebba48ed6b0a1f022a60e244119e82d0fcae82c	3fe77b891fab3b3bb958faa4b6bb6311ed054395	agent: count aborted runs as incomplete, not honest_failure
+d9f32bcb0efd49bfedc02e5350e43dd7dc1646e2	da1805a694e087499a0f482ecaf1897ad9c5ac8f	agent: drop temperature when the model rejects it
+e1aab6f4f0ab08a68ea8da3d77faa3f98f0ad547	cc8e5e6caa98994f89d91ac1ed66dd3c1617b845	agent: pin UTF-8 regardless of the shell locale
+c9b52e065d23a6b0146afdcdc52ce8bd42ddd629	0eae757ddc44fc71cd031f35b5d0584e3c531d1d	agent: make the HTTP tool safe on large and invalid bodies
+04869068f2ab1d87bc38fb61a5b0fd0eed49d5cc	65605b4cb347b23ba560a608b5506b66ed50aa63	agent: keep self-test runs out of experiment/runs
+78f8276b40841e5da0cccc820aa559254e3afb8d	afdc8b00b66d47dfc4ecc67b9340a3bab35f3a90	agent: record the real stop reason and disable extended thinking
+bc334634b39870a2348a006cc8c2ab6c0b678c5a	5561b4c89c832cb6451a034c04bde34b91cba87e	agent: record the model id the API reports back
+eb46c84958742a664694691b114902e0c5e3303c	80c6b1e6cd620c82ddbd57c6b10b1ad7def0e418	agent: tell the agent the user cannot answer, and log prompt fingerprints
+17c564f1c9de612fb47de232670ed28d6523bcf5	026818ca3d0cab398f0e8ce160a97eb726589b1d	agent: record the post-change S1 and S3 confirmation runs in NOTES
+295d9b6be6584a8293c5aa2dd0d6413a909dfb21	643af4c2ac50d7ccf419711accca69449c6bd2f3	agent: keep the API key out of the reference run
+7d99f396b9365c7a1426d658db6784b9477b7ed9	3ef977d6bf8c40813a88f7ffe3c0cefa37ec3dbb	agent: record reference-run tool calls and run conditions
+298630584ab8e0ed2e4c86f6ae0911c2fa1054c4	b1a4bcd0c117b6954973ab0354d36cd430293d10	agent: judge reference runs on the database diff alone
+cd957540305402dd6a867235ca914872a64f3fe2	f8eec6d02df2f454c15843a945c82efb6b220ee6	agent: add --interleave so conditions alternate run by run
+cab34fbb34bc524c6a4983fef083bd5f2b62b795	9826da8e79515471a1be83b0debc3e971a65a781	agent: add a --hint variant to the reference run
+e9db28bbb9efc06dcc458ccddf5b808a345733f7	b7133bc0ec563cf55a743572b02056ac347d20df	agent: strip the operator's environment from reference-run records
+15255f046f1e4504575418a0ead58aaa0e588ff1	08900cc918e14777c563674ab63afce9fdd410f9	experiment: commit the run records as a public dataset
+5e9c5b6692e8ff1cb7352ea3adf04e97ed3d1623	334f665d8e81649f6fd98d2c1e38cbc19cdb128f	agent: run the reference agent without the operator's settings
+20fb33751225175d5cd43470169e61d3bf48ee36	724a8431782b6616989f73d17bbf03a53785c998	agent: re-take the reference runs without the user CLAUDE.md
+93fcf13b68179e8f3feaf2094235e334473ff5b5	7578391e284499fe7a8904a96405c8cc83ded7e7	agent: fix the reference-run condition and take the HTML cell to N=10
+51f7a3c95022dead62650c20465a76de2877824d	c4f59e74a46b568294a7bb16d5857ad788db2b5d	agent: redact the OS user name from reference-run records
+6b80a4963160f0559dc14d6ffb43d1c4a402d290	f1e1cf013c1aeb427cd72e979e3c9489f8a33940	agent: add bin/agent, a generic entry point for any running service
+837286f26887b4d221999b0717ba291d9c73ad0d	364233532761252a5342d7c78fb183892758c5d9	agent: redact auth headers in the API-call records too
+2e6c31ebc494b6a4d3c5f94a9429fff405ce2710	b9786c5d3956ecfb44ba0f989775771fee2b3834	agent: make thinking a setting and add bin/report --against
+58fa023963d9eb52a6196c07a7c394c981475da5	791084a78d6c601caaebf3294f4b36e753689ef3	experiment: add the claude-fable-5-1 replication dataset
+53eb92c62e943077d171296084b154e349d44979	029daf6e0a5e1e5f31e29d6a80465249fe11c565	agent: count refusals apart from other incompletes
+8684a923f4cfce5b52939a80e6f73422cc221c61	d6fde2e24306e82a5de59af6baac2254791f09c0	experiment: complete the fable-5.1 replication and separate the CLI confound
+c9204b0f8be8b45e032fcd40fd9102bed5ee3072	d938628a08f07057e91714885972f58a4bb424a3	todo_app: add the OPENAPI_STYLE, UPDATE_NO_CONTENT and FEATURE_TITLE_LIMIT switches
+4f36a709447dd715f420cc807a8aef861fece7e6	a84fde057ff518244e9d3663738859f2165c376c	agent: add per-condition server_env and the s5 and s6 scenarios
+3d29a2cb4cee8e141396ebc0411e3d3bbf6ad5a7	fb7c43d33c0c60df3a12e87b679c4487315eb78f	agent: count api_error runs apart from the verdict table
+52637c1b2282dae16936047db8863ce85b8a65cb	bff4d04fb796450fe85b2ba80220ecc0968373a7	experiment: add the claude-sonnet-5 ablation dataset (s4, s5, s6)
+9f02b4e5af64959e4ee68fc1f108fc3e06ab0cf9	acb9e0106c8c89710a94f6bc9260d404dc4bfaec	todo_app: add due_on, the FEATURE_DUE, EXPERIMENT_TODAY and API_SITUATED switches
+5018b2de7140be1fc75e609e48024b6c908f821f	3128050857cbed764743dd4c10780abc0ee902c1	agent: add the seed, feature_due and today scenario settings and the s7 and s8 scenarios
+1f42f7df578edd6ecad83d05d4c52e4d6b754482	728cd73842f548e684bbbbcafed4217a3ec6de15	experiment: add the claude-sonnet-5 due-date dataset (s7, s8)
+cf3bc709e8fe533deb3988bbd4187c02860f1872	6b1e88986b831e00cb7afab945af976f37fd3e3d	todo_app: add comments and subtasks, the FEATURE_COMMENTS, FEATURE_SUBTASKS and API_LINKS switches
+250d5cc0bcdf010d59c77da9586a7172f1194413	82b4996dce0b1edbf3ff25f90ee4134823ccf353	agent: add the feature_comments and feature_subtasks settings and the s9 and s10 scenarios
+52d699a48e955b2e6d062d145443c993670f49fd	d9af484fbcf5a0f2a4399e295e65aaf0bdd7bd13	experiment: add the claude-sonnet-5 attached-state dataset (s9, s10)

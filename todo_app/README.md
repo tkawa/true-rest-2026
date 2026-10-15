@@ -56,6 +56,8 @@ EXPERIMENT_DB=/tmp/run.sqlite3 EXPERIMENT_LOG=/tmp/run.jsonl FEATURE_ARCHIVE=1 S
 | `OPENAPI_STYLE` | 仕様書の生成時のみ。`terse` で「この操作では変わりません」型の警告文を外す（既定は `full`） |
 | `SECRET_KEY_BASE` | 未設定なら `experiment-only-fixed-key` を使う |
 
+credentials（`config/master.key`、`config/credentials.yml.enc`）は使いません。`development` と `test` は `tmp/local_secret.txt` を自動で作り、`experiment` は上の固定値を使います。実験では使わない `production` で起動するには、`SECRET_KEY_BASE` が必要です。
+
 CSSとJavaScriptを配信する場合は、先に `bin/rails assets:precompile RAILS_ENV=experiment SECRET_KEY_BASE=x` を実行してください。
 エージェントはHTTPレベルで話すので、アセットが無くてもHTMLとJSONの操作はすべて完結します。
 

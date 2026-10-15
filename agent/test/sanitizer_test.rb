@@ -68,10 +68,10 @@ class SanitizerTest < Minitest::Test
   end
 
   def test_the_os_user_name_is_replaced_outside_paths
-    listing = "total 0\ndrwx------@ 2 <USER>  staff  64  9 20 00:53 ."
+    listing = "total 0\ndrwx------@ 2 someone  staff  64  9 20 00:53 ."
 
     assert_equal "total 0\ndrwx------@ 2 <USER>  staff  64  9 20 00:53 .",
-                 Sanitizer.redact(listing, home: "/Users/tkawa", user: "tkawa")
+                 Sanitizer.redact(listing, home: "/Users/someone", user: "someone")
   end
 
   def test_the_user_name_inside_a_longer_token_is_left_alone
@@ -87,8 +87,8 @@ class SanitizerTest < Minitest::Test
   end
 
   def test_redaction_is_idempotent
-    once = Sanitizer.redact("/Users/tkawa/x 2 <USER> staff", home: "/Users/tkawa", user: "tkawa")
-    twice = Sanitizer.redact(once, home: "/Users/tkawa", user: "tkawa")
+    once = Sanitizer.redact("/Users/someone/x 2 someone staff", home: "/Users/someone", user: "someone")
+    twice = Sanitizer.redact(once, home: "/Users/someone", user: "someone")
 
     assert_equal once, twice
     assert_equal "<HOME>/x 2 <USER> staff", once

@@ -4,6 +4,7 @@ Kaigi on Rails 2026 の発表「真のREST 2026」で示した比較実験の、
 同じ業務ロジックの上に HTML（Hotwire）と JSON API の二つの表現を並べた ToDo アプリに、同じ LLM エージェントへ同じ自然言語の指示を与え、表現の違いだけで挙動がどう変わるかを測りました。
 
 スライド: https://tkawa.github.io/true-rest-2026/ja/
+<br>Slides in English: https://tkawa.github.io/true-rest-2026/en/
 
 ## 構成
 

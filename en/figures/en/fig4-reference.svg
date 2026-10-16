@@ -1,0 +1,129 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="1600" height="900" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif">
+<defs><pattern id="hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" fill="#fcfcfb"/><line x1="0" y1="0" x2="0" y2="8" stroke="#c3c2b7" stroke-width="2"/></pattern></defs>
+<rect width="1600" height="900" fill="#fcfcfb"/>
+<text x="40" y="58" font-size="32" fill="#0b0b0b" text-anchor="start" font-weight="bold" >Reference: the same instruction given to an off-the-shelf agent (Claude Code)</text>
+<text x="40" y="92" font-size="18" fill="#52514e" text-anchor="start" font-weight="normal" >S2 &quot;Add milk to the shopping list.&quot; Stock system prompt, no personal settings, tools: curl (Bash), Read, Write. Judged by DB diff.</text>
+<text x="40" y="140" font-size="19" fill="#0b0b0b" text-anchor="start" font-weight="bold" >Model / CLI</text>
+<text x="330" y="140" font-size="19" fill="#0b0b0b" text-anchor="start" font-weight="bold" >Representation</text>
+<text x="520" y="140" font-size="19" fill="#0b0b0b" text-anchor="start" font-weight="bold" >Extra line</text>
+<text x="520" y="160" font-size="13" fill="#8a8983" text-anchor="start" font-weight="normal" >&quot;You can access this</text>
+<text x="520" y="176" font-size="13" fill="#8a8983" text-anchor="start" font-weight="normal" >service over HTTP.&quot;</text>
+<text x="640" y="140" font-size="19" fill="#0b0b0b" text-anchor="start" font-weight="bold" >1 cell = 1 run</text>
+<text x="1440" y="140" font-size="19" fill="#0b0b0b" text-anchor="middle" font-weight="bold" >HTTP requests</text>
+<text x="1440" y="160" font-size="13" fill="#8a8983" text-anchor="middle" font-weight="normal" >median (range)</text>
+<line x1="40" y1="186" x2="1560" y2="186" stroke="#0b0b0b" stroke-width="1.5"/>
+<text x="40" y="293.0" font-size="19" fill="#0b0b0b" text-anchor="start" font-weight="bold" >claude-sonnet-5</text>
+<text x="40" y="314.0" font-size="14" fill="#52514e" text-anchor="start" font-weight="normal" >Claude Code 2.1.275</text>
+<text x="330" y="226.0" font-size="19" fill="#0b0b0b" text-anchor="start" font-weight="normal" >HTML</text>
+<text x="520" y="226.0" font-size="19" fill="#0b0b0b" text-anchor="start" font-weight="normal" >No</text>
+<rect x="640" y="197.0" width="48" height="32" rx="5" fill="url(#hatch)" stroke="#c3c2b7" stroke-width="1.5"/>
+<rect x="696" y="197.0" width="48" height="32" rx="5" fill="url(#hatch)" stroke="#c3c2b7" stroke-width="1.5"/>
+<rect x="752" y="197.0" width="48" height="32" rx="5" fill="url(#hatch)" stroke="#c3c2b7" stroke-width="1.5"/>
+<rect x="808" y="197.0" width="48" height="32" rx="5" fill="#eb6834"/>
+<rect x="864" y="197.0" width="48" height="32" rx="5" fill="#eb6834"/>
+<rect x="920" y="197.0" width="48" height="32" rx="5" fill="#eb6834"/>
+<rect x="976" y="197.0" width="48" height="32" rx="5" fill="#eb6834"/>
+<rect x="1032" y="197.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="1088" y="197.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="1144" y="197.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<text x="640" y="249.0" font-size="14" fill="#8a8983" text-anchor="start" font-weight="normal" >never reached 3  /  stopped 4  /  completed 3</text>
+<text x="1440" y="226.0" font-size="19" fill="#0b0b0b" text-anchor="middle" font-weight="normal" >3 (0–11)</text>
+<line x1="330" y1="260" x2="1560" y2="260" stroke="#efeee9" stroke-width="1"/>
+<text x="330" y="300.0" font-size="19" fill="#0b0b0b" text-anchor="start" font-weight="normal" >HTML</text>
+<text x="520" y="300.0" font-size="19" fill="#0b0b0b" text-anchor="start" font-weight="normal" >Yes</text>
+<rect x="640" y="271.0" width="48" height="32" rx="5" fill="#eb6834"/>
+<rect x="696" y="271.0" width="48" height="32" rx="5" fill="#eb6834"/>
+<rect x="752" y="271.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="808" y="271.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="864" y="271.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="920" y="271.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="976" y="271.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="1032" y="271.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="1088" y="271.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="1144" y="271.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<text x="640" y="323.0" font-size="14" fill="#8a8983" text-anchor="start" font-weight="normal" >stopped 2  /  completed 8</text>
+<text x="1440" y="300.0" font-size="19" fill="#0b0b0b" text-anchor="middle" font-weight="normal" >5 (2–7)</text>
+<line x1="330" y1="334" x2="1560" y2="334" stroke="#efeee9" stroke-width="1"/>
+<text x="330" y="374.0" font-size="19" fill="#52514e" text-anchor="start" font-weight="normal" >JSON (spec)</text>
+<text x="520" y="374.0" font-size="19" fill="#0b0b0b" text-anchor="start" font-weight="normal" >No / Yes</text>
+<rect x="640" y="345.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="696" y="345.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="752" y="345.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="808" y="345.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="864" y="345.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="920" y="345.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<text x="640" y="397.0" font-size="14" fill="#8a8983" text-anchor="start" font-weight="normal" >completed 6</text>
+<text x="1440" y="374.0" font-size="19" fill="#0b0b0b" text-anchor="middle" font-weight="normal" >2</text>
+<line x1="40" y1="408" x2="1560" y2="408" stroke="#d9d8d2" stroke-width="1"/>
+<text x="40" y="441.0" font-size="19" fill="#0b0b0b" text-anchor="start" font-weight="bold" >claude-sonnet-5</text>
+<text x="40" y="462.0" font-size="14" fill="#52514e" text-anchor="start" font-weight="normal" >Claude Code 2.1.283 (control: CLI updated only)</text>
+<text x="330" y="448.0" font-size="19" fill="#0b0b0b" text-anchor="start" font-weight="normal" >HTML</text>
+<text x="520" y="448.0" font-size="19" fill="#0b0b0b" text-anchor="start" font-weight="normal" >No</text>
+<rect x="640" y="419.0" width="48" height="32" rx="5" fill="url(#hatch)" stroke="#c3c2b7" stroke-width="1.5"/>
+<rect x="696" y="419.0" width="48" height="32" rx="5" fill="url(#hatch)" stroke="#c3c2b7" stroke-width="1.5"/>
+<rect x="752" y="419.0" width="48" height="32" rx="5" fill="url(#hatch)" stroke="#c3c2b7" stroke-width="1.5"/>
+<rect x="808" y="419.0" width="48" height="32" rx="5" fill="url(#hatch)" stroke="#c3c2b7" stroke-width="1.5"/>
+<rect x="864" y="419.0" width="48" height="32" rx="5" fill="#eb6834"/>
+<rect x="920" y="419.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="976" y="419.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="1032" y="419.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="1088" y="419.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="1144" y="419.0" width="48" height="32" rx="5" fill="#0b0b0b"/>
+<text x="640" y="471.0" font-size="14" fill="#8a8983" text-anchor="start" font-weight="normal" >never reached 4  /  stopped 1  /  completed 4  /  collateral 1</text>
+<text x="1440" y="448.0" font-size="19" fill="#0b0b0b" text-anchor="middle" font-weight="normal" >3 (0–7)</text>
+<line x1="40" y1="482" x2="1560" y2="482" stroke="#d9d8d2" stroke-width="1"/>
+<text x="40" y="589.0" font-size="19" fill="#0b0b0b" text-anchor="start" font-weight="bold" >claude-fable-5-1</text>
+<text x="40" y="610.0" font-size="14" fill="#52514e" text-anchor="start" font-weight="normal" >Claude Code 2.1.283</text>
+<text x="330" y="522.0" font-size="19" fill="#0b0b0b" text-anchor="start" font-weight="normal" >HTML</text>
+<text x="520" y="522.0" font-size="19" fill="#0b0b0b" text-anchor="start" font-weight="normal" >No</text>
+<rect x="640" y="493.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="696" y="493.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="752" y="493.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="808" y="493.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="864" y="493.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="920" y="493.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="976" y="493.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="1032" y="493.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="1088" y="493.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="1144" y="493.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<text x="640" y="545.0" font-size="14" fill="#8a8983" text-anchor="start" font-weight="normal" >completed 10</text>
+<text x="1440" y="522.0" font-size="19" fill="#0b0b0b" text-anchor="middle" font-weight="normal" >4</text>
+<line x1="330" y1="556" x2="1560" y2="556" stroke="#efeee9" stroke-width="1"/>
+<text x="330" y="596.0" font-size="19" fill="#0b0b0b" text-anchor="start" font-weight="normal" >HTML</text>
+<text x="520" y="596.0" font-size="19" fill="#0b0b0b" text-anchor="start" font-weight="normal" >Yes</text>
+<rect x="640" y="567.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="696" y="567.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="752" y="567.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="808" y="567.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="864" y="567.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="920" y="567.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="976" y="567.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="1032" y="567.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="1088" y="567.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="1144" y="567.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<text x="640" y="619.0" font-size="14" fill="#8a8983" text-anchor="start" font-weight="normal" >completed 10</text>
+<text x="1440" y="596.0" font-size="19" fill="#0b0b0b" text-anchor="middle" font-weight="normal" >4</text>
+<line x1="330" y1="630" x2="1560" y2="630" stroke="#efeee9" stroke-width="1"/>
+<text x="330" y="670.0" font-size="19" fill="#52514e" text-anchor="start" font-weight="normal" >JSON (spec)</text>
+<text x="520" y="670.0" font-size="19" fill="#0b0b0b" text-anchor="start" font-weight="normal" >No / Yes</text>
+<rect x="640" y="641.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="696" y="641.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="752" y="641.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="808" y="641.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="864" y="641.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<rect x="920" y="641.0" width="48" height="32" rx="5" fill="#2a78d6"/>
+<text x="640" y="693.0" font-size="14" fill="#8a8983" text-anchor="start" font-weight="normal" >completed 6</text>
+<text x="1440" y="670.0" font-size="19" fill="#0b0b0b" text-anchor="middle" font-weight="normal" >2</text>
+<line x1="40" y1="704" x2="1560" y2="704" stroke="#d9d8d2" stroke-width="1"/>
+<rect x="40" y="722" width="30" height="22" rx="4" fill="url(#hatch)" stroke="#c3c2b7" stroke-width="1.5"/>
+<text x="80" y="738" font-size="15" fill="#52514e" text-anchor="start" font-weight="normal" >Never reached: didn&#x27;t realize it could call HTTP; never sent a request</text>
+<rect x="820" y="722" width="30" height="22" rx="4" fill="#eb6834"/>
+<text x="860" y="738" font-size="15" fill="#52514e" text-anchor="start" font-weight="normal" >Reached but stopped: asked &quot;Shall I go ahead?&quot; just before writing</text>
+<rect x="40" y="752" width="30" height="22" rx="4" fill="#2a78d6"/>
+<text x="80" y="768" font-size="15" fill="#52514e" text-anchor="start" font-weight="normal" >Completed: handled the cookie and per-form CSRF token itself; submitted the form</text>
+<rect x="820" y="752" width="30" height="22" rx="4" fill="#0b0b0b"/>
+<text x="860" y="768" font-size="15" fill="#52514e" text-anchor="start" font-weight="normal" >Collateral: misread a 302 as failure, POSTed twice; milk added twice (reported once)</text>
+<text x="40" y="812" font-size="14" fill="#52514e" text-anchor="start" font-weight="normal" >Of the HTML runs that reached the app, 0 failed because they couldn&#x27;t read hypermedia (17 with sonnet-5, 20 with fable-5.1). The sonnet-5 failures came from the agent&#x27;s default stance (tool choice, habit of asking first).</text>
+<text x="40" y="838" font-size="14" fill="#52514e" text-anchor="start" font-weight="normal" >The CLI-only control is close to the main run (4/10), so fable-5.1&#x27;s 10/10 is a model difference. With our own loop, fable-5.1 refuses a single URL plus a short instruction (API safety mechanism).</text>
+<text x="40" y="864" font-size="14" fill="#52514e" text-anchor="start" font-weight="normal" >--setting-sources &quot;&quot;, no ~/.claude/CLAUDE.md, empty temp directory. sonnet-5 on 2026-09-19–20; the control and fable-5.1 on 2026-09-27.</text>
+</svg>
